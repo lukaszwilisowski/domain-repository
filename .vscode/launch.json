@@ -1,0 +1,23 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Jest Unit Tests",
+      "type": "node",
+      "request": "launch",
+      "args": ["-i"],
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--config",
+        "test/jest.unit.config.json",
+        "--runInBand"
+      ]
+    }
+  ]
+}

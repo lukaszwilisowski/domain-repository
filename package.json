@@ -1,0 +1,27 @@
+{
+  "name": "swarmcheckapi",
+  "version": "1.0.0",
+  "description": "",
+  "module": "esnext",
+  "jest": {
+    "verbose": true
+  },
+  "keywords": [],
+  "author": "Lukasz Wilisowski",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "jest --config ./test/jest.unit.config.json",
+    "test:db": "jest --config ./test/jest.integration.config.json"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.4",
+    "@typescript-eslint/eslint-plugin": "^5.28.0",
+    "@typescript-eslint/parser": "^5.28.0",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "^28.1.2",
+    "ts-jest": "^28.0.5",
+    "jest-mock": "^29.3.1",
+    "typescript": "^4.7.4"
+  }
+}
