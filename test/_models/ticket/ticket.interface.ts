@@ -1,3 +1,4 @@
+import { IBaseModelAttached } from '../base.attached.model';
 
 export interface ITestTicket {
   name: string;
@@ -9,4 +10,4 @@ export interface ITestTicket {
   validUntil?: Date;
 }
 
-export type ITestTicketAttached = ITestTicket;
+export type ITestTicketAttached = ITestTicket & IBaseModelAttached;

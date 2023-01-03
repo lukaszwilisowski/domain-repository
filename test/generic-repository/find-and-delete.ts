@@ -44,7 +44,7 @@ export const runFindAndDeleteTests = (
 
     it('should delete object by Id', async () => {
       const joe = await ticketRepository.findOne({ price: 10 });
-      await ticketRepository.findByIdAndDelete(joe!.id);
+      await ticketRepository.findAllAndDelete({ id: joe!.id });
       const all = await ticketRepository.findAll();
 
       expect(all.length).toBe(1);

@@ -1,4 +1,4 @@
-import { IBaseModelAttached } from "interfaces/base.attached.model";
+import { IBaseModelAttached } from '../base.attached.model';
 
 export interface ITestStats {
   grade: string;
@@ -17,7 +17,7 @@ export interface ITestCharacter {
   born?: Date;
 }
 
-export type ITestStatsAttached = ITestStats;
+export type ITestStatsAttached = ITestStats & IBaseModelAttached;
 export type ITestCharacterAttached = ITestCharacter &
   IBaseModelAttached & {
     stats?: ITestStatsAttached[];

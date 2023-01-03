@@ -1,4 +1,4 @@
-import { IBaseModelAttached } from 'interfaces/base.attached.model';
+import { IBaseModelAttached } from '../base.attached.model';
 
 export enum TestFuelType {
   Gasoline = 'Gasoline',
@@ -43,8 +43,8 @@ export interface ITestCar {
   features?: ITestFeatures;
 }
 
-export type ITestPartAttached = ITestPart;
-export type ITestAdvancedAttached = ITestAdvanced;
+export type ITestPartAttached = ITestPart & IBaseModelAttached;
+export type ITestAdvancedAttached = ITestAdvanced & IBaseModelAttached;
 export type ITestFeaturesAttached = ITestFeatures &
   IBaseModelAttached & {
     advanced?: ITestAdvancedAttached;
