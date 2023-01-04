@@ -19,7 +19,7 @@ This library will be most useful for:
 
 ## How to use it
 
-Example repository:
+### Define domain types
 
 ```typescript
 const carRepository: IDomainRepository<ITestCar, ITestCarAttached>;
@@ -42,9 +42,7 @@ To type your domain objects you can use both Typescript Types and Interfaces. No
 
 ---
 
-See example use-cases of IDomainRepository below:
-
-Create:
+### Create
 
 ```typescript
 const testCar: ITestCar = {
@@ -73,7 +71,7 @@ const createdCars = await carRepository.createMany([testCar]);
 
 ---
 
-Find by `SearchCriteria<T>`
+### Find
 
 ```typescript
 /**
@@ -183,7 +181,7 @@ const foundCars = await carRepository.findAll({ features: SearchBy.ObjectDoesNot
 
 ---
 
-Update with `UpdateCriteria<T>`
+### Update
 
 ```typescript
 /**
@@ -197,6 +195,8 @@ Update with `UpdateCriteria<T>`
  */
 export type UpdateCriteria<T> = {...}
 ```
+
+Update with:
 
 ```typescript
 //update one
@@ -381,7 +381,7 @@ Note! When updating nested arrays and objects in SQL database, we cannot use dir
 
 Because of SOLID's Single-responsibility principle. You should not operate on objects, whose functions you do not need (for example heavy Mongoose documents). You should never pass more data than you need (for simplicity and security purposes). Also, the mapping gives you additional flexibility, decouples DB implementation from domain model, and allows to change both domain and DB models asynchronously, without breaking the contract.
 
-For example: we recommend you to have all Domain objects inherited from base IDomainModel interface (inheritance pattern should be mostly limited to models). Hence, all domain models should have ID of type string (as this is mappable to both MongoDB \_id and SQL numeric IDs). Without mappings, it would be impossible to have the same id mapped to different data types in different databases.
+For example, we recommend that your **attached models have string id** (id is usually read, persisted or compared, but not numerically processed). This way, domain ID can be mapped to both MongoDB ObjectId and SQL numeric id. Without mappings, it would be impossible to have the same id mapped to different data types in different databases.
 
 ### 7. _Why should I care for optional and readonly properties?_
 
@@ -400,7 +400,7 @@ Yes. The two main approaches to implementing repositories are:
 ```typescript
 class OrderService {
   public findOrder(orderName: string): IOrderAttached {
-    return this.genericRespository.findOne({ name: orderName });
+    return this.genericRepository.findOne({ name: orderName });
   }
 }
 ```
