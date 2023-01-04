@@ -34,7 +34,9 @@ export type ITestCarAttached = ITestCar & { id: string };
 
 To type your domain objects you can use both Typescript Types and Interfaces. None is really preferred.
 
-Create function:
+## API
+
+Create:
 
 ```typescript
 const testCar: ITestCar = {
