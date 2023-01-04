@@ -10,16 +10,11 @@ Properly implemented abstract repository layer solves 3 major development proble
 2. Thanks to advanced Typescript checks, takes into consideration additional constraints such as optional and readonly, providing developers with **better intellisense and type-checking**.
 3. Offers a mocked repository implementation, which simplifies unit testing and **removes the need to mock any DB dependencies**.
 
-This library will be most useful for:
-
-- new projects
-- old projects that you want to fully or partly refactor
-
 ---
 
 ## How to use it
 
-### Define domain types
+IDomainRepository is very similar in use to Mongoose collection or TypeORM repository. You can think of it as simplified, but more strictly typed version of those.
 
 ```typescript
 const carRepository: IDomainRepository<ITestCar, ITestCarAttached>;
@@ -469,7 +464,12 @@ The latter approach has important advantages over the former one, especially whe
 
 IDomainRepository can be also used with specific repository. In this case, leave your repository interface untouched, but change its implementation by using our IDomainRepository as its sub-dependency.
 
-### 9. _Can IDomainRepository be used with DI framework?_
+### 9. _Are you planning to add fluent API?_
+
+Maybe. Fluent API works best for automated purposes. This repository is created mostly
+for best developer's experience, so there are goals. But there are common use-cases to be considered in future.
+
+### 10. _Can IDomainRepository be used with DI framework?_
 
 Of course. Please see our documentation for concrete implementations:
 
