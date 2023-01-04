@@ -38,9 +38,9 @@ import {
  * 2. `Optional` properties additionally by: Exists, DoesNotExists.
  * 3. `Strings` additionally by: StartsWith, EndsWith, Contains, DoesNotStartWith, DoesNotEndWith, DoesNotContain.
  * 4. `Numbers` and `Dates` additionally by: IsGreaterThan, IsLesserThan, IsLesserThanOrEqual, IsGreaterThanOrEqual.
- * 5. `Arrays of primitives` by: HasElement, DoesNotHaveElement, HasAnyOfTheElements, HasNoneOfTheElements, HasAllElements.
- * 6. `Arrays of objects` by: HasElementThatMatches.
- * 7. `Nested objects` by: NestedCriteria.
+ * 5. `Arrays of primitives` by: value, Equals, DoesNotEqual, HasElement, DoesNotHaveElement, HasAnyOfTheElements, HasNoneOfTheElements, HasAllElements.
+ * 6. `Arrays of objects` by: HasElementThatMatches, ObjectArrayExists, ObjectArrayDoesNotExist.
+ * 7. `Nested objects` by: NestedCriteria, ObjectExists, ObjectDoesNotExist.
  */
 export type SearchCriteria<T> = {
   [P in keyof T]?: T[P] extends PrimitiveTypes | undefined

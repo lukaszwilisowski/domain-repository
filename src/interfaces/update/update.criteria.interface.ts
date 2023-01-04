@@ -18,10 +18,11 @@ import {
 /**
  * Makes `T` non-readonly (!) properties updateable:
  * 1. `Primitives` by: Set.
- * 2. `Optionals` additionally by: Clear.
- * 3. `Numbers` additionally by: Increment.
- * 4. `Arrays` additionally by: Push, PushEach, Pull, PullEach.
- * 5. `Nested objects`: by UpdateCriteria<T>.
+ * 2. `Optional` properties by: Set, Clear.
+ * 3. `Numbers` properties by: Set, Increment.
+ * 4. `Arrays` by: Push, Set, PushEach, Pull, PullEach, ClearArray.
+ * 5. `Arrays of objects` by: Set, Push, PushEach, Pull, PullEach, ClearObjectArray.
+ * 5. `Nested objects`: by Set, UpdateCriteria, ClearObject.
  */
 export type UpdateCriteria<T> = {
   [P in keyof T]?: P extends MutablePropsOf<T>

@@ -43,10 +43,10 @@ export const runFindAllAndUpdateTests = (
     });
 
     it('should update property', async () => {
-      const updateResponse = await carRepository.findAllAndUpdate({ model: 'Toyota Avensis' }, { leftGas: 100 });
+      const result = await carRepository.findAllAndUpdate({ model: 'Toyota Avensis' }, { leftGas: 100 });
       const foundCars = await carRepository.findAll({ model: 'Toyota Avensis' });
 
-      expect(updateResponse.numberOfUpdatedObjects).toBe(1);
+      expect(result.numberOfUpdatedObjects).toBe(1);
       expect(foundCars[0].leftGas).toBe(100);
     });
 
@@ -74,16 +74,16 @@ export const runFindAllAndUpdateTests = (
     });
 
     it('should update property for two entities', async () => {
-      const updateResponse = await carRepository.findAllAndUpdate({ horsePower: 180 }, { leftGas: 100 });
+      const result = await carRepository.findAllAndUpdate({ horsePower: 180 }, { leftGas: 100 });
       const foundCars = await carRepository.findAll({ horsePower: 180 });
 
-      expect(updateResponse.numberOfUpdatedObjects).toBe(2);
+      expect(result.numberOfUpdatedObjects).toBe(2);
       expect(foundCars[0].leftGas).toBe(100);
       expect(foundCars[1].leftGas).toBe(100);
     });
 
     it('should update by multiple criteria', async () => {
-      const updateResponse = await carRepository.findAllAndUpdate(
+      const result = await carRepository.findAllAndUpdate(
         {
           horsePower: 180,
           mileage: 200
@@ -96,7 +96,7 @@ export const runFindAllAndUpdateTests = (
       const notUpdatedCar = foundCars.find((el) => el.mileage !== 200);
 
       expect(foundCars.length).toBe(2);
-      expect(updateResponse.numberOfUpdatedObjects).toBe(1);
+      expect(result.numberOfUpdatedObjects).toBe(1);
       expect(updatedCar?.leftGas).toBe(8000);
       expect(notUpdatedCar?.leftGas).toBe(40);
     });
@@ -199,50 +199,47 @@ export const runFindAllAndUpdateTests = (
     });
 
     it('should update with Clear', async () => {
-      const updateResponse = await carRepository.findAllAndUpdate(
-        { horsePower: 180 },
-        { leftGas: UpdateWith.Clear() }
-      );
+      const result = await carRepository.findAllAndUpdate({ horsePower: 180 }, { leftGas: UpdateWith.Clear() });
       const foundCars = await carRepository.findAll({ horsePower: 180 });
 
-      expect(updateResponse.numberOfUpdatedObjects).toBe(2);
+      expect(result.numberOfUpdatedObjects).toBe(2);
       expect(!foundCars[0].leftGas).toBe(true);
       expect(!foundCars[1].leftGas).toBe(true);
     });
 
     it('should update with ClearArray', async () => {
-      const updateResponse = await carRepository.findAllAndUpdate(
+      const result = await carRepository.findAllAndUpdate(
         { horsePower: 180 },
         { producedIn: UpdateWith.ClearArray() }
       );
       const foundCars = await carRepository.findAll({ horsePower: 180 });
 
-      expect(updateResponse.numberOfUpdatedObjects).toBe(2);
+      expect(result.numberOfUpdatedObjects).toBe(2);
       expect(foundCars[0].producedIn).toEqual([]);
       expect(foundCars[1].producedIn).toEqual([]);
     });
 
     it('should update with ClearObject', async () => {
-      const updateResponse = await carRepository.findAllAndUpdate(
+      const result = await carRepository.findAllAndUpdate(
         { horsePower: 180 },
         { features: UpdateWith.ClearObject() }
       );
       const foundCars = await carRepository.findAll({ horsePower: 180 });
 
-      expect(updateResponse.numberOfUpdatedObjects).toBe(2);
+      expect(result.numberOfUpdatedObjects).toBe(2);
       expect(!foundCars[0].features).toBe(true);
       expect(!foundCars[1].features).toBe(true);
     });
 
     it('should update with ClearObjectArray', async () => {
-      const updateResponse = await carRepository.findAllAndUpdate(
+      const result = await carRepository.findAllAndUpdate(
         { horsePower: 140 },
         { parts: UpdateWith.ClearObjectArray() }
       );
 
       const foundCars = await carRepository.findAll({ horsePower: 140 });
 
-      expect(updateResponse.numberOfUpdatedObjects).toBe(1);
+      expect(result.numberOfUpdatedObjects).toBe(1);
       expect(foundCars[0].parts).toEqual([]);
     });
 
