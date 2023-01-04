@@ -2,8 +2,8 @@ import { describe, it, jest } from '@jest/globals';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { SearchBy } from 'interfaces/search/search.by.interface';
 import { Mocked } from 'jest-mock';
-import { NullableAnimal } from '../../_models//nullable.model';
 import { NumericFoodType, SexType, StringAnimalType } from '../../_models/non-nullable.model';
+import { NullableAnimal } from '../../_models/nullable.model';
 
 const repository = {
   findOne: jest.fn()

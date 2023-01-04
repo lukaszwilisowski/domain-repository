@@ -1,9 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
-import { Features, Friend } from '../repository-types/_models/non-nullable.model';
-import {
-  AnimalObject
-} from './_models/animal.models';
+import { Features, Friend } from '../repository-type-checks/_models/non-nullable.model';
+import { AnimalObject } from './_models/animal.models';
 import { complexMapping } from './_models/example.mapping';
 
 describe('Map entity', () => {

@@ -27,22 +27,19 @@ const carRepository: IDomainRepository<ITestCar, ITestCarAttached>;
 
 `IDomainRepository<Detached, Attached>` can be typed with a single domain type T, but we strongly recommend to differentiate between Detached and Attached domain types:
 
-- `Detached` is a type of domain object that was not yet persisted. This type contains only manually assignable properties (without Id).
-- `Attached` is a type of already persisted domain object. This type contains all properties including those set by DB engine (usually id).
+- `Detached` is a type of domain object that was not yet persisted. This type contains only manually assignable properties (without id).
+- `Attached` is a type of already persisted domain object. This type contains all properties including those set by DB engine (id property and possibly more, depending on your setup).
 
 For example:
 
 ```typescript
-export type IBaseModelAttached = { id: string };
 export type ITestCar = {...};
-export type ITestCarAttached = ITestCar & IBaseModelAttached;
+export type ITestCarAttached = ITestCar & { id: string };
 ```
 
 To type your domain objects you can use both Typescript Types and Interfaces. None is really preferred.
 
----
-
-### Create
+Create function:
 
 ```typescript
 const testCar: ITestCar = {
@@ -69,9 +66,7 @@ const createdCar = await carRepository.create(testCar);
 const createdCars = await carRepository.createMany([testCar]);
 ```
 
----
-
-### Find
+Find criteria:
 
 ```typescript
 /**
@@ -181,7 +176,7 @@ const foundCars = await carRepository.findAll({ features: SearchBy.ObjectDoesNot
 
 ---
 
-### Update
+Update criteria:
 
 ```typescript
 /**
@@ -196,7 +191,7 @@ const foundCars = await carRepository.findAll({ features: SearchBy.ObjectDoesNot
 export type UpdateCriteria<T> = {...}
 ```
 
-Update with:
+Update primitive property:
 
 ```typescript
 //update one
@@ -204,37 +199,44 @@ const result = await carRepository.findOneAndUpdate({ model: 'Toyota' }, { model
 
 //update all
 const result = await carRepository.findAllAndUpdate({}, { leftGas: UpdateWith.Increment(10) });
-const result = await carRepository.findAllAndUpdate({ horsePower: 180, mileage: 200 }, { leftGas: 8000 });
 
 //clear
 const result = await carRepository.findAllAndUpdate({ horsePower: 180 }, { leftGas: UpdateWith.Clear() });
+```
+
+Update array property:
+
+```typescript
+//set
+const result = await carRepository.findOneAndUpdate({}, { parts: [{ name: 'part1' }] });
+const result = await carRepository.findOneAndUpdate({}, { parts: UpdateWith.Set([{ name: 'part1' }]) });
+
+//push and pull
+const result = await carRepository.findAllAndUpdate({}, { producedIn: UpdateWith.Push('3') });
+const result = await carRepository.findAllAndUpdate({}, { producedIn: UpdateWith.PushEach(['4', '5']) });
+const result = await carRepository.findAllAndUpdate({}, { producedIn: UpdateWith.Pull('2') });
+const result = await carRepository.findAllAndUpdate({}, { producedIn: UpdateWith.PullEach(['2', '3']) });
+const result = await carRepository.findAllAndUpdate(
+  { features: SearchBy.Exists() },
+  { features: UpdateWith.Push({ ranking: 1 }) }
+);
+
+//clear array
 const result = await carRepository.findAllAndUpdate({ horsePower: 180 }, { producedIn: UpdateWith.ClearArray() });
 const result = await carRepository.findAllAndUpdate({ horsePower: 140 }, { parts: UpdateWith.ClearObjectArray() });
-const result = await carRepository.findAllAndUpdate({ horsePower: 180 }, { features: UpdateWith.ClearObject() });
+```
 
-//array - push, pull
-const result = await carRepository.findAllAndUpdate(
-  { producedIn: SearchBy.HasElement('2') },
-  { producedIn: UpdateWith.Push('3') }
-);
-const result = await carRepository.findAllAndUpdate(
-  { producedIn: SearchBy.HasElement('2') },
-  { producedIn: UpdateWith.PushEach(['4', '5']) }
-);
-const result = await carRepository.findAllAndUpdate(
-  { producedIn: SearchBy.HasElement('2') },
-  { producedIn: UpdateWith.Pull('2') }
-);
-const { numberOfUpdatedObjects } = await carRepository.findAllAndUpdate(
-  { leftGas: SearchBy.IsLesserThanOrEqual(50) },
-  { producedIn: UpdateWith.PullEach(['2', '3']) }
-);
+Update nested object property:
 
-//nested set
+```typescript
+//set
 const { numberOfUpdatedObjects } = await carRepository.findAllAndUpdate(
   { features: SearchBy.NestedCriteria<ITestFeatures>({ ranking: SearchBy.IsGreaterThanOrEqual(20) }) },
   { features: UpdateWith.Set({ ranking: 100, color: TestColor.Black, numbers: [1, 2, 3] }) }
 );
+
+//clear object
+const result = await carRepository.findAllAndUpdate({ horsePower: 180 }, { features: UpdateWith.ClearObject() });
 
 //complex update
 const { numberOfUpdatedObjects } = await carRepository.findAllAndUpdate(
@@ -256,7 +258,55 @@ const { numberOfUpdatedObjects } = await carRepository.findAllAndUpdate(
 );
 ```
 
-Note that typescript will throw error if you try to perform a forbidden action (updating property which is readonly, clearing property which is not optional, incrementing non-numeric property etc.).
+Please note that:
+
+- all input data is properly escaped by TypeORM implementation (preventing SQL injection)
+- typescript will throw error if you try to perform a forbidden action (updating property which is readonly, clearing property which is not optional, incrementing non-numeric property etc.).
+
+Delete functions:
+
+```typescript
+const result = await ticketRepository.findOneAndDelete({ price: SearchBy.IsGreaterThan(5) });
+const result = await ticketRepository.findAllAndDelete({ price: SearchBy.IsGreaterThan(5) });
+```
+
+---
+
+## Unit testing
+
+With IDomainRepository, testing and test-driven-development has never been simpler.
+Here lies the true power of this library: mocked, in-memory implementation of abstract repository (you can think of it as mocked database).
+
+To test any business service, you have to mock all of its dependencies.
+Now, you don't have to worry about mocking Mongoose or TypeORM functions. Just create an automatic mock of IDomainRepository using the following syntax, passing **initial db data** in MockedDBRepository contructor:
+
+### Example using Jest
+
+```typescript
+describe('carService', () => {
+  const initialData: ITestCarAttached[] = [
+    { name: 'Volvo', best: false },
+    { name: 'Toyota', best: true }
+  ];
+
+  const mockedRepository = new MockedDBRepository<ITestCar, ITestCarAttached>(initialData);
+
+  const carService = new CarService(mockedRepository);
+
+  it('should find best car', async () => {
+    const car = await carService.findBestCar();
+    expect(car.name).toEqual('Toyota');
+  });
+});
+```
+
+No more complex mocking of functions or DB state. **Now all your business services
+are easily testable!**
+
+Caveats:
+
+- MockedDBRepository creates string IDs for each added object (simulating ID creation in Mongo and SQL databases). This ID has custom format and should not be tested for proper formatting (in case anybody has such an idea).
+- MockedDBRepository does not simulate other auto-generated properties, as those depend on target DB technology and DB models settings (decorators). Anyway, it should not be a problem, because in principle you should never test your database when testing your business services. You assume that database works (correctly creates proper IDs) and only test the code that is within the business service itself.
 
 ---
 

@@ -2,7 +2,7 @@ import { describe, it, jest } from '@jest/globals';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { UpdateWith } from 'interfaces/update/update.with.interface';
 import { Mocked } from 'jest-mock';
-import { NullableAnimal } from '../../_models//nullable.model';
+import { NullableAnimal } from '../../_models/nullable.model';
 
 const repository = {
   findOneAndUpdate: jest.fn()

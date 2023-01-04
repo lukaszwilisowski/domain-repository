@@ -2,15 +2,30 @@ import { describe, it, jest } from '@jest/globals';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { UpdateWith } from 'interfaces/update/update.with.interface';
 import { Mocked } from 'jest-mock';
-import { NullableAdvancedFeatures, NullableFeatures } from '../../_models//nullable.model';
-import { AdvancedFeatures, Features, NonNullableAnimal } from '../../_models/non-nullable.model';
+import { AdvancedFeatures, Features } from '../../_models/non-nullable.model';
+import { NullableAdvancedFeatures, NullableAnimal, NullableFeatures } from '../../_models/nullable.model';
 
 const repository = {
   findOneAndUpdate: jest.fn()
-} as unknown as Mocked<IDomainRepository<NonNullableAnimal, NonNullableAnimal>>;
+} as unknown as Mocked<IDomainRepository<NullableAnimal, NullableAnimal>>;
 
 describe('Non-nullable multi nested object criteria', () => {
   it('should be searchable', () => {
+    repository.findOneAndUpdate(
+      {},
+      {
+        features: UpdateWith.NestedUpdate<NullableFeatures>({
+          carnivore: UpdateWith.Clear(),
+          advanced: UpdateWith.NestedUpdate<NullableAdvancedFeatures>({
+            serialNumber: UpdateWith.Clear()
+          })
+        })
+      }
+    );
+
+    repository.findOneAndUpdate({}, { features: UpdateWith.ClearObject() });
+
+    //you can update by more specific, non-nullable criteria, because it has the subset of update options of nullable type
     repository.findOneAndUpdate(
       {},
       {
@@ -23,10 +38,10 @@ describe('Non-nullable multi nested object criteria', () => {
       }
     );
 
+    //you can update by more specific, non-nullable criteria, because it has the subset of update options of nullable type
     repository.findOneAndUpdate(
       {},
       {
-        // @ts-expect-error
         features: UpdateWith.NestedUpdate<NullableFeatures>({
           carnivore: true,
           advanced: UpdateWith.NestedUpdate<AdvancedFeatures>({

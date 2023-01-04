@@ -1,7 +1,7 @@
 import { describe, it, jest } from '@jest/globals';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { Mocked } from 'jest-mock';
-import { NullableAnimal } from '../../_models//nullable.model';
+import { NullableAnimal } from '../../_models/nullable.model';
 
 import { SearchBy } from 'interfaces/search/search.by.interface';
 
