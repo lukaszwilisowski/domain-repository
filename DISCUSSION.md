@@ -36,6 +36,36 @@ Abstract repository layer approach pushes TypeORM improvements even further, by 
 
 ---
 
+### Example using Jest
+
+```typescript
+describe('carService', () => {
+  const initialData: ITestCarAttached[] = [
+    { name: 'Volvo', best: false },
+    { name: 'Toyota', best: true }
+  ];
+
+  const mockedRepository = new MockedDBRepository<ITestCar, ITestCarAttached>(initialData);
+
+  const carService = new CarService(mockedRepository);
+
+  it('should find best car', async () => {
+    const car = await carService.findBestCar();
+    expect(car.name).toEqual('Toyota');
+  });
+});
+```
+
+No more complex mocking of functions or DB state. **Now all your business services
+are easily testable!**
+
+Caveats:
+
+- MockedDBRepository creates string IDs for each added object (simulating ID creation in Mongo and SQL databases). This ID has custom format and should not be tested for proper formatting (in case anybody has such an idea).
+- MockedDBRepository does not simulate other auto-generated properties, as those depend on target DB technology and DB models settings (decorators). Anyway, it should not be a problem, because in principle you should never test your database when testing your business services. You assume that database works (correctly creates proper IDs) and only test the code that is within the business service itself.
+
+---
+
 ## Discussion
 
 ### 1. _What are benefits of DB as an implementation detail pattern?_

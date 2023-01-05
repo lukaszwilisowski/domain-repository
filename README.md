@@ -6,7 +6,7 @@ Useful links:
 
 - [Why use it? Benefits and FAQ](https://github.com/lukaszwilisowski/domain-repository/blob/main/DISCUSSION.md)
 - [API (similar to TypeORM repository)](https://github.com/lukaszwilisowski/domain-repository/blob/main/DISCUSSION.md)
-- [Example](https://github.com/lukaszwilisowski/domain-repository-example)
+- [Code example](https://github.com/lukaszwilisowski/domain-repository-example)
 
 ## Installation
 
@@ -28,13 +28,14 @@ npm install domain-repository
 - detached (without id), for objects not yet persisted in the database
 - attached (with id), for already persisted objects
 
-This differentiation improves intellisense and debugging. You can call your models whatever you like, but please stick to your naming convention. Our recommendation is to add prefix such as _Attached_ or _Db_ to all your attached models.
+This differentiation improves intellisense and debugging. You can call your models whatever you like, but please stick to your naming convention. Our recommendation is to add either _Db_ prefix or _Attached_ suffix to all of your attached models.
 
 For example:
 
 ```typescript
 export type Car = {
   name: string;
+  best: boolean;
   readonly yearOfProduction: number;
   sold?: Date;
 };
@@ -42,37 +43,46 @@ export type Car = {
 export type DbCar = Car & { id: string };
 ```
 
-#3. Use IDomainRepository in your business services.
+[Why id is of type string here?](https://github.com/lukaszwilisowski/domain-repository/blob/main/DISCUSSION.md#6-why-should-i-map-db-objects-to-domain-objects)
 
-In any place, where you would previously use Mongoose collection or TypeORM repository, now use abstract repository:
+#3. Use `IDomainRepository` interface in your business services, in places, where you would previously use Mongoose collection or TypeORM repository.
 
 ```typescript
 const carRepository: IDomainRepository<Car, DbCar>;
 ```
 
-The first type here is non-persisted (detached = Car) type, the second one is persisted (attached = DbCar) type.
+The first type here (Car) is not persisted (detached) type, the second one (DbCar) is persisted (attached) type. If you only need to read or write data you can also use more narrow interfaces: `IReadDomainRepository` or `IWriteDomainRepository`.
 
-If you only need to read or write data, you should always narrow down your interfaces.
-
-```typescript
-//read-only
-const carRepository: IReadDomainRepository<Car, DbCar>;
-
-//write-only
-const carRepository: IWriteDomainRepository<Car, DbCar>;
-```
-
-Always put your dependencies in the constuctor of the business service (or CQRS query / command), like here:
+#4. Put your IDomainRepository dependency in the constuctor of your business service (or CQRS query / command), like here:
 
 ```typescript
-//read-only
-const carRepository: IReadDomainRepository<Car, DbCar>;
+export class CarService {
+  constructor(private readonly carRepository: IReadDomainRepository<DbCar>) {}
 
-//write-only
-const carRepository: IWriteDomainRepository<Car, DbCar>;
+  public async findBestCar(): Promise<DbCar | undefined> {
+    return this.carRepository.findOne({ best: true });
+  }
+}
 ```
 
-#4. Add `IDomainRepository<T>` as a depenedency to your business services (it is important to supply interface, not concrete implementation yet). DI framework is greatly recommended here.
+#5. Test your domain model and business service using MockedDbRepository implementation.
+
+```typescript
+describe('CarService', () => {
+  const initialData: DbCar[] = [
+    { name: 'Volvo', best: false, yearOfProduction: 2000 },
+    { name: 'Toyota', best: true, yearOfProduction: 2010, sold: new Date() }
+  ];
+
+  const mockedRepository = new MockedDBRepository<Car, DbCar>(initialData);
+  const carService = new CarService(mockedRepository);
+
+  it('should find best car', async () => {
+    const car = await carService.findBestCar();
+    expect(car.name).toEqual('Toyota');
+  });
+});
+```
 
 ---
 

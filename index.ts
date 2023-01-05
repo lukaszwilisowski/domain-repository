@@ -1,5 +1,6 @@
 //
 export { MongoDbRepository } from './src/db/mongoose/mongo.repository';
+export { SingleEntityNotFoundError } from './src/errors/singleEntityNotFound.error';
 export {
   IDomainRepository,
   IReadDomainRepository,
