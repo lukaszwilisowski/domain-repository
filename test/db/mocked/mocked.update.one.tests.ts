@@ -1,7 +1,7 @@
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { MockedDBRepository } from 'mocked-repository/mocked.repository';
-import { runFindOneAndUpdateTests } from '../generic-repository/find-one-and-update';
-import { ITestCharacter, ITestCharacterAttached } from '../_models/character/character.interface';
+import { ITestCharacter, ITestCharacterAttached } from '../../_models/character/character.interface';
+import { runFindOneAndUpdateTests } from '../../_templates/find-one-and-update';
 
 const findOneAndUpdateMockedTestSetup = async (): Promise<{
   characterRepository: IDomainRepository<ITestCharacter, ITestCharacterAttached>;

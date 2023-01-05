@@ -1,7 +1,7 @@
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { MockedDBRepository } from 'mocked-repository/mocked.repository';
-import { runFindAllAndUpdateTests } from '../generic-repository/find-all-and-update';
-import { ITestCar, ITestCarAttached } from '../_models/car/car.interface';
+import { ITestCar, ITestCarAttached } from '../../_models/car/car.interface';
+import { runFindAllAndUpdateTests } from '../../_templates/find-all-and-update';
 
 const findAllAndUpdateMockedTestSetup = async (): Promise<{
   carRepository: IDomainRepository<ITestCar, ITestCarAttached>;

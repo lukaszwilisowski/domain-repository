@@ -1,7 +1,7 @@
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { MockedDBRepository } from 'mocked-repository/mocked.repository';
-import { runCreateTests } from '../generic-repository/create';
-import { ITestCar, ITestCarAttached } from '../_models/car/car.interface';
+import { ITestCar, ITestCarAttached } from '../../_models/car/car.interface';
+import { runCreateTests } from '../../_templates/create';
 
 const createMockedTestSetup = async (): Promise<{
   carRepository: IDomainRepository<ITestCar, ITestCarAttached>;

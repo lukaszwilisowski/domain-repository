@@ -1,8 +1,8 @@
 import { MongoDbRepository } from 'db/mongoose/mongo.repository';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import mongoose from 'mongoose';
-import { runFindAllAndUpdateTests } from '../../../generic-repository/find-all-and-update';
 import { ITestCar, ITestCarAttached } from '../../../_models/car/car.interface';
+import { runFindAllAndUpdateTests } from '../../../_templates/find-all-and-update';
 import { carMapping, getCarCollection, TestMongoCarEntity } from '../entities/car/car.entity';
 
 const findAllAndUpdateMongoTestSetup = async (): Promise<{

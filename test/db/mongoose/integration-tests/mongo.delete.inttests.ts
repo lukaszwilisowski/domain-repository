@@ -1,8 +1,8 @@
 import { MongoDbRepository } from 'db/mongoose/mongo.repository';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import mongoose from 'mongoose';
-import { runFindAndDeleteTests } from '../../../generic-repository/find-and-delete';
 import { ITestTicket, ITestTicketAttached } from '../../../_models/ticket/ticket.interface';
+import { runFindAndDeleteTests } from '../../../_templates/find-and-delete';
 import { getTicketCollection, TestMongoTicketEntity, ticketMapping } from '../entities/ticket/ticket.entity';
 
 const findAndDeleteMongoTestSetup = async (): Promise<{

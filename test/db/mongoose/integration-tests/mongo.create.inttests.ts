@@ -1,8 +1,8 @@
 import { MongoDbRepository } from 'db/mongoose/mongo.repository';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import mongoose from 'mongoose';
-import { runCreateTests } from '../../../generic-repository/create';
 import { ITestCar, ITestCarAttached } from '../../../_models/car/car.interface';
+import { runCreateTests } from '../../../_templates/create';
 import { carMapping, getCarCollection, TestMongoCarEntity } from '../entities/car/car.entity';
 
 const createMongoTestSetup = async (): Promise<{
