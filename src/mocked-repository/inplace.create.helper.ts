@@ -27,7 +27,7 @@ export class InPlaceCreateHelper<A> {
   }
 
   public deepCopy(object: unknown): unknown {
-    const copy = { ...(object as {}) } as Record<string, unknown>;
+    const copy = { ...(object as Record<string, unknown>) };
 
     for (const key in copy) {
       if (Array.isArray(copy[key])) {

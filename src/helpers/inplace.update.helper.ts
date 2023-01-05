@@ -14,6 +14,7 @@ export class InPlaceUpdateHelper {
           continue;
 
         const updatedValue = this.getUpdatedValue(entity[key], update[key]);
+
         if (updatedValue !== undefined) {
           entity[key] = updatedValue;
           updated = true;
