@@ -1,5 +1,5 @@
-import { IfEquals } from 'interfaces/helper.types';
-import { PrimitiveTypes } from '../property.types.interface';
+import { IfEquals } from '../helper.types';
+import { PrimitiveTypes } from '../primitive.types.interface';
 import {
   ArrayDoesNotExist,
   ArrayExists,

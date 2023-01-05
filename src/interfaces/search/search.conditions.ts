@@ -198,7 +198,7 @@ export class NestedCriteria<T> extends ValueCondition<SearchCriteria<T>> {
   }
 }
 
-export class HasElementThatMatches<T> extends NestedCriteria<T> {
+export class HasElementThatMatches<T> extends ValueCondition<SearchCriteria<T>> {
   constructor(
     value: SearchCriteria<T>,
     public readonly hasElementThatMatchesConditionName = 'HasElementThatMatches'

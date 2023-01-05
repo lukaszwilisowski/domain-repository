@@ -5,7 +5,7 @@ import { runFindAllByArrayCriteriaTests } from '../generic-repository/find-all-b
 import { runFindAllByNestedObjectCriteriaTests } from '../generic-repository/find-all-by-nested-object-criteria';
 import { runFindAllBySimpleCriteriaTests } from '../generic-repository/find-all-by-simple-criteria';
 import { runFindOneByCriteriaTests } from '../generic-repository/find-one-by-criteria';
-import { testCars } from '../_mocked_data/car/car.data';
+import { testCars } from '../_data/car/car.data';
 import { ITestCar, ITestCarAttached } from '../_models/car/car.interface';
 
 const findMockedTestSetup = async (): Promise<{

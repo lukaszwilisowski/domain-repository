@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { SearchBy } from 'interfaces/search/search.by.interface';
-import { testTickets } from '../_mocked_data/ticket/ticket.data';
+import { testTickets } from '../_data/ticket/ticket.data';
 import { ITestTicket, ITestTicketAttached } from '../_models/ticket/ticket.interface';
 
 export const runFindAndDeleteTests = (

@@ -10,11 +10,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "baseUrl": "./src",
-    "paths": {
-      "*": ["./*"]
-    }
-  },
-  "include": ["src/**/*", "test/**/*"],
-  "exclude": ["node_modules", "dist"]
+    "declaration": true,
+    "baseUrl": "./src"
+  }
 }

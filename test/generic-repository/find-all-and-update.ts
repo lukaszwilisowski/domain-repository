@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { SearchBy } from 'interfaces/search/search.by.interface';
 import { UpdateWith } from 'interfaces/update/update.with.interface';
-import { testCars } from '../_mocked_data/car/car.data';
+import { testCars } from '../_data/car/car.data';
 import {
   ITestAdvanced,
   ITestCar,

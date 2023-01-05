@@ -1,5 +1,5 @@
 import { MutablePropsOf } from '../helper.types';
-import { PrimitiveTypes } from '../property.types.interface';
+import { PrimitiveTypes } from '../primitive.types.interface';
 import {
   Clear,
   ClearArray,

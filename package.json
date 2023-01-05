@@ -1,20 +1,24 @@
 {
-  "name": "swarmcheckapi",
-  "version": "1.0.0",
-  "description": "",
-  "module": "esnext",
-  "jest": {
-    "verbose": true
-  },
-  "keywords": [],
+  "name": "domain-repository",
   "author": "Lukasz Wilisowski",
+  "version": "1.0.5",
+  "description": "",
+  "license": "ISC",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukaszwilisowski/domain-repository.git"
+  },
+  "module": "esnext",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "test": "jest --config ./test/jest.unit.config.json",
-    "test:db": "jest --config ./test/jest.integration.config.json"
+    "test:db": "jest --config ./test/jest.integration.config.json",
+    "prepublish": "copy package.json dist & copy LICENSE dist & copy README.md dist"
   },
   "devDependencies": {
     "@types/jest": "^28.1.4",
+    "@types/mongodb": "^4.0.7",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "eslint-import-resolver-typescript": "^3.5.2",
@@ -23,5 +27,10 @@
     "jest-mock": "^29.3.1",
     "ts-jest": "^28.0.5",
     "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "mongodb": "^4.13.0",
+    "mongoose": "^6.8.2",
+    "typeorm": "^0.3.11"
   }
 }

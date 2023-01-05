@@ -1,7 +1,7 @@
 {
   "eslint.lintTask.enable": true,
   "eslint.lintTask.options": "src/** -c .eslintrc.js",
-  "eslint.workingDirectories": ["src", "node-app/src"],
+  "eslint.workingDirectories": ["src"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

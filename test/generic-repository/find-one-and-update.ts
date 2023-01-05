@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { SearchBy } from 'interfaces/search/search.by.interface';
 import { UpdateWith } from 'interfaces/update/update.with.interface';
-import { testCharacters } from '../_mocked_data/character/character.data';
+import { testCharacters } from '../_data/character/character.data';
 import { ITestCharacter, ITestCharacterAttached, ITestStats } from '../_models/character/character.interface';
 
 export const runFindOneAndUpdateTests = (

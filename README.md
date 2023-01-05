@@ -16,6 +16,8 @@ Properly implemented abstract repository layer solves 3 major development proble
 
 IDomainRepository is very similar in use to Mongoose collection or TypeORM repository. You can think of it as simplified, but more strictly typed version of those.
 
+#1. Make sure you have separate domain types and db models.
+
 ```typescript
 const carRepository: IDomainRepository<ITestCar, ITestCarAttached>;
 ```
@@ -32,7 +34,9 @@ export type ITestCar = {...};
 export type ITestCarAttached = ITestCar & { id: string };
 ```
 
-To type your domain objects you can use both Typescript Types and Interfaces. None is really preferred.
+#2. Add `IDomainRepository<T>` as a depenedency to your business services (it is important to supply interface, not concrete implementation yet). DI framework is greatly recommended here.
+
+---
 
 ## API
 
@@ -469,7 +473,7 @@ IDomainRepository can be also used with specific repository. In this case, leave
 ### 9. _Are you planning to add fluent API?_
 
 Maybe. Fluent API works best for automated purposes. This repository is created mostly
-for best developer's experience, so there are goals. But there are common use-cases to be considered in future.
+for best developer's experience, so there are different end goals. But there are common use-cases to be considered in future.
 
 ### 10. _Can IDomainRepository be used with DI framework?_
 

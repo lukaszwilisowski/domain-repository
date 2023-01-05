@@ -1,4 +1,4 @@
-import { PrimitiveTypes } from '../../interfaces/property.types.interface';
+import { PrimitiveTypes } from '../../interfaces/primitive.types.interface';
 import {
   TransformArray,
   TransformArrayOfObjects,
