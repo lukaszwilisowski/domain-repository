@@ -15,7 +15,8 @@
     "build": "tsc -p ./tsconfig.build.json",
     "test": "jest --config ./test/jest.unit.config.json",
     "test:db": "jest --config ./test/jest.integration.config.json",
-    "prepublish": "npm version patch & copy package.json dist & copy LICENSE dist & copy README.md dist & copy .npmignore dist"
+    "prepare": "npm version patch && copy package.json dist && copy LICENSE dist && copy README.md dist",
+    "publish": "cd dist && npm publish"
   },
   "devDependencies": {
     "@types/jest": "^28.1.4",
