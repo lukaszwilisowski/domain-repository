@@ -12,6 +12,7 @@
     "esModuleInterop": true,
     "declaration": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "baseUrl": "./src"
   }
 }

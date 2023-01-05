@@ -1,6 +1,6 @@
-import { ObjectId } from 'mongodb';
+import * as mongoose from 'mongoose';
 
 export type BaseMongoEntity = {
   /** A MongoDB Id of the object. */
-  _id: ObjectId;
+  _id: mongoose.Types.ObjectId;
 };

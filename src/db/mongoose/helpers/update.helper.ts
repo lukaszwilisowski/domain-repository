@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import * as mongoose from 'mongoose';
 import { Clear, NestedArrayUpdate, NestedUpdate, ValueAction } from '../../../interfaces/update/update.conditions';
 
 export const getUpdate = (update: Record<string, unknown>): Record<string, unknown> => {
@@ -52,7 +52,7 @@ export const getUpdate = (update: Record<string, unknown>): Record<string, unkno
 
 export const getUpdateActionAndValue = (action: unknown): [string | undefined, unknown] => {
   if (action === null) return [undefined, action];
-  if (action instanceof ObjectId) return [undefined, action];
+  if (action instanceof mongoose.Types.ObjectId) return [undefined, action];
   if (action instanceof Date) return [undefined, action];
   if (Array.isArray(action)) return [undefined, action];
   if (typeof action !== 'object') return [undefined, action];

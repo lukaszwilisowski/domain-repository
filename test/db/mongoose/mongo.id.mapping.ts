@@ -1,9 +1,9 @@
-import { ObjectId } from 'mongodb';
+import * as mongoose from 'mongoose';
 import { MapTo } from 'object-entity-mapper/interfaces/map.to.interface';
 import { TransformProperty } from 'object-entity-mapper/interfaces/mapping.transforms';
 
-export const mongoMapTo_id: TransformProperty<'_id', string, ObjectId> = MapTo.Property(
+export const mongoMapTo_id: TransformProperty<'_id', string, mongoose.Types.ObjectId> = MapTo.Property(
   '_id',
-  (objectId: string) => new ObjectId(objectId),
-  (entityId: ObjectId) => entityId.toString()
+  (objectId: string) => new mongoose.Types.ObjectId(objectId),
+  (entityId: mongoose.Types.ObjectId) => entityId.toString()
 );
