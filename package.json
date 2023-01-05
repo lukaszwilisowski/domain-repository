@@ -12,23 +12,28 @@
   },
   "module": "esnext",
   "scripts": {
-    "build": "tsc -p ./tsconfig.build.json",
+    "build": "ttsc -p ./tsconfig.build.json && babel dist -d dist",
     "test": "jest --config ./test/jest.unit.config.json",
     "test:db": "jest --config ./test/jest.integration.config.json",
     "prepublish": "npm version patch & copy package.json dist & copy LICENSE dist & copy README.md dist & copy .npmignore dist"
   },
   "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.12",
     "@types/jest": "^28.1.4",
     "@types/mongodb": "^4.0.7",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
+    "babel-plugin-module-resolver": "^4.1.0",
     "eslint-import-resolver-typescript": "^3.5.2",
     "eslint-plugin-import": "^2.24.1",
     "jest": "^28.1.2",
     "jest-mock": "^29.3.1",
     "pg": "^8.8.0",
     "ts-jest": "^28.0.5",
-    "typescript": "^4.7.4"
+    "ttypescript": "^1.5.15",
+    "typescript": "^4.7.4",
+    "typescript-transform-paths": "^3.4.4"
   },
   "dependencies": {
     "mongodb": "^4.13.0",
