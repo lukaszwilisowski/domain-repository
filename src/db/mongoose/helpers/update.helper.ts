@@ -1,5 +1,5 @@
-import { Clear, NestedArrayUpdate, NestedUpdate, ValueAction } from 'interfaces/update/update.conditions';
 import { ObjectId } from 'mongodb';
+import { Clear, NestedArrayUpdate, NestedUpdate, ValueAction } from '../../../interfaces/update/update.conditions';
 
 export const getUpdate = (update: Record<string, unknown>): Record<string, unknown> => {
   const formattedUpdate: Record<string, unknown> = {};

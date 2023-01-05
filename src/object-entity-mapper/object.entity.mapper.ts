@@ -1,8 +1,7 @@
-
-import { DoesNotExist, Exists, ValueCondition } from 'interfaces/search/search.conditions';
-import { SearchCriteria } from 'interfaces/search/search.criteria.interface';
-import { Clear, ValueAction } from 'interfaces/update/update.conditions';
-import { UpdateCriteria } from 'interfaces/update/update.criteria.interface';
+import { DoesNotExist, Exists, ValueCondition } from '../interfaces/search/search.conditions';
+import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
+import { Clear, ValueAction } from '../interfaces/update/update.conditions';
+import { UpdateCriteria } from '../interfaces/update/update.criteria.interface';
 import { Mapping } from './interfaces/mapping.interface';
 import { compileMappings } from './mapping.helper';
 import { CompiledMapping } from './models/compiled.mapping';
@@ -119,6 +118,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
     const arrayElementTansform = reversed
       ? mapping.entityElementKeyToFuncMap[key]
       : mapping.objectElementKeyToFuncMap[key];
+
     if (arrayElementTansform) {
       if (transformedValue === null) {
         //null array (SQL)

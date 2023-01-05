@@ -12,15 +12,6 @@
     "esModuleInterop": true,
     "declaration": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "baseUrl": "./src",
-    "paths": {
-      "db/*": ["./db/*"],
-      "errors/*": ["./errors/*"],
-      "helpers/*": ["./helpers/*"],
-      "interfaces/*": ["./interfaces/*"],
-      "mocked-repository/*": ["./mocked-repository/*"],
-      "object-entity-mapper/*": ["./object-entity-mapper/*"]
-    }
+    "emitDecoratorMetadata": true
   }
 }

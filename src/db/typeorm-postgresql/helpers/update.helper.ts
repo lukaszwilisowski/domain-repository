@@ -1,3 +1,5 @@
+import { ObjectLiteral, UpdateQueryBuilder } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import {
   ArrayExists,
   ObjectArrayDoesNotExist,
@@ -5,7 +7,7 @@ import {
   ObjectDoesNotExist,
   ObjectExists,
   ValueCondition
-} from 'interfaces/search/search.conditions';
+} from '../../../interfaces/search/search.conditions';
 import {
   Clear,
   ClearObject,
@@ -14,9 +16,7 @@ import {
   NestedUpdate,
   PullEach,
   ValueAction
-} from 'interfaces/update/update.conditions';
-import { ObjectLiteral, UpdateQueryBuilder } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+} from '../../../interfaces/update/update.conditions';
 import { addConditionToQueryBuilder } from './filter.helper';
 
 export const isSimpleUpdate = (criteria: Record<string, unknown>, update: Record<string, unknown>): boolean => {

@@ -1,5 +1,5 @@
-import { SearchCriteria } from 'interfaces/search/search.criteria.interface';
-import { UpdateCriteria } from 'interfaces/update/update.criteria.interface';
+import { SearchCriteria } from '../../interfaces/search/search.criteria.interface';
+import { UpdateCriteria } from '../../interfaces/update/update.criteria.interface';
 import { getCriteria } from './helpers/filter.helper';
 import { getUpdate } from './helpers/update.helper';
 

@@ -1,7 +1,6 @@
-
-import { SingleEntityNotFoundError } from 'errors/singleEntityNotFound.error';
-import { IDomainRepository } from 'interfaces/repository.interface';
+import { SingleEntityNotFoundError } from '../errors/singleEntityNotFound.error';
 import { InPlaceUpdateHelper } from '../helpers/inplace.update.helper';
+import { IDomainRepository } from '../interfaces/repository.interface';
 import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
 import { UpdateCriteria } from '../interfaces/update/update.criteria.interface';
 import { InPlaceCreateHelper } from './inplace.create.helper';

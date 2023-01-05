@@ -1,11 +1,11 @@
-import { SingleEntityNotFoundError } from 'errors/singleEntityNotFound.error';
-import { InPlaceUpdateHelper } from 'helpers/inplace.update.helper';
-import { IDomainRepository } from 'interfaces/repository.interface';
-import { SearchCriteria } from 'interfaces/search/search.criteria.interface';
-import { UpdateCriteria } from 'interfaces/update/update.criteria.interface';
-import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
-import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
 import { ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
+import { SingleEntityNotFoundError } from '../../errors/singleEntityNotFound.error';
+import { InPlaceUpdateHelper } from '../../helpers/inplace.update.helper';
+import { IDomainRepository } from '../../interfaces/repository.interface';
+import { SearchCriteria } from '../../interfaces/search/search.criteria.interface';
+import { UpdateCriteria } from '../../interfaces/update/update.criteria.interface';
+import { Mapping } from '../../object-entity-mapper/interfaces/mapping.interface';
+import { ObjectEntityMapper } from '../../object-entity-mapper/object.entity.mapper';
 import { SqlEntityFormatter } from './sql.entity.formatter';
 
 /**

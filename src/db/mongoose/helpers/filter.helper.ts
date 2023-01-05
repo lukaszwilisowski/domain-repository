@@ -1,5 +1,9 @@
-import { HasElementThatMatches, NestedCriteria, ValueCondition } from 'interfaces/search/search.conditions';
 import { ObjectId } from 'mongodb';
+import {
+  HasElementThatMatches,
+  NestedCriteria,
+  ValueCondition
+} from '../../../interfaces/search/search.conditions';
 
 export const getCriteria = (criteria: Record<string, unknown>): Record<string, unknown> => {
   const formattedCriteria: Record<string, unknown> = {};

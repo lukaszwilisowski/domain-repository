@@ -1,3 +1,4 @@
+import { ObjectLiteral, SelectQueryBuilder, UpdateQueryBuilder } from 'typeorm';
 import {
   Equals,
   HasElementThatMatches,
@@ -7,10 +8,9 @@ import {
   ObjectDoesNotExist,
   ObjectExists,
   ValueCondition
-} from 'interfaces/search/search.conditions';
-import { SearchCriteria } from 'interfaces/search/search.criteria.interface';
-import { CompiledMapping } from 'object-entity-mapper/models/compiled.mapping';
-import { ObjectLiteral, SelectQueryBuilder, UpdateQueryBuilder } from 'typeorm';
+} from '../../../interfaces/search/search.conditions';
+import { SearchCriteria } from '../../../interfaces/search/search.criteria.interface';
+import { CompiledMapping } from '../../../object-entity-mapper/models/compiled.mapping';
 
 export const formatSelectQuery = <E extends ObjectLiteral>(
   entityName: string,

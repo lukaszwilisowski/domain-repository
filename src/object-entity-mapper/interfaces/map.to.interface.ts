@@ -1,9 +1,9 @@
-import { NoInfer } from 'interfaces/helper.types';
+import { NoInfer } from '../../interfaces/helper.types';
 import {
-    TransformArray,
-    TransformArrayOfObjects,
-    TransformNestedObject,
-    TransformProperty
+  TransformArray,
+  TransformArrayOfObjects,
+  TransformNestedObject,
+  TransformProperty
 } from './mapping.transforms';
 
 export const MapTo = {
