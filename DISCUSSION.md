@@ -1,3 +1,13 @@
+## Benefits
+
+Properly implemented abstract repository layer solves 3 major development problems:
+
+1. By hiding DB details, allows to easily switch between different databases. This pattern is called **DB as an implementation detail**.
+2. Thanks to advanced Typescript checks, takes into consideration additional constraints such as optional and readonly, providing developers with **better intellisense and type-checking**.
+3. Offers a mocked repository implementation, which simplifies unit testing and **removes the need to mock any DB dependencies**.
+
+---
+
 ## Comparison with standard approach
 
 Classic back-end layered architecture consists of:

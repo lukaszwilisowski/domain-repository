@@ -1,6 +1,6 @@
 import { SqlDbRepository } from 'db/typeorm-postgresql/sql.repository';
+import { IDomainRepository } from 'interfaces/repository.interface';
 import { DataSource } from 'typeorm';
-import { IDomainRepository } from '../../../..';
 import { ITestCar, ITestCarAttached } from '../../../_models/car/car.interface';
 import { runFindAllAndUpdateTests } from '../../../_templates/find-all-and-update';
 import { carMapping } from '../entities/car/car.entity';

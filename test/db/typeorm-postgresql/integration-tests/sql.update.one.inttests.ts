@@ -1,6 +1,6 @@
 import { SqlDbRepository } from 'db/typeorm-postgresql/sql.repository';
+import { IDomainRepository } from 'interfaces/repository.interface';
 import { DataSource } from 'typeorm';
-import { IDomainRepository } from '../../../..';
 import { ITestCharacter, ITestCharacterAttached } from '../../../_models/character/character.interface';
 import { runFindOneAndUpdateTests } from '../../../_templates/find-one-and-update';
 import {

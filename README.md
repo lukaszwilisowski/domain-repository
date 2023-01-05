@@ -1,40 +1,78 @@
 # Domain Repository
 
-IDomainRepository is a DB-agnostic abstract repository layer over Node.JS ORM frameworks (Mongoose or TypeORM). You can think of it as an extension of Mongoose or TypeORM functionalities.
+IDomainRepository is a DB-agnostic abstract repository layer over Node.JS ORM frameworks (Mongoose or TypeORM). You can think of it as simplified, but more strictly typed version of those.
 
-## Benefits
+Useful links:
 
-Properly implemented abstract repository layer solves 3 major development problems:
+- [Why use it? Benefits and FAQ](https://github.com/lukaszwilisowski/domain-repository/blob/main/DISCUSSION.md)
+- [API (similar to TypeORM repository)](https://github.com/lukaszwilisowski/domain-repository/blob/main/DISCUSSION.md)
+- [Example](https://github.com/lukaszwilisowski/domain-repository-example)
 
-1. By hiding DB details, allows to easily switch between different databases. This pattern is called **DB as an implementation detail**.
-2. Thanks to advanced Typescript checks, takes into consideration additional constraints such as optional and readonly, providing developers with **better intellisense and type-checking**.
-3. Offers a mocked repository implementation, which simplifies unit testing and **removes the need to mock any DB dependencies**.
+## Installation
+
+1. Make sure you have the latest Mongoose or TypeORM package version (depending on which you are using).
+2. Install domain-repository
+
+```bash
+npm install domain-repository
+```
 
 ---
 
 ## How to use it
 
-IDomainRepository is very similar in use to Mongoose collection or TypeORM repository. You can think of it as simplified, but more strictly typed version of those.
+#1. Install the library (see above).
 
-#1. Make sure you have separate domain types and db models.
+#2. Make sure you have domain models defined. Each model should be exported in two versions:
 
-```typescript
-const carRepository: IDomainRepository<ITestCar, ITestCarAttached>;
-```
+- detached (without id), for objects not yet persisted in the database
+- attached (with id), for already persisted objects
 
-`IDomainRepository<Detached, Attached>` can be typed with a single domain type T, but we strongly recommend to differentiate between Detached and Attached domain types:
-
-- `Detached` is a type of domain object that was not yet persisted. This type contains only manually assignable properties (without id).
-- `Attached` is a type of already persisted domain object. This type contains all properties including those set by DB engine (id property and possibly more, depending on your setup).
+This differentiation improves intellisense and debugging. You can call your models whatever you like, but please stick to your naming convention. Our recommendation is to add prefix such as _Attached_ or _Db_ to all your attached models.
 
 For example:
 
 ```typescript
-export type ITestCar = {...};
-export type ITestCarAttached = ITestCar & { id: string };
+export type Car = {
+  name: string;
+  readonly yearOfProduction: number;
+  sold?: Date;
+};
+
+export type DbCar = Car & { id: string };
 ```
 
-#2. Add `IDomainRepository<T>` as a depenedency to your business services (it is important to supply interface, not concrete implementation yet). DI framework is greatly recommended here.
+#3. Use IDomainRepository in your business services.
+
+In any place, where you would previously use Mongoose collection or TypeORM repository, now use abstract repository:
+
+```typescript
+const carRepository: IDomainRepository<Car, DbCar>;
+```
+
+The first type here is non-persisted (detached = Car) type, the second one is persisted (attached = DbCar) type.
+
+If you only need to read or write data, you should always narrow down your interfaces.
+
+```typescript
+//read-only
+const carRepository: IReadDomainRepository<Car, DbCar>;
+
+//write-only
+const carRepository: IWriteDomainRepository<Car, DbCar>;
+```
+
+Always put your dependencies in the constuctor of the business service (or CQRS query / command), like here:
+
+```typescript
+//read-only
+const carRepository: IReadDomainRepository<Car, DbCar>;
+
+//write-only
+const carRepository: IWriteDomainRepository<Car, DbCar>;
+```
+
+#4. Add `IDomainRepository<T>` as a depenedency to your business services (it is important to supply interface, not concrete implementation yet). DI framework is greatly recommended here.
 
 ---
 

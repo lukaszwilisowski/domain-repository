@@ -1,10 +1,11 @@
 {
   "name": "domain-repository",
   "author": "Lukasz Wilisowski",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "",
   "license": "ISC",
   "keywords": [],
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/lukaszwilisowski/domain-repository.git"
@@ -14,7 +15,7 @@
     "build": "tsc -p ./tsconfig.build.json",
     "test": "jest --config ./test/jest.unit.config.json",
     "test:db": "jest --config ./test/jest.integration.config.json",
-    "prepublish": "copy package.json dist & copy LICENSE dist & copy README.md dist"
+    "prepublish": "copy package.json dist & copy LICENSE dist & copy README.md dist & copy .npmignore dist"
   },
   "devDependencies": {
     "@types/jest": "^28.1.4",
