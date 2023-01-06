@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 import { MongoEntityFormatter } from 'db/mongoose/mongo.entity.formatter';
 import { SearchBy } from 'interfaces/search/search.by.interface';
 import * as mongoose from 'mongoose';
+import { SearchCriteria } from '../../../..';
 import { ITestAdvanced, ITestFeatures, ITestPart, TestColor } from '../../../_models/car/car.interface';
 
 import { TestMongoCarEntity } from '../entities/car/car.entity';
@@ -39,7 +40,7 @@ describe('formatCriteria', () => {
   it('should map id', async () => {
     const objectId = new mongoose.Types.ObjectId();
 
-    const criteria = mongoEntityFormatter.formatCriteria({ _id: objectId });
+    const criteria = mongoEntityFormatter.formatCriteria({ _id: objectId } as SearchCriteria<unknown>);
 
     expect(criteria).toEqual({
       _id: objectId

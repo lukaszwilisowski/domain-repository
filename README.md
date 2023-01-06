@@ -10,7 +10,8 @@ Useful links:
 
 ## Installation
 
-1. Make sure you have the latest Mongoose or TypeORM package version (depending on which you are using).
+1. If you are using Mongoose, install the latest versions of mongoose and mongodb. If you are using TypeORM, install the latest version of TypeORM.
+
 2. Install domain-repository
 
 ```bash

@@ -1,4 +1,3 @@
-import * as mongoose from 'mongoose';
 import {
   HasElementThatMatches,
   NestedCriteria,
@@ -41,7 +40,7 @@ export const getCriteria = (criteria: Record<string, unknown>): Record<string, u
 const changeValueToMongoCriteria = (condition: unknown): unknown => {
   if (
     condition === null ||
-    condition instanceof mongoose.Types.ObjectId ||
+    (condition as Record<string, unknown>)['_bsontype'] === 'ObjectID' ||
     Array.isArray(condition) ||
     typeof condition !== 'object'
   ) {

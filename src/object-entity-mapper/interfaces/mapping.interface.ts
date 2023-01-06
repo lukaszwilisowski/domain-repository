@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { PrimitiveTypes } from '../../interfaces/primitive.types.interface';
 import {
   TransformArray,
@@ -36,7 +37,7 @@ type MappedType<I, O, P extends keyof I, MapAll> = keyof O extends infer R
 
 type PrimitiveCompatibleTypes<I, O, P extends keyof I, R extends keyof O> = I[P] extends PrimitiveTypes | undefined
   ? I[P] extends PrimitiveTypes
-    ? O[R] extends PrimitiveTypes
+    ? O[R] extends PrimitiveTypes | mongoose.Types.ObjectId //special case for MongoDb Object id mapping
       ? PropertyCompatibleTypes<I, O, P, R, I[P], O[R]>
       : never
     : O[R] extends PrimitiveTypes | undefined
