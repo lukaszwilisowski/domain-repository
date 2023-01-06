@@ -11,7 +11,7 @@ Useful links:
 
 ## Installation
 
-1. If you are using Mongoose, or TypeORM, uninstall it.
+1. If you are using Mongoose, or TypeORM, first uninstall it.
 
 ```bash
 npm uninstall mongoose mongodb typeorm @types/mongoose @types/mongodb @types/typeorm
@@ -23,6 +23,8 @@ npm uninstall mongoose mongodb typeorm @types/mongoose @types/mongodb @types/typ
 npm install domain-repository
 ```
 
+3. Install Mongoose or TypeORM in the latest version.
+
 ---
 
 ## How to use it
@@ -31,7 +33,7 @@ npm install domain-repository
 
 Make sure you have domain models defined. Each model should be exported in two versions:
 
-- default, `Detached` (without id), for objects not yet persisted in the database
+- `Detached` (default model without id), for objects not yet persisted in the database
 - `Attached` (with id), for already persisted objects
 
 This differentiation improves intellisense and debugging. You can call your models whatever you like, as long as you stick to your naming convention. Our recommendation is to add _Attached suffix_ to all of your attached models.
