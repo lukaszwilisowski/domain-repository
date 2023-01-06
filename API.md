@@ -1,33 +1,79 @@
-## API
+# IDomainRepository API
 
-Create:
+Domain repository has a similar API to Mongoose collection or TypeORM repository, with some important caveats. It is more limited (for inter-supportability pusposes) but also more strictly typed. It allows to perform CRUD operations on domain objects, including **any type of properties, arrays and nested objects**.
+
+The interface has currently 3 implementations:
+
+- MockedDBRepository, for simulated, in-memory database
+- MongoDbRepository, a Mongoose implementation for MongoDB database
+- SqlDbRepository, a TypeORM implementation for PostreSQL database
+
+More implementaitons will be added in future. It is crutial to understand that **any repository function works in any database**. There are no abstraction leaks that we know of at the moment, that is features that work in one repository but do not work in others.
+
+For more information see: [Discussion](https://github.com/lukaszwilisowski/domain-repository/blob/main/DISCUSSION.md), API examples can be found [here](https://github.com/lukaszwilisowski/domain-repository/tree/main/test/_templates).
+
+---
+
+## IDomainReadRepository
+
+`IDomainReadRepository<Attached>` is a invariant, read-only part of full `IDomainRepository<Detached, Attached>` interface. It allows to search for objects in given database, using the following methods:
+
+- findOne()
+- findOneOrFail()
+- findAll()
+- countAll()
 
 ```typescript
-const testCar: ITestCar = {
-  model: 'Toyota Avensis',
-  engineType: TestFuelType.Gasoline,
-  horsePower: 140,
-  mileage: null,
-  producedIn: ['Poland', 'Germany'],
-  failed: true,
-  features: {
-    ranking: 5,
-    numbers: [1, 2, 3],
-    advanced: {
-      serialNumber: 'test'
-    }
-  },
-  parts: [
-    { name: 'part1', year: 1999 },
-    { name: 'part2', year: 2000 }
-  ]
-};
-
-const createdCar = await carRepository.create(testCar);
-const createdCars = await carRepository.createMany([testCar]);
+/**
+ * Finds a single object by specified criteria.
+ * @param criteria Contains the list of optional properties to search by.
+ * To run complex searches, use `SearchBy` conditions.
+ * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
+ *
+ * @returns An attached object or undefined if object was not found.
+ */
+findOne(criteria: SearchCriteria<Attached>): Promise<Attached | undefined>;
 ```
 
-Find criteria:
+```typescript
+/**
+ * Finds a single object by specified criteria.
+ * @param criteria Contains the list of optional properties to search by.
+ * To run complex searches, use `SearchBy` conditions.
+ * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
+ *
+ * @throws `SingleEntityNotFound` error if not a single entity was found.
+ * @returns An attached object.
+ */
+findOneOrFail(criteria: SearchCriteria<Attached>): Promise<Attached>;
+```
+
+```typescript
+/**
+ * Finds all objects by specified criteria.
+ *
+ * @param criteria Contains the list of optional properties to search by.
+ * To run complex searches, use `SearchBy` conditions.
+ * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
+ *
+ * @returns A list of attached objects.
+ */
+findAll(criteria?: SearchCriteria<Attached>): Promise<Array<Attached>>;
+```
+
+```typescript
+/**
+ * Counts the number of objects by specified criteria.
+ * @param criteria Contains the list of optional properties to search by.
+ * To run complex searches, use `SearchBy` conditions.
+ * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
+ *
+ * @returns A number of found objects.
+ */
+countAll(criteria: SearchCriteria<Attached>): Promise<number>;
+```
+
+Each of those methods uses `SearchCriteria<Attached>`:
 
 ```typescript
 /**
@@ -43,101 +89,174 @@ Find criteria:
 export type SearchCriteria<T> = {...}
 ```
 
-Find by primitive property:
+---
+
+The advanced search functions are available through `SearchBy` helper that can be imported from:
 
 ```typescript
-//findOne
-const foundCar = await carRepository.findOne({ model: 'Peugeot 508' });
-const foundCar = await carRepository.findOneOrFail({ fullTankCapacity: 55, leftGas: 55 });
-
-//findAll
-const foundCars = await carRepository.findAll();
-
-//equals
-const foundCars = await carRepository.findAll({ model: 'Toyota Avensis', mileage: 0});
-const foundCars = await carRepository.findAll({ model: SearchBy.Equals(('Mazda CX5') });
-const foundCars = await carRepository.findAll({ model: SearchBy.DoesNotEqual('Mazda CX5') });
-
-//exists
-const foundCars = await carRepository.findAll({ failed: SearchBy.Exists() });
-const foundCars = await carRepository.findAll({ failed: SearchBy.DoesNotExist() });
-
-//string
-const foundCars = await carRepository.findAll({ model: SearchBy.Contains('o') });
-const foundCars = await carRepository.findAll({ model: SearchBy.DoesNotContain('o') });
-const foundCars = await carRepository.findAll({ model: SearchBy.StartsWith('Toy') });
-const foundCars = await carRepository.findAll({ model: SearchBy.DoesNotStartWith('Toy') });
-const foundCars = await carRepository.findAll({ model: SearchBy.EndsWith('508') });
-const foundCars = await carRepository.findAll({ model: SearchBy.DoesNotEndWith('508') });
-
-//number and Date
-const foundCars = await carRepository.findAll({ fullTankCapacity: SearchBy.IsGreaterThan(50) });
-const foundCars = await carRepository.findAll({ fullTankCapacity: SearchBy.IsGreaterThanOrEqual(50) });
-const foundCars = await carRepository.findAll({ fullTankCapacity: SearchBy.IsLesserThan(50) });
-const foundCars = await carRepository.findAll({ fullTankCapacity: SearchBy.IsLesserThanOrEqual(50) })
-
-//isOneOfTheValues and isNoneOfTheValues
-const foundCars = await carRepository.findAll({ model: SearchBy.IsOneOfTheValues(['Mazda CX5', 'Peugeot 508']) });
-const foundCars = await carRepository.findAll({ model: SearchBy.IsNoneOfTheValues(['Mazda CX5', 'Peugeot 508']) });
-
-//complex
-const foundCars = await carRepository.findAll({
-   avgFuelConsumption: SearchBy.IsGreaterThanOrEqual(0),
-   manufacturingLineId: SearchBy.DoesNotEqual(null)
-});
+import { SearchBy } from 'domain-repository';
 ```
 
-Find by array property:
+Please note, that **Typescript will show error if you try to call unsupported** action.
 
-```typescript
-//array
-const foundCars = await carRepository.findAll({ producedIn: SearchBy.HasElement('Poland') });
-const foundCars = await carRepository.findAll({ producedIn: SearchBy.DoesNotHaveElement('Poland') });
-const foundCars = await carRepository.findAll({ producedIn: SearchBy.HasAnyOfTheElements(['Poland', 'Germany']) });
-const foundCars = await carRepository.findAll({ producedIn: SearchBy.HasNoneOfTheElements(['France', 'Spain']) });
-const foundCars = await carRepository.findAll({ producedIn: SearchBy.HasAllElements(['Spain', 'France']) });
+Search functions applicable to all property types:
 
-//exists
-const foundCars = await carRepository.findAll({ producedIn: SearchBy.ArrayExists() });
-const foundCars = await carRepository.findAll({ producedIn: SearchBy.ArrayDoesNotExist() });
-```
+- `SearchBy.Equals()`: takes an argument of compatible type, matches value
+- `SearchBy.DoesNotEqual()`: takes as as argument of compatible type, does not match value
 
-Find by object array property:
+Search functions applicable to all primitives:
 
-```typescript
-//object array
-const foundCars = await carRepository.findAll({
-  parts: SearchBy.HasElementThatMatches<ITestPart>({
-    name: SearchBy.StartsWith('w'),
-    year: SearchBy.IsGreaterThan(1999)
-  })
-});
+- `SearchBy.IsOneOfTheValues()`: takes as array of compatible values, matches any
+- `SearchBy.IsNoneOfTheValues()`: takes as array of compatible values, matches none
+- `SearchBy.Exists()`: applies to optional primitives only, takes no arguments:
+  - matches existing property value in MongoDb (including NULL)
+  - matches non-NULL value in SQL databases
+- `SearchBy.DoesNotExists()`: applies to optional primitives only, takes no arguments:
+  - matches missing property value in MongoDb (does not check for null value which is possible in MongoDb and can be useful in some scenarios)
+  - matches NULL value in SQL databases
 
-//object array exists
-const foundCars = await carRepository.findAll({ parts: SearchBy.ObjectArrayExists() });
-const foundCars = await carRepository.findAll({ parts: SearchBy.ObjectArrayDoesNotExist() });
-```
+Search functions applicable to strings:
 
-Find by nested object property:
+- `SearchBy.StartsWith()`: takes a string, matches a string which starts with a value
+- `SearchBy.DoesNotStartWith()`: takes a string, matches a string which does not start with a value
+- `SearchBy.EndsWith()`: takes a string, matches a string which ends with a value
+- `SearchBy.DoesNotStartWith()`: takes a string, matches a string which does not end with a value
+- `SearchBy.Contains()`: takes a string, matches a string which ends with a value
+- `SearchBy.DoesNotContain()`: takes a string, matches a string which does not end with a value
 
-```typescript
-//nested object
-const foundCars = await carRepository.findAll({
-  features: SearchBy.NestedCriteria<ITestFeatures>({
-    advanced: SearchBy.NestedCriteria<ITestAdvanced>({
-      index: SearchBy.Exists()
-    })
-  })
-});
+Search functions applicable to numbers and Dates:
 
-//nested object exists
-const foundCars = await carRepository.findAll({ features: SearchBy.ObjectExists() });
-const foundCars = await carRepository.findAll({ features: SearchBy.ObjectDoesNotExist() });
-```
+- `SearchBy.IsGreaterThan()`: takes a date or number, matches a date or number which is greater than value
+- `SearchBy.IsGreaterThanOrEqual()`: takes a date or number, matches a date or number which is greater than value or equal to value
+- `SearchBy.IsLesserThan()`: takes a date or number, matches a date or number which is lesser than value
+- `SearchBy.IsLesserThanOrEqual()`: takes a date or number, matches a date or number which is lesser than value or equal to value
+
+Search functions applicable to arrays of primitives:
+
+- `SearchBy.HasElement()`: takes a compatible array element, matches an array which has value
+- `SearchBy.DoesNotHaveElement()`: takes a compatible array element, matches an array which does not have value
+- `SearchBy.HasAnyOfTheElements()`: takes an array of compatible elements, matches an array which has any of the values
+- `SearchBy.HasNoneOfTheElements()`: takes an array of compatible elements, matches an array which has none of the values
+- `SearchBy.HasAllElements()`: takes an array of compatible elements, matches an array which has all of the values
+- `SearchBy.ArrayExists()`: applies to optional arrays only, takes no arguments:
+  - matches existing and non-empty (!) array in MongoDb (assuming the higher level object exists)
+  - matches non-empty array in SQL databases
+- `SearchBy.DoesNotExists()`: applies to optional arrays only, takes no arguments:
+  - matches non-existing or empty (!) array in MongoDb (assuming the higher level object exists)
+  - matches empty array in SQL databases
+
+Search functions applicable to nested object arrays:
+
+- `SearchBy.HasElementThatMatches()`: takes a nested criteria, matches an array which has at least one element that matches the nested criteria
+- `SearchBy.ObjectArrayExists()`: applies to optional object arrays only, takes no arguments:
+  - matches existing and non-empty (!) object array in MongoDb (assuming the higher level object exists)
+  - matches non-empty related collection in SQL databases
+- `SearchBy.ObjectDoesNotExists()`: applies to optional object arrays only, takes no arguments:
+  - matches non-existing or empty (!) object array in MongoDb (assuming the higher level object exists)
+  - matches empty related collection in SQL databases
+
+Search functions applicable to nested objects:
+
+- `SearchBy.NestedCriteria()`: takes a nested criteria, matches nested criteria
+- `SearchBy.ObjectExists()`: applies to optional objects only, takes no arguments:
+  - matches existing object in MongoDb (assuming the higher level object exists)
+  - matches non-empty related collection in SQL databases
+- `SearchBy.ObjectDoesNotExists()`: applies to optional objects only, takes no arguments:
+  - matches non-existing object in MongoDb (assuming the higher level object exists)
+  - matches empty related collection in SQL databases
 
 ---
 
-Update criteria:
+## IDomainWriteRepository
+
+`IDomainWriteRepository<Detached, Attached>` is a invariant, write-only part of full `IDomainRepository<Detached, Attached>` interface. It allows to insert, update and delete objects in given database, using the following methods:
+
+- create()
+- createMany()
+- findOneAndUpdate()
+- findAllAndUpdate()
+- findOneAndDelete()
+- findAllAndDelete()
+
+```typescript
+/**
+ * Creates a new object based on detached entity.
+ *
+ * @param object Detached object.
+ * @returns Attached object.
+ */
+create(object: Detached): Promise<Attached>;
+```
+
+```typescript
+/**
+ * Creates a new objects based on array of detached entity.
+ *
+ * @param objects Array of detached objects.
+ * @returns Attached object.
+ */
+createMany(objects: Detached[]): Promise<Attached[]>;
+```
+
+```typescript
+/**
+ * Finds a single object by specified criteria and updates it.
+ *
+ * @param criteria Contains the list of optional properties to search by.
+ * To run complex searches, use `SearchBy` conditions.
+ * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
+ *
+ * @param update Contains the list of properties to update.
+ * To run complex updates, use `UpdateWith` options.
+ *
+ * @returns Attached object or undefined if object was not found.
+ */
+findOneAndUpdate(
+  criteria: SearchCriteria<Attached>,
+  update: UpdateCriteria<Detached>
+): Promise<Attached | undefined>;
+```
+
+```typescript
+/**
+ * Finds all objects that meet specified criteria and updates them.
+ *
+ * @param update Contains the list of properties to update.
+ * To run complex updates, use `UpdateWith` options.
+ *
+ * @returns Object with a number of updated entities.
+ */
+findAllAndUpdate(
+  criteria: SearchCriteria<Attached>,
+  update: UpdateCriteria<Detached>
+): Promise<{ numberOfUpdatedObjects: number }>;
+```
+
+```typescript
+/**
+ * Finds a single object by specified criteria and deletes it.
+ *
+ * @param criteria Contains the list of optional properties to search by.
+ * To run complex searches, use `SearchBy` conditions.
+ * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
+ */
+findOneAndDelete(criteria: SearchCriteria<Attached>): Promise<void>;
+```
+
+```typescript
+/**
+ * Finds all objects that meet specified criteria and deletes them. Returns an object with a number of deleted entities.
+ *
+ * @param criteria Contains the list of optional properties to search by.
+ * To run complex searches, use `SearchBy` conditions.
+ * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
+ *
+ * @returns Object with a number of deleted entities.
+ */
+findAllAndDelete(criteria: SearchCriteria<Attached>): Promise<{ numberOfDeletedObjects: number }>;
+```
+
+The update and delete methods use `SearchCriteria<Attached>` described before, the updates methods additionally use `UpdateCriteria<Detached>`:
 
 ```typescript
 /**
@@ -152,81 +271,39 @@ Update criteria:
 export type UpdateCriteria<T> = {...}
 ```
 
-Update primitive property:
+---
+
+The advanced update functions are available through `UpdateWith` helper that can be imported from:
 
 ```typescript
-//update one
-const result = await carRepository.findOneAndUpdate({ model: 'Toyota' }, { model: 'Toyota_updated' });
-
-//update all
-const result = await carRepository.findAllAndUpdate({}, { leftGas: UpdateWith.Increment(10) });
-
-//clear
-const result = await carRepository.findAllAndUpdate({ horsePower: 180 }, { leftGas: UpdateWith.Clear() });
+import { UpdateWith } from 'domain-repository';
 ```
 
-Update array property:
+Please note, that **Typescript will show error if you try to call unsupported** action.
 
-```typescript
-//set
-const result = await carRepository.findOneAndUpdate({}, { parts: [{ name: 'part1' }] });
-const result = await carRepository.findOneAndUpdate({}, { parts: UpdateWith.Set([{ name: 'part1' }]) });
+Update functions applicable to all property types:
 
-//push and pull
-const result = await carRepository.findAllAndUpdate({}, { producedIn: UpdateWith.Push('3') });
-const result = await carRepository.findAllAndUpdate({}, { producedIn: UpdateWith.PushEach(['4', '5']) });
-const result = await carRepository.findAllAndUpdate({}, { producedIn: UpdateWith.Pull('2') });
-const result = await carRepository.findAllAndUpdate({}, { producedIn: UpdateWith.PullEach(['2', '3']) });
-const result = await carRepository.findAllAndUpdate(
-  { features: SearchBy.Exists() },
-  { features: UpdateWith.Push({ ranking: 1 }) }
-);
+- `UpdateWith.Set()`: takes an argument of compatible type, sets value
+- `UpdateWith.Clear()`: applies to optional primitives only, takes no arguments:
+- deletes property in MongoDB
+- sets propety to NULL in SQL databases
 
-//clear array
-const result = await carRepository.findAllAndUpdate({ horsePower: 180 }, { producedIn: UpdateWith.ClearArray() });
-const result = await carRepository.findAllAndUpdate({ horsePower: 140 }, { parts: UpdateWith.ClearObjectArray() });
-```
+Update functions applicable to number types:
 
-Update nested object property:
+- `UpdateWith.Increment()`: takes a number, increments property by value
 
-```typescript
-//set
-const { numberOfUpdatedObjects } = await carRepository.findAllAndUpdate(
-  { features: SearchBy.NestedCriteria<ITestFeatures>({ ranking: SearchBy.IsGreaterThanOrEqual(20) }) },
-  { features: UpdateWith.Set({ ranking: 100, color: TestColor.Black, numbers: [1, 2, 3] }) }
-);
+Update functions applicable to array types (both primitive arrays and object arrays):
 
-//clear object
-const result = await carRepository.findAllAndUpdate({ horsePower: 180 }, { features: UpdateWith.ClearObject() });
+- `UpdateWith.Push()`: takes an array element of compatible type, pushes it to the array
+- `UpdateWith.PushEach()`: takes an array of compatibles elements, pushes them to the array
+- `UpdateWith.Pull()`: takes an array element of compatible type, pulls them from the array
+- `UpdateWith.PullEach()`: takes an array of compatibles elements, pulls them from the array
 
-//complex update
-const { numberOfUpdatedObjects } = await carRepository.findAllAndUpdate(
-  { model: SearchBy.Contains('ta') },
-  {
-    producedIn: UpdateWith.PushEach(['11', '12']),
-    parts: UpdateWith.Set([{ name: 'wheel"% select', year: 2020 }]),
-    leftGas: UpdateWith.Clear(),
-    mileage: UpdateWith.Set(100),
-    features: UpdateWith.NestedUpdate<ITestFeatures>({
-      ranking: UpdateWith.Increment(1),
-      numbers: UpdateWith.ClearArray(),
-      color: TestColor.White,
-      advanced: UpdateWith.NestedUpdate<ITestAdvanced>({
-        serialNumber: 'new_sn'
-      })
-    })
-  }
-);
-```
+Update functions applicable to nested object arrays:
 
-Please note that:
+- `UpdateWith.NestedArrayUpdate()`: takes a partial object of array element type, updates all array elements with its values
 
-- all input data is properly escaped by TypeORM implementation (preventing SQL injection)
-- typescript will throw error if you try to perform a forbidden action (updating property which is readonly, clearing property which is not optional, incrementing non-numeric property etc.).
+Update functions applicable to nested objects:
 
-Delete functions:
-
-```typescript
-const result = await ticketRepository.findOneAndDelete({ price: SearchBy.IsGreaterThan(5) });
-const result = await ticketRepository.findAllAndDelete({ price: SearchBy.IsGreaterThan(5) });
-```
+- `UpdateWith.NestedUpdate()`: takes a partial update of compatible type, updates the nested object
+  - it is highly recommended to check if nested object exists before calling nested update, because otherwise an object will be created containing only (!) the updated properties (this breaks the domain model contract)
