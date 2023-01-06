@@ -26,6 +26,7 @@ For more information see: [Discussion](https://github.com/lukaszwilisowski/domai
 ```typescript
 /**
  * Finds a single object by specified criteria.
+ *
  * @param criteria Contains the list of optional properties to search by.
  * To run complex searches, use `SearchBy` conditions.
  * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
@@ -38,6 +39,7 @@ findOne(criteria: SearchCriteria<Attached>): Promise<Attached | undefined>;
 ```typescript
 /**
  * Finds a single object by specified criteria.
+ *
  * @param criteria Contains the list of optional properties to search by.
  * To run complex searches, use `SearchBy` conditions.
  * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
@@ -64,6 +66,7 @@ findAll(criteria?: SearchCriteria<Attached>): Promise<Array<Attached>>;
 ```typescript
 /**
  * Counts the number of objects by specified criteria.
+ *
  * @param criteria Contains the list of optional properties to search by.
  * To run complex searches, use `SearchBy` conditions.
  * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
@@ -285,8 +288,8 @@ Update functions applicable to all property types:
 
 - `UpdateWith.Set()`: takes an argument of compatible type, sets value
 - `UpdateWith.Clear()`: applies to optional primitives only, takes no arguments:
-- deletes property in MongoDB
-- sets propety to NULL in SQL databases
+  - deletes property in MongoDB
+  - sets propety to NULL in SQL databases
 
 Update functions applicable to number types:
 
@@ -298,12 +301,17 @@ Update functions applicable to array types (both primitive arrays and object arr
 - `UpdateWith.PushEach()`: takes an array of compatibles elements, pushes them to the array
 - `UpdateWith.Pull()`: takes an array element of compatible type, pulls them from the array
 - `UpdateWith.PullEach()`: takes an array of compatibles elements, pulls them from the array
+- `UpdateWith.Clear()`: takes no arguments, sets an empty array
 
 Update functions applicable to nested object arrays:
 
 - `UpdateWith.NestedArrayUpdate()`: takes a partial object of array element type, updates all array elements with its values
+- `UpdateWith.ClearObjectArray()`: takes no arguments, sets an empty array
 
 Update functions applicable to nested objects:
 
 - `UpdateWith.NestedUpdate()`: takes a partial update of compatible type, updates the nested object
   - it is highly recommended to check if nested object exists before calling nested update, because otherwise an object will be created containing only (!) the updated properties (this breaks the domain model contract)
+- `UpdateWith.ClearObject()`: takes no arguments:
+  - deletes a nested object property in MongoDB
+  - sets relation to NULL in SQL databases

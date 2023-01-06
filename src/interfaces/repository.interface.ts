@@ -52,6 +52,7 @@ export interface IReadDomainRepository<Attached> {
 
   /**
    * Counts the number of objects by specified criteria.
+   *
    * @param criteria Contains the list of optional properties to search by.
    * To run complex searches, use `SearchBy` conditions.
    * All conditions are `AND`ed. To use (OR) logic, run multiple searches.

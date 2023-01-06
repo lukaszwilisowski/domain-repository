@@ -287,7 +287,7 @@ Output:
 
 PostgreSQL data (see best_of_all renamed property):
 
-```json
+```
 id,"name","best_of_all","yearOfProduction","sold"
 146,"Toyota",True,2010,"2023-01-06T13:11:43.685+01:00"
 ```
