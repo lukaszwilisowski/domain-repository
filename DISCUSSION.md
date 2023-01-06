@@ -1,4 +1,4 @@
-## Benefits
+## Benefits of abstract repository
 
 Properly implemented abstract repository layer solves 3 major development problems:
 
@@ -36,36 +36,6 @@ Abstract repository layer approach pushes TypeORM improvements even further, by 
 
 ---
 
-### Example using Jest
-
-```typescript
-describe('carService', () => {
-  const initialData: ITestCarAttached[] = [
-    { name: 'Volvo', best: false },
-    { name: 'Toyota', best: true }
-  ];
-
-  const mockedRepository = new MockedDBRepository<ITestCar, ITestCarAttached>(initialData);
-
-  const carService = new CarService(mockedRepository);
-
-  it('should find best car', async () => {
-    const car = await carService.findBestCar();
-    expect(car.name).toEqual('Toyota');
-  });
-});
-```
-
-No more complex mocking of functions or DB state. **Now all your business services
-are easily testable!**
-
-Caveats:
-
-- MockedDBRepository creates string IDs for each added object (simulating ID creation in Mongo and SQL databases). This ID has custom format and should not be tested for proper formatting (in case anybody has such an idea).
-- MockedDBRepository does not simulate other auto-generated properties, as those depend on target DB technology and DB models settings (decorators). Anyway, it should not be a problem, because in principle you should never test your database when testing your business services. You assume that database works (correctly creates proper IDs) and only test the code that is within the business service itself.
-
----
-
 ## Discussion
 
 ### 1. _What are benefits of DB as an implementation detail pattern?_
@@ -82,18 +52,7 @@ The main benefit of this approach comes from SOLID's Liskov substitution princip
 
 ### 2. _Which DB features does IDomainRepository support?_
 
-IDomainRepository supports:
-
-- basic CRUD functions, similarly to Mongoose and TypeORM
-- all DB features that are transparent to repository layer (indexes, constraints, triggers, etc.)
-
-IDomainRepository does not support:
-
-- creating and running functions, procedures, views
-- creating triggers
-- executing custom queries
-
-If you need any of those use-cases, create an additional service with direct dependency to Mongoose or TypeORM repository.
+IDomainRepository id DB agnostic and supports all DB features that are transparent to underlying ORM layer (Mongoose or TypeORM).
 
 ### 3. _Does IDomainRepository support nested objects and nested arrays?_
 
@@ -102,85 +61,50 @@ If you wonder how those are implemented in concrete databases:
 
 - nested primitive arrays:
   - MongoDb: supported out-of-the-box
-  - SQL: as special array column type
+  - PostgreSQL: as special array column type
 - nested objects:
   - MongoDb: supported out-of-the-box
-  - SQL: as additional table with one-to-one relationship
+  - PostgreSQL: as additional table with one-to-one relationship
 - nested object arrays:
   - MongoDb: supported out-of-the-box
-  - SQL: as additional table with one-to-many relationship
+  - PostgreSQL: as additional table with one-to-many relationship
 
-### 4. _Which functions does IDomainRepository support?_
+### 4. _Which ORM functions does IDomainRepository support?_
 
-IDomainRepository supports basic functions that are replicable to all possible DBs and cover vast majority of DB use-cases.
-
-Supported functions have been grouped by type of interface (according to SOLID's Interface segregation principle):
-
-- `IReadDomainRepository<invariant T>`
-
-  - findOne()
-  - findOneOrFail()
-  - findAll()
-  - countAll()
-
-- `IWriteDomainRepository<invariant T>`
-
-  - create()
-  - createMany()
-  - findOneAndUpdate()
-  - findAllAndUpdate()
-  - findOneAndDelete()
-  - findAllAndDelete()
-
-- `IDomainRepository<invariant T>`:
-  - all of above
-
-To be added:
-
-- transactions
-- find options: skip(), take(), sort()
-
-Out of scope:
-
-- findById() - not replicable (some SQL tables have no id), instead use findOne({ id }) when necessary
-- DB-specific update and search methods: not replicable to other DBs. If you need any of those use-cases, create an additional service with direct dependency to Mongoose or TypeORM repository.
+[See API](https://github.com/lukaszwilisowski/domain-repository/blob/main/API.md)
 
 ### 5. _Is IDomainRepository performant?_
 
-Yes, with small exceptions.
+Yes, the performance of IDomainRepository is **equal** to the performance of underlying Mongoose or TypeORM repository, with a single exception: when updating **nested arrays and objects in SQL** database.
 
-The performance of MongoDb searches and queries is equal to the performance of native Mongoose methods.
-
-The performance of SQL searches and direct updates is equal to the performance of native TypeORM methods.
-
-Note! When updating nested arrays and objects in SQL database, we cannot use direct queries (mapping to additional tables is too complicated). Instead we are using save() method which can be slow in some circumstances (for example when updating a large number or nested elements). In most use-cases this performance drop is negligible for updates (from user's UX perspective). In case, where it is not, please use additional service with direct dependency to Mongoose or TypeORM repository.
+In this case we are using `save()` method, which can be slow in some circumstances (for example when updating a large number of nested elements). In most use-cases this performance drop is negligible. In cases, where it is not, please create a **separate IDomainRepository for nested object / array type** and run your functions from there.
 
 ### 6. _Why should I map DB objects to domain objects?_
 
-Because of SOLID's Single-responsibility principle. You should not operate on objects, whose functions you do not need (for example heavy Mongoose documents). You should never pass more data than you need (for simplicity and security purposes). Also, the mapping gives you additional flexibility, decouples DB implementation from domain model, and allows to change both domain and DB models asynchronously, without breaking the contract.
+Because of SOLID's Single-responsibility principle. You should not operate on objects, whose functions you do not need (for example heavy Mongoose documents). You should never pass more data than you need (for simplicity and security purposes). Also, the mapping gives you additional flexibility, decouples DB implementation from domain model, and allows to change both domain and DB models separately, without breaking the contract.
 
 ### 7. _Why object Id should be of type string?_
 
-Because string id can be safely mapped from **any** type of database:
+Because string type can be safely mapped from **any** type of database:
 
 - [string id] <- [MongoDb ObjectId]
 - [string id] <- [numeric SQL id]
 
-Also, IDs are usually read, assigned or compared, but not semantically processed. So there is no need to using different type than string.
+Also, IDs are usually read, assigned or compared, but not semantically processed. So in most circumstances there is no need to use different type than string. If there is, you can still use our repository, but you will not be able to switch it to different database as easily.
 
 ### 8. _Why should I care for optional and readonly properties?_
 
-The same reason we care for typing variables: to get most of Typescript compile-time checks. The better designed is your domain model, the better for everyone. Our repository checks that you do not run forbidden actions:
+To get most of Typescript compile-time checks. The better designed is your domain model, the better for everyone. Our repository checks that you do not run forbidden actions:
 
-- check if property exists, if that property is _not_ optional
-- clear property (delete or set to NULL depending on DB), if that property is _not_ optional
-- update property, if that property is readonly
+- check if _non_-optional property exists (makes no sense)
+- clear _non_-optional property (makes no sense)
+- update _readonly_ property (makes no sense)
 
 ### 9. _I already use specific businesss repositories. Can I switch to IDomainRepository?_
 
 Yes. The two main approaches to implementing repositories are:
 
-- using generic repositories (Mongoose collection, TypeORM repository) in more specific business functions (or CQRS queries / commands)
+- using generic repositories (Mongoose collection, TypeORM repository) in more specific business functions (or CQRS queries / commands). An examle of that would be:
 
 ```typescript
 class OrderService {
@@ -190,7 +114,7 @@ class OrderService {
 }
 ```
 
-- using specific repositories for each type of db entity, in business functions (or CQRS queries / commands)
+- using specific repositories for each type of db entity, in business functions (or CQRS queries / commands), as in example:
 
 ```typescript
 class OrderService {
@@ -202,13 +126,13 @@ class OrderService {
 
 The latter approach has important advantages over the former one, especially when each repository has a dedicated interface which can be implemented (mocked) for testing purposes. But, it is also more verbose.
 
-IDomainRepository can be also used with specific repository. In this case, leave your repository interface untouched, but change its implementation by using our IDomainRepository as its sub-dependency.
+IDomainRepository can be also used **in both cases**. In specific repository case, leave your repository interface untouched, but change its implementation to use our IDomainRepository as its sub-dependency (instead of Mongoose collection or TypeORM repository).
 
 ### 10. _Are you planning to add fluent API?_
 
-Maybe. Fluent API works best for automated purposes. This repository is created mostly
-for best developer's experience, so there are different end goals. But there are common use-cases to be considered in future.
+Maybe. Fluent API works best for automated purposes. This library is created mostly
+for best development experience (advanced type checking), so these are different end goals. But there are shared use-cases to be considered in future.
 
-### 11. _Can IDomainRepository be used with DI framework?_
+### 11. _Can IDomainRepository be used with DI framework or/and NestJS framework?_
 
-Of course. Please see our documentation for concrete implementations:
+Yes, it is highly recommended.

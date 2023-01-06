@@ -130,7 +130,7 @@ export type ICarMongoEntity = {
 Now create file `car.schema.ts` and define your db schema, using mongoose:
 
 ```typescript
-const CarSchema = new Schema<ICarMongoEntity>({
+export const CarSchema = new Schema<ICarMongoEntity>({
   name: {
     type: String,
     required: true
@@ -149,9 +149,7 @@ const CarSchema = new Schema<ICarMongoEntity>({
   }
 });
 
-export const getCarCollection = () => mongoose.model<ICarMongoEntity>('cars', CarSchema);
-
-export const carMapping: Mapping<ICarAttached, ICarMongoEntity> = {
+export const mongoCarMapping: Mapping<ICarAttached, ICarMongoEntity> = {
   id: mapToMongoObjectId,
   name: 'name',
   best: 'best_of_all',
@@ -174,7 +172,9 @@ You can find an example of advanced nested object mapping [here](https://github.
 
 ### 5. Supply your services with proper repository implemenation for your target DB.
 
-Example `app.ts`:
+Now depending on your db and ORM layer, you need to create ORM repository and pass it to our implementation of IDomainRepository.
+
+MongoDb example:
 
 ```typescript
 const runMongoTest = async (): Promise<void> => {
@@ -183,7 +183,11 @@ const runMongoTest = async (): Promise<void> => {
     mongoose.connection.on('open', () => resolve());
   });
 
-  const carRepository = new MongoDbRepository<ICar, ICarAttached, ICarMongoEntity>(getCarCollection(), carMapping);
+  const carRepository = new MongoDbRepository<ICar, ICarAttached, ICarMongoEntity>(
+    mongoose.model<ICarMongoEntity>('cars', CarSchema),
+    mongoCarMapping
+  );
+
   const carService = new CarService(carRepository);
 
   await carService.create({
@@ -227,4 +231,63 @@ MongoDB data (see best_of_all renamed property):
   },
   "__v": 0
 }
+```
+
+---
+
+PostgreSQL example:
+
+```typescript
+const runPostgresTest = async (): Promise<void> => {
+  const dataSource = new DataSource({
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    database: 'testdb',
+    username: 'postgres',
+    password: 'admin',
+    synchronize: true, //for local testing
+    entities: [SqlCarEntity]
+  });
+
+  await dataSource.initialize();
+
+  const carRepository = new PostgreSQLDbRepository<ICar, ICarAttached, ICarSqlEntity>(
+    dataSource.getRepository(SqlCarEntity),
+    sqlCarMapping
+  );
+
+  const carService = new CarService(carRepository);
+
+  await carService.create({
+    name: 'Toyota',
+    best: true,
+    yearOfProduction: 2010,
+    sold: new Date()
+  });
+
+  const bestCar = await carService.findBestCar();
+  console.log(bestCar);
+};
+
+runPostgresTest();
+```
+
+Output:
+
+```bash
+{
+  id: '146',
+  name: 'Toyota',
+  best: true,
+  yearOfProduction: 2010,
+  sold: '2023-01-06T13:11:43.685+01:00'
+}
+```
+
+PostgreSQL data (see best_of_all renamed property):
+
+```json
+id,"name","best_of_all","yearOfProduction","sold"
+146,"Toyota",True,2010,"2023-01-06T13:11:43.685+01:00"
 ```
