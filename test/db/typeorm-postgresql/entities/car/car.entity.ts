@@ -1,6 +1,7 @@
 import { MapTo } from 'object-entity-mapper/interfaces/map.to.interface';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, Relation } from 'typeorm';
+import { mapToSqlIntId } from '../../../../../src/db/typeorm-postgresql/sql.id.mapping';
 import {
   ITestAdvanced,
   ITestAdvancedAttached,
@@ -14,7 +15,6 @@ import {
   TestFuelType
 } from '../../../../_models/car/car.interface';
 import { BaseSqlEntity } from '../../base.sql.entity';
-import { sqlMapToId } from '../../sql.id.mapping';
 
 @Entity('cars')
 export class TestSqlCarEntity extends BaseSqlEntity implements ITestCar {
@@ -104,19 +104,19 @@ export class TestSqlPartEntity extends BaseSqlEntity implements ITestPart {
 }
 
 const partsMapping: Mapping<ITestPartAttached, TestSqlPartEntity> = {
-  id: sqlMapToId,
+  id: mapToSqlIntId,
   name: 'name',
   year: 'year'
 };
 
 const advancedMapping: Mapping<ITestAdvancedAttached, TestSqlAdvancedFeaturesEntity> = {
-  id: sqlMapToId,
+  id: mapToSqlIntId,
   serialNumber: 'serialNumber',
   index: 'index'
 };
 
 const featuresMapping: Mapping<ITestFeaturesAttached, TestSqlFeaturesEntity> = {
-  id: sqlMapToId,
+  id: mapToSqlIntId,
   ranking: 'ranking',
   color: 'color',
   numbers: 'numbers',
@@ -124,7 +124,7 @@ const featuresMapping: Mapping<ITestFeaturesAttached, TestSqlFeaturesEntity> = {
 };
 
 export const carMapping: Mapping<ITestCarAttached, TestSqlCarEntity> = {
-  id: sqlMapToId,
+  id: mapToSqlIntId,
   manufacturingLineId: 'manufacturingLineId',
   model: 'model',
   engineModel: 'engineModel',

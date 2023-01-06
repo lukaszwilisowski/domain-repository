@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { MapTo } from 'object-entity-mapper/interfaces/map.to.interface';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
+import { mapToMongoObjectId } from '../../../../../src/db/mongoose/mongo.id.mapping';
 import {
   ITestAdvanced,
   ITestAdvancedAttached,
@@ -14,7 +15,6 @@ import {
   TestFuelType
 } from '../../../../_models/car/car.interface';
 import { BaseMongoEntity } from '../../base.mongo.entity';
-import { mongoMapTo_id } from '../../mongo.id.mapping';
 
 const PartSchema = new Schema<ITestPart>({
   name: {
@@ -131,19 +131,19 @@ export const getCarCollection = (collectionName: string) =>
   mongoose.model<TestMongoCarEntity>(collectionName, CarSchema);
 
 const partsMapping: Mapping<ITestPartAttached, TestMongoPartEntity> = {
-  id: mongoMapTo_id,
+  id: mapToMongoObjectId,
   name: 'name',
   year: 'year'
 };
 
 const advancedMapping: Mapping<ITestAdvancedAttached, TestAdvancedEntity> = {
-  id: mongoMapTo_id,
+  id: mapToMongoObjectId,
   serialNumber: 'serialNumber',
   index: 'index'
 };
 
 const featuresMapping: Mapping<ITestFeaturesAttached, TestFeaturesEntity> = {
-  id: mongoMapTo_id,
+  id: mapToMongoObjectId,
   ranking: 'ranking',
   color: 'color',
   numbers: 'numbers',
@@ -151,7 +151,7 @@ const featuresMapping: Mapping<ITestFeaturesAttached, TestFeaturesEntity> = {
 };
 
 export const carMapping: Mapping<ITestCarAttached, TestMongoCarEntity> = {
-  id: mongoMapTo_id,
+  id: mapToMongoObjectId,
   manufacturingLineId: 'manufacturingLineId',
   model: 'model',
   engineModel: 'engineModel',

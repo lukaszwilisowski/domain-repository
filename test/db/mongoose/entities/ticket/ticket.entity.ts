@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
+import { mapToMongoObjectId } from '../../../../../src/db/mongoose/mongo.id.mapping';
 import { ITestTicket, ITestTicketAttached } from '../../../../_models/ticket/ticket.interface';
 import { BaseMongoEntity } from '../../base.mongo.entity';
-import { mongoMapTo_id } from '../../mongo.id.mapping';
 
 const TicketSchema = new Schema<ITestTicket>({
   price: {
@@ -41,7 +41,7 @@ export const getTicketCollection = (collectionName: string) =>
   mongoose.model<TestMongoTicketEntity>(collectionName, TicketSchema);
 
 export const ticketMapping: Mapping<ITestTicketAttached, TestMongoTicketEntity> = {
-  id: mongoMapTo_id,
+  id: mapToMongoObjectId,
   price: 'price',
   counter: 'counter',
   seats: 'seats',

@@ -159,9 +159,16 @@ Note! When updating nested arrays and objects in SQL database, we cannot use dir
 
 Because of SOLID's Single-responsibility principle. You should not operate on objects, whose functions you do not need (for example heavy Mongoose documents). You should never pass more data than you need (for simplicity and security purposes). Also, the mapping gives you additional flexibility, decouples DB implementation from domain model, and allows to change both domain and DB models asynchronously, without breaking the contract.
 
-For example, we recommend that your **attached models have string id** (id is usually read, persisted or compared, but not numerically processed). This way, domain ID can be mapped to both MongoDB ObjectId and SQL numeric id. Without mappings, it would be impossible to have the same id mapped to different data types in different databases.
+### 7. _Why object Id should be of type string?_
 
-### 7. _Why should I care for optional and readonly properties?_
+Because string id can be safely mapped from **any** type of database:
+
+- [string id] <- [MongoDb ObjectId]
+- [string id] <- [numeric SQL id]
+
+Also, IDs are usually read, assigned or compared, but not semantically processed. So there is no need to using different type than string.
+
+### 8. _Why should I care for optional and readonly properties?_
 
 The same reason we care for typing variables: to get most of Typescript compile-time checks. The better designed is your domain model, the better for everyone. Our repository checks that you do not run forbidden actions:
 
@@ -169,7 +176,7 @@ The same reason we care for typing variables: to get most of Typescript compile-
 - clear property (delete or set to NULL depending on DB), if that property is _not_ optional
 - update property, if that property is readonly
 
-### 8. _I already use specific businesss repositories. Can I switch to IDomainRepository?_
+### 9. _I already use specific businesss repositories. Can I switch to IDomainRepository?_
 
 Yes. The two main approaches to implementing repositories are:
 
@@ -197,11 +204,11 @@ The latter approach has important advantages over the former one, especially whe
 
 IDomainRepository can be also used with specific repository. In this case, leave your repository interface untouched, but change its implementation by using our IDomainRepository as its sub-dependency.
 
-### 9. _Are you planning to add fluent API?_
+### 10. _Are you planning to add fluent API?_
 
 Maybe. Fluent API works best for automated purposes. This repository is created mostly
 for best developer's experience, so there are different end goals. But there are common use-cases to be considered in future.
 
-### 10. _Can IDomainRepository be used with DI framework?_
+### 11. _Can IDomainRepository be used with DI framework?_
 
 Of course. Please see our documentation for concrete implementations:

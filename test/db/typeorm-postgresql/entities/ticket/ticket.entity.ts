@@ -1,8 +1,8 @@
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { Column, Entity } from 'typeorm';
+import { mapToSqlIntId } from '../../../../../src/db/typeorm-postgresql/sql.id.mapping';
 import { ITestTicket, ITestTicketAttached } from '../../../../_models/ticket/ticket.interface';
 import { BaseSqlEntity } from '../../base.sql.entity';
-import { sqlMapToId } from '../../sql.id.mapping';
 
 @Entity('tickets')
 export class TestSqlTicketEntity extends BaseSqlEntity implements ITestTicket {
@@ -29,7 +29,7 @@ export class TestSqlTicketEntity extends BaseSqlEntity implements ITestTicket {
 }
 
 export const ticketMapping: Mapping<ITestTicketAttached, TestSqlTicketEntity> = {
-  id: sqlMapToId,
+  id: mapToSqlIntId,
   price: 'price',
   counter: 'counter',
   seats: 'seats',

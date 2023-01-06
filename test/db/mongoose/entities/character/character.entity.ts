@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import { MapTo } from 'object-entity-mapper/interfaces/map.to.interface';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 
+import { mapToMongoObjectId } from '../../../../../src/db/mongoose/mongo.id.mapping';
 import {
   ITestCharacter,
   ITestCharacterAttached,
@@ -9,7 +10,6 @@ import {
   ITestStatsAttached
 } from '../../../../_models/character/character.interface';
 import { BaseMongoEntity } from '../../base.mongo.entity';
-import { mongoMapTo_id } from '../../mongo.id.mapping';
 
 const StatsSchema = new Schema<ITestStats>({
   grade: {
@@ -71,14 +71,14 @@ export const getCharacterCollection = (collectionName: string) =>
   mongoose.model<TestMongoCharacterEntity>(collectionName, CharacterSchema);
 
 const statsMapping: Mapping<ITestStatsAttached, TestMongoStatsEntity> = {
-  id: mongoMapTo_id,
+  id: mapToMongoObjectId,
   grade: 'grade',
   damage: 'damage',
   armor: 'armor'
 };
 
 export const characterMapping: Mapping<ITestCharacterAttached, TestMongoCharacterEntity> = {
-  id: mongoMapTo_id,
+  id: mapToMongoObjectId,
   name: 'name',
   surname: 'surname',
   scorePoints: 'scorePoints',

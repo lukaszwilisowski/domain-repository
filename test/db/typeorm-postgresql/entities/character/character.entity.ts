@@ -1,6 +1,7 @@
 import { MapTo } from 'object-entity-mapper/interfaces/map.to.interface';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, Relation } from 'typeorm';
+import { mapToSqlIntId } from '../../../../../src/db/typeorm-postgresql/sql.id.mapping';
 import {
   ITestCharacter,
   ITestCharacterAttached,
@@ -8,7 +9,6 @@ import {
   ITestStatsAttached
 } from '../../../../_models/character/character.interface';
 import { BaseSqlEntity } from '../../base.sql.entity';
-import { sqlMapToId } from '../../sql.id.mapping';
 
 @Entity('characters_stats')
 export class TestSqlStatsEntity extends BaseSqlEntity implements ITestStats {
@@ -54,14 +54,14 @@ export class TestSqlCharacterEntity extends BaseSqlEntity implements ITestCharac
 }
 
 const statsMapping: Mapping<ITestStatsAttached, TestSqlStatsEntity> = {
-  id: sqlMapToId,
+  id: mapToSqlIntId,
   grade: 'grade',
   damage: 'damage',
   armor: 'armor'
 };
 
 export const characterMapping: Mapping<ITestCharacterAttached, TestSqlCharacterEntity> = {
-  id: sqlMapToId,
+  id: mapToSqlIntId,
   name: 'name',
   surname: 'surname',
   scorePoints: 'scorePoints',
