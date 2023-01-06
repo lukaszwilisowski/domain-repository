@@ -147,10 +147,10 @@ const CarSchema = new Schema({
 export const getCarCollection = () => mongoose.model<CarEntity>('cars', CarSchema);
 
 //define mapping between your attached model and your db model
-const carMapping: Mapping<CarAttached, CarEntity> = {
+export const carMapping: Mapping<CarAttached, CarEntity> = {
   id: mapToMongoObjectId,
   name: 'name',
-  best: 'best_of_all', //changed name
+  best: 'best_of_all',
   yearOfProduction: 'yearOfProduction',
   sold: 'sold'
 };
@@ -164,6 +164,8 @@ Please note that our Mapping allows for more advanced transformations, such as:
 - an object array property can be mapped to other object array property, using nested mapping `MapTo.ObjectArray(mappedProperty, nestedMapping)`
 - a nested object property can be mapped to other nested object property, using nested mapping `MapTo.NestedObject(mappedProperty, nestedMapping)`
 
-### 4. Supply your services with your repository implemenations for your target DB.
+You can find an example of advanced nested object mapping [here](https://github.com/lukaszwilisowski/domain-repository/blob/main/test/db/mongoose/entities/car/car.entity.ts).
+
+### 5. Supply your services with proper repository implemenation for your target DB.
 
 Only now, focus on your DB implementation. Defined your DB model and mapping between domain and DB model.
