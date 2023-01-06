@@ -163,6 +163,6 @@ export const carMapping: Mapping<ITestCarAttached, TestMongoCarEntity> = {
   producedIn: 'producedIn',
   leftGas: 'leftGas',
   mileage: 'mileage',
-  parts: MapTo.ArrayOfObjects('parts', partsMapping),
+  parts: MapTo.ObjectArray('parts', partsMapping),
   features: MapTo.NestedObject('features', featuresMapping)
 };

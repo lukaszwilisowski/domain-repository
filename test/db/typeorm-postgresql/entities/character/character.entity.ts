@@ -68,6 +68,6 @@ export const characterMapping: Mapping<ITestCharacterAttached, TestSqlCharacterE
   equipment: 'equipment',
   charLevel: 'charLevel',
   motto: 'motto',
-  stats: MapTo.ArrayOfObjects('stats', statsMapping),
+  stats: MapTo.ObjectArray('stats', statsMapping),
   born: 'born'
 };

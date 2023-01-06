@@ -14,7 +14,7 @@ import {
  * 2. When types are not compatible, you must use `MapTo` function.
  * 3. When you want to use transformation, you must use `MapTo` function.
  * 2. When you want to map a nested object, you must use `MapTo.NestedObject`, with nested mapping.
- * 2. When you want to map an array of objects, you must use `MapTo.ArrayOfObjects`, with nested mapping.
+ * 2. When you want to map an array of objects, you must use `MapTo.ObjectArray`, with nested mapping.
  */
 export type Mapping<I, O, MapAll = true> = MapAll extends true
   ? { [P in keyof I]: MappedType<I, O, P, MapAll> }

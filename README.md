@@ -145,7 +145,24 @@ const CarSchema = new Schema({
 
 //export function returing collection
 export const getCarCollection = () => mongoose.model<CarEntity>('cars', CarSchema);
+
+//define mapping between your attached model and your db model
+const carMapping: Mapping<CarAttached, CarEntity> = {
+  id: mapToMongoObjectId,
+  name: 'name',
+  best: 'best_of_all', //changed name
+  yearOfProduction: 'yearOfProduction',
+  sold: 'sold'
+};
 ```
+
+Please note that our Mapping allows for more advanced transformations, such as:
+
+- a property can be mapped to other property with compatible type but different name, using direct assignment: `property: 'mappedProperty'`
+- a primitive property can be mapped to other primitive property of different type, using transformation helper `MapTo.Property(mappedProperty, transformFunc, reverseTransformFunc)`
+- an array of primitives property can be mapped to other array of primitives, using single element transformation helper `MapTo.Array(mappedProperty, transformElementFunc, reverseTransformElementFunc)`
+- an object array property can be mapped to other object array property, using nested mapping `MapTo.ObjectArray(mappedProperty, nestedMapping)`
+- a nested object property can be mapped to other nested object property, using nested mapping `MapTo.NestedObject(mappedProperty, nestedMapping)`
 
 ### 4. Supply your services with your repository implemenations for your target DB.
 

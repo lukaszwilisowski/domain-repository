@@ -28,8 +28,8 @@ export const MapTo = {
   /**
    * Transforms object's array of objects into entity's array of objects, using nested mapping.
    */
-  ArrayOfObjects: <K, M>(targetKey: K, nestedMapping: M) =>
-    new TransformArrayOfObjects('ArrayOfObjects', targetKey, nestedMapping),
+  ObjectArray: <K, M>(targetKey: K, nestedMapping: M) =>
+    new TransformArrayOfObjects('ObjectArray', targetKey, nestedMapping),
 
   /**
    * Transforms object's nested object into entity object, using nested mapping.

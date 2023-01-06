@@ -56,8 +56,8 @@ export const complexMapping: Mapping<AnimalObject, AnimalObject, false> = {
     (objectFriendId: number) => -objectFriendId,
     (entityFriendId: number) => -entityFriendId
   ),
-  friends: MapTo.ArrayOfObjects('friends', friendMapping),
-  friendsNullable: MapTo.ArrayOfObjects('friendsNullable', friendMapping),
+  friends: MapTo.ObjectArray('friends', friendMapping),
+  friendsNullable: MapTo.ObjectArray('friendsNullable', friendMapping),
   features: MapTo.NestedObject('features', featuresMapping),
   featuresNullable: MapTo.NestedObject('featuresNullable', featuresMapping)
 };

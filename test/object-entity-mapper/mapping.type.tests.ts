@@ -2,10 +2,7 @@
 import { describe, it } from '@jest/globals';
 import { MapTo } from 'object-entity-mapper/interfaces/map.to.interface';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
-import {
-  AdditionalObject,
-  AnimalObject, FeaturesObject, FriendObject
-} from './_models/animal.models';
+import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject } from './_models/animal.models';
 
 describe('Mapping', () => {
   it('should work for standard properties', () => {
@@ -127,7 +124,7 @@ describe('Mapping', () => {
     };
 
     const mapping: Mapping<AnimalObject, AnimalObject, false> = {
-      friends: MapTo.ArrayOfObjects('friends', elementMapping)
+      friends: MapTo.ObjectArray('friends', elementMapping)
     };
   });
 
@@ -139,7 +136,7 @@ describe('Mapping', () => {
     };
 
     const mapping: Mapping<AnimalObject, AnimalObject, false> = {
-      friendsNullable: MapTo.ArrayOfObjects('friendsNullable', elementMapping)
+      friendsNullable: MapTo.ObjectArray('friendsNullable', elementMapping)
     };
   });
 
@@ -152,7 +149,7 @@ describe('Mapping', () => {
 
     const mapping: Mapping<AnimalObject, AnimalObject, false> = {
       // @ts-expect-error
-      friendsNullable: MapTo.ArrayOfObjects('friends', elementMapping)
+      friendsNullable: MapTo.ObjectArray('friends', elementMapping)
     };
   });
 
