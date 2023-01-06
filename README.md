@@ -6,7 +6,7 @@ Useful links:
 
 - [Why use it? Benefits and FAQ](https://github.com/lukaszwilisowski/domain-repository/blob/main/DISCUSSION.md)
 - [API (similar to TypeORM repository)](https://github.com/lukaszwilisowski/domain-repository/blob/main/API.md)
-- [How to contribute?](https://github.com/lukaszwilisowski/domain-repository/CONTRIBUTION.MD)
+- [How to contribute?](https://github.com/lukaszwilisowski/domain-repository/blob/main/CONTRIBUTION.md)
 - [Code example](https://github.com/lukaszwilisowski/domain-repository-example)
 
 ## Installation
