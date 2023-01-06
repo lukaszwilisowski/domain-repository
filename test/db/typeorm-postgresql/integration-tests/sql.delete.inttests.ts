@@ -1,4 +1,4 @@
-import { SqlDbRepository } from 'db/typeorm-postgresql/sql.repository';
+import { PostgreSQLDbRepository } from 'db/typeorm-postgresql/sql.repository';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { DataSource } from 'typeorm';
 import { ITestTicket, ITestTicketAttached } from '../../../_models/ticket/ticket.interface';
@@ -24,7 +24,7 @@ const findAndDeleteSqlTestSetup = async (): Promise<{
 
   const typeORMCarRepository = dataSource.getRepository(TestSqlTicketEntity);
 
-  const ticketRepository = new SqlDbRepository<ITestTicket, ITestTicketAttached, TestSqlTicketEntity>(
+  const ticketRepository = new PostgreSQLDbRepository<ITestTicket, ITestTicketAttached, TestSqlTicketEntity>(
     typeORMCarRepository,
     ticketMapping
   );

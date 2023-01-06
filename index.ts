@@ -2,6 +2,7 @@
 export { mapToMongoObjectId } from './src/db/mongoose/mongo.id.mapping';
 export { MongoDbRepository } from './src/db/mongoose/mongo.repository';
 export { mapToSqlIntId } from './src/db/typeorm-postgresql/sql.id.mapping';
+export { PostgreSQLDbRepository } from './src/db/typeorm-postgresql/sql.repository';
 export { SingleEntityNotFoundError } from './src/errors/singleEntityNotFound.error';
 export {
   IDomainRepository,

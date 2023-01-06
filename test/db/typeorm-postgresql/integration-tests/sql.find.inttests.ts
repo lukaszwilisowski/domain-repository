@@ -1,4 +1,4 @@
-import { SqlDbRepository } from 'db/typeorm-postgresql/sql.repository';
+import { PostgreSQLDbRepository } from 'db/typeorm-postgresql/sql.repository';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { DataSource } from 'typeorm';
 import { testCars } from '../../../_data/car/car.data';
@@ -35,7 +35,7 @@ const findSqlTestSetup = async (): Promise<{
 
   const typeORMCarRepository = dataSource.getRepository(TestSqlCarEntity2);
 
-  const carRepository = new SqlDbRepository<ITestCar, ITestCarAttached, TestSqlCarEntity2>(
+  const carRepository = new PostgreSQLDbRepository<ITestCar, ITestCarAttached, TestSqlCarEntity2>(
     typeORMCarRepository,
     carMapping
   );

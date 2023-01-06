@@ -1,4 +1,4 @@
-import { SqlDbRepository } from 'db/typeorm-postgresql/sql.repository';
+import { PostgreSQLDbRepository } from 'db/typeorm-postgresql/sql.repository';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { DataSource } from 'typeorm';
 import { ITestCharacter, ITestCharacterAttached } from '../../../_models/character/character.interface';
@@ -28,10 +28,11 @@ const findOneAndUpdateSqlTestSetup = async (): Promise<{
 
   const typeORMCarRepository = dataSource.getRepository(TestSqlCharacterEntity);
 
-  const characterRepository = new SqlDbRepository<ITestCharacter, ITestCharacterAttached, TestSqlCharacterEntity>(
-    typeORMCarRepository,
-    characterMapping
-  );
+  const characterRepository = new PostgreSQLDbRepository<
+    ITestCharacter,
+    ITestCharacterAttached,
+    TestSqlCharacterEntity
+  >(typeORMCarRepository, characterMapping);
 
   const cleanUp = (): Promise<void> => dataSource.destroy();
 

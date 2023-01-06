@@ -39,14 +39,15 @@ This differentiation improves intellisense and debugging. You can call your mode
 For example:
 
 ```typescript
-export type Car = {
+//We recommend to use IType naming convention for pure model types, to distinguish them from classes which can have implementation (functions, state, etc.)
+export type ICar = {
   name: string;
   best: boolean;
   readonly yearOfProduction: number;
   sold?: Date;
 };
 
-export type CarAttached = Car & { id: string };
+export type ICarAttached = ICar & { id: string };
 ```
 
 An attached model will contain:
@@ -64,9 +65,13 @@ Use `IDomainRepository`\* interface in places, where you would previously use Mo
 
 ```typescript
 export class CarService {
-  constructor(private readonly carRepository: IReadDomainRepository<CarAttached>) {}
+  constructor(private readonly carRepository: IDomainRepository<ICar, ICarAttached>) {}
 
-  public async findBestCar(): Promise<CarAttached | undefined> {
+  public async create(car: ICar): Promise<ICarAttached> {
+    return this.carRepository.create(car);
+  }
+
+  public async findBestCar(): Promise<ICarAttached | undefined> {
     return this.carRepository.findOne({ best: true });
   }
 }
@@ -80,19 +85,20 @@ First test your domain model and business service, using MockedDbRepository impl
 
 ```typescript
 describe('CarService', () => {
-  //simulate initial db data
-  const initialData: CarAttached[] = [
+  const initialData: ICarAttached[] = [
     { id: '1', name: 'Volvo', best: false, yearOfProduction: 2000 },
-    { id: '2', name: 'Toyota', best: true, yearOfProduction: 2010, sold: new Date() }
+    {
+      id: '2',
+      name: 'Toyota',
+      best: true,
+      yearOfProduction: 2010,
+      sold: new Date()
+    }
   ];
 
-  //create mocked db repository (simulating db) with your initial data
-  const mockedRepository = new MockedDBRepository<Car, CarAttached>(initialData);
-
-  //pass the mocked implementation to your service constructor
+  const mockedRepository = new MockedDBRepository<ICar, ICarAttached>(initialData);
   const carService = new CarService(mockedRepository);
 
-  //test if your service works as expected
   it('should find best car', async () => {
     const car = await carService.findBestCar();
 
@@ -112,10 +118,10 @@ Let's create a new file for my DB model, for example: `car.entity.ts`:
 Because we have mappings, this does not have to be the same model as domain model.
 
 ```typescript
-export type CarEntity = {
+export type ICarMongoEntity = {
   _id: mongoose.Types.ObjectId;
   name: string;
-  best_of_all: boolean; //changed property name
+  best_of_all: boolean;
   readonly yearOfProduction: number;
   sold?: Date;
 };
@@ -124,7 +130,7 @@ export type CarEntity = {
 Now create file `car.schema.ts` and define your db schema, using mongoose:
 
 ```typescript
-const CarSchema = new Schema({
+const CarSchema = new Schema<ICarMongoEntity>({
   name: {
     type: String,
     required: true
@@ -143,11 +149,9 @@ const CarSchema = new Schema({
   }
 });
 
-//export function returing collection
-export const getCarCollection = () => mongoose.model<CarEntity>('cars', CarSchema);
+export const getCarCollection = () => mongoose.model<ICarMongoEntity>('cars', CarSchema);
 
-//define mapping between your attached model and your db model
-export const carMapping: Mapping<CarAttached, CarEntity> = {
+export const carMapping: Mapping<ICarAttached, ICarMongoEntity> = {
   id: mapToMongoObjectId,
   name: 'name',
   best: 'best_of_all',
@@ -166,6 +170,61 @@ Please note that our Mapping allows for more advanced transformations, such as:
 
 You can find an example of advanced nested object mapping [here](https://github.com/lukaszwilisowski/domain-repository/blob/main/test/db/mongoose/entities/car/car.entity.ts).
 
+---
+
 ### 5. Supply your services with proper repository implemenation for your target DB.
 
-Only now, focus on your DB implementation. Defined your DB model and mapping between domain and DB model.
+Example `app.ts`:
+
+```typescript
+const runMongoTest = async (): Promise<void> => {
+  await new Promise<void>((resolve) => {
+    mongoose.connect('mongodb://localhost:27017/testdb', {});
+    mongoose.connection.on('open', () => resolve());
+  });
+
+  const carRepository = new MongoDbRepository<ICar, ICarAttached, ICarMongoEntity>(getCarCollection(), carMapping);
+  const carService = new CarService(carRepository);
+
+  await carService.create({
+    name: 'Toyota',
+    best: true,
+    yearOfProduction: 2010,
+    sold: new Date()
+  });
+
+  const bestCar = await carService.findBestCar();
+  console.log(bestCar);
+};
+
+runMongoTest();
+```
+
+Output:
+
+```bash
+{
+  id: '63b8091cdd1f0c4927ca4725',
+  name: 'Toyota',
+  best: true,
+  yearOfProduction: 2010,
+  sold: 2023-01-06T11:42:20.836Z
+}
+```
+
+MongoDB data (see best_of_all renamed property):
+
+```json
+{
+  "_id": {
+    "$oid": "63b8091cdd1f0c4927ca4725"
+  },
+  "name": "Toyota",
+  "best_of_all": true,
+  "yearOfProduction": 2010,
+  "sold": {
+    "$date": "2023-01-06T11:42:20.836Z"
+  },
+  "__v": 0
+}
+```

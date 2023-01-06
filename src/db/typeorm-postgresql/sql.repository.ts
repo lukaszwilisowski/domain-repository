@@ -14,7 +14,7 @@ import { SqlEntityFormatter } from './sql.entity.formatter';
  * @typeparam `A` invariant attached domain object type.
  * @typeparam `E` invariant DB entity type.
  */
-export class SqlDbRepository<T, A extends T, E extends ObjectLiteral> implements IDomainRepository<T, A> {
+export class PostgreSQLDbRepository<T, A extends T, E extends ObjectLiteral> implements IDomainRepository<T, A> {
   private readonly objectEntityMapper: ObjectEntityMapper<T, A, E>;
   private readonly sqlEntityFormatter: SqlEntityFormatter<E>;
   private readonly inPlaceUpdateHelper: InPlaceUpdateHelper;
