@@ -25,8 +25,6 @@ npm install domain-repository
 
 3. Install Mongoose or TypeORM in the latest version.
 
----
-
 ## How to use it
 
 ### 1. Define your domain models

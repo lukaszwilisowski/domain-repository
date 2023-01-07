@@ -301,7 +301,7 @@ Update functions applicable to array types (both primitive arrays and object arr
 - `UpdateWith.PushEach()`: takes an array of compatibles elements, pushes them to the array
 - `UpdateWith.Pull()`: takes an array element of compatible type, pulls them from the array
 - `UpdateWith.PullEach()`: takes an array of compatibles elements, pulls them from the array
-- `UpdateWith.Clear()`: takes no arguments, sets an empty array
+- `UpdateWith.ClearArray()`: takes no arguments, sets an empty array
 
 Update functions applicable to nested object arrays:
 
