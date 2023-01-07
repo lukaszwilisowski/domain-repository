@@ -39,7 +39,7 @@ This differentiation improves intellisense and debugging. You can call your mode
 For example:
 
 ```typescript
-//We recommend to use IType naming convention for pure model types, to distinguish them from classes which can have implementation (functions, state, etc.)
+//We recommend to use IType naming convention for pure model types, to distinguish them from classes
 export type ICar = {
   name: string;
   best: boolean;
@@ -64,6 +64,8 @@ Use `IDomainRepository`\* interface in places, where you would previously use Mo
 \*If you only need to read or write data you can also use narrowed versions of interfaces: `IReadDomainRepository` or `IWriteDomainRepository` (SOLID's Interface segregation principle).
 
 ```typescript
+import { IDomainRepository } from 'domain-repository';
+
 export class CarService {
   constructor(private readonly carRepository: IDomainRepository<ICar, ICarAttached>) {}
 
@@ -84,6 +86,8 @@ export class CarService {
 First test your domain model and business service, using MockedDbRepository implementation.
 
 ```typescript
+import { MockedDBRepository } from 'domain-repository';
+
 describe('CarService', () => {
   const initialData: ICarAttached[] = [
     { id: '1', name: 'Volvo', best: false, yearOfProduction: 2000 },
@@ -130,6 +134,13 @@ export type ICarMongoEntity = {
 Now create file `car.schema.ts` and define your db schema, using mongoose:
 
 ```typescript
+//import mapping interface
+import { Mapping } from 'domain-repository/mapping';
+
+//import MongoDb ID tranformation
+import { mapToMongoObjectId } from 'domain-repository/db/mongodb';
+
+//Standard MongoDb schema, typed with your Db model
 export const CarSchema = new Schema<ICarMongoEntity>({
   name: {
     type: String,
@@ -149,6 +160,7 @@ export const CarSchema = new Schema<ICarMongoEntity>({
   }
 });
 
+//domain model to db model mapping
 export const mongoCarMapping: Mapping<ICarAttached, ICarMongoEntity> = {
   id: mapToMongoObjectId,
   name: 'name',
@@ -156,6 +168,16 @@ export const mongoCarMapping: Mapping<ICarAttached, ICarMongoEntity> = {
   yearOfProduction: 'yearOfProduction',
   sold: 'sold'
 };
+```
+
+If you are interested, `mapToMongoObjectId` has a simple implementation:
+
+```typescript
+export const mapToMongoObjectId: TransformProperty<'_id', string, mongoose.Types.ObjectId> = MapTo.Property(
+  '_id',
+  (objectId: string) => new mongoose.Types.ObjectId(objectId),
+  (entityId: mongoose.Types.ObjectId) => entityId.toString()
+);
 ```
 
 Please note that our Mapping allows for more advanced transformations, such as:
@@ -177,6 +199,8 @@ Now depending on your db and ORM layer, you need to create ORM repository and pa
 MongoDb example:
 
 ```typescript
+import { MongoDbRepository } from 'domain-repository/db/mongodb';
+
 const runMongoTest = async (): Promise<void> => {
   await new Promise<void>((resolve) => {
     mongoose.connect('mongodb://localhost:27017/testdb', {});
@@ -238,12 +262,14 @@ MongoDB data (see best_of_all renamed property):
 PostgreSQL example:
 
 ```typescript
+import { PostgreSQLDbRepository } from 'domain-repository/db/postgresql';
+
 const runPostgresTest = async (): Promise<void> => {
   const dataSource = new DataSource({
     type: 'postgres',
     host: 'localhost',
     port: 5432,
-    database: 'testdb',
+    database: 'mydb',
     username: 'postgres',
     password: 'admin',
     synchronize: true, //for local testing
