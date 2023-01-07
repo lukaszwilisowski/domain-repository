@@ -17,15 +17,15 @@ To be added in near future:
 
 ## Development strategy
 
-The whole IDomainRepository is in one GitHub repo (with all DB implementations). It has only too dependencies:
+The whole IDomainRepository is in one GitHub repo (with all DB implementations). It has only two dependencies:
 
 - Mongoose
 - TypeORM
 
-This is not a perfect solution, because each client has to download both of those sub-dependencies when installing the library. However, this is considered non-critial, because:
+This is not a perfect solution, because each client has to download both of those sub-dependencies when installing the library. However, this is considered acceptable, because:
 
-- for Node.js those unused libraries will be ignored during build
-- our testing strategy requires that all of the integration tests are passing all current template tests
+- in Node.js those unused libraries will be ignored during build
+- our testing strategy requires that all of the integration tests are passing all current template tests, so we need to keep them in one repo, to prevent anybody from breaking the contract
 
 ## Testing strategy
 
@@ -33,4 +33,4 @@ Assumptions of testing strategy:
 
 - the test templates are created and developed in [test/\_templates](https://github.com/lukaszwilisowski/domain-repository/tree/main/test/_templates).
 - **each repository implementation must pass all of the test templates** (MockedDBRepository with unit-tests, real DB repositories with integration-tests)
-- real db repositories should be unit-tested as much as possible. For example, in MongoDb we created unit tests tp check if search and update criteria are properly formatted. But in PostgreSQL we have no unit-tests, because the SQL output from TypeORM is too ugly to unit test it (to reconsider in future).
+- real db repositories should be unit-tested as much as possible. For example, in MongoDb we created unit tests to check if search criteria and update criteria are properly formatted. But in PostgreSQL we have no unit-tests, because the SQL output from TypeORM is too ugly to unit test it (to reconsider in future).

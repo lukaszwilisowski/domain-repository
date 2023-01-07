@@ -124,15 +124,15 @@ Search functions applicable to strings:
 - `SearchBy.DoesNotStartWith()`: takes a string, matches a string which does not start with a value
 - `SearchBy.EndsWith()`: takes a string, matches a string which ends with a value
 - `SearchBy.DoesNotStartWith()`: takes a string, matches a string which does not end with a value
-- `SearchBy.Contains()`: takes a string, matches a string which ends with a value
-- `SearchBy.DoesNotContain()`: takes a string, matches a string which does not end with a value
+- `SearchBy.Contains()`: takes a string, matches a string which contains a value
+- `SearchBy.DoesNotContain()`: takes a string, matches a string which does not contain a value
 
 Search functions applicable to numbers and Dates:
 
 - `SearchBy.IsGreaterThan()`: takes a date or number, matches a date or number which is greater than value
-- `SearchBy.IsGreaterThanOrEqual()`: takes a date or number, matches a date or number which is greater than value or equal to value
+- `SearchBy.IsGreaterThanOrEqual()`: takes a date or number, matches a date or number which is greater than or equal value
 - `SearchBy.IsLesserThan()`: takes a date or number, matches a date or number which is lesser than value
-- `SearchBy.IsLesserThanOrEqual()`: takes a date or number, matches a date or number which is lesser than value or equal to value
+- `SearchBy.IsLesserThanOrEqual()`: takes a date or number, matches a date or number which is lesser than or equal value
 
 Search functions applicable to arrays of primitives:
 
@@ -259,7 +259,7 @@ findOneAndDelete(criteria: SearchCriteria<Attached>): Promise<void>;
 findAllAndDelete(criteria: SearchCriteria<Attached>): Promise<{ numberOfDeletedObjects: number }>;
 ```
 
-The update and delete methods use `SearchCriteria<Attached>` described before, the updates methods additionally use `UpdateCriteria<Detached>`:
+The update and delete methods use `SearchCriteria<Attached>` described before. The updates methods use `UpdateCriteria<Detached>`:
 
 ```typescript
 /**
@@ -301,17 +301,17 @@ Update functions applicable to array types (both primitive arrays and object arr
 - `UpdateWith.PushEach()`: takes an array of compatibles elements, pushes them to the array
 - `UpdateWith.Pull()`: takes an array element of compatible type, pulls them from the array
 - `UpdateWith.PullEach()`: takes an array of compatibles elements, pulls them from the array
-- `UpdateWith.ClearArray()`: takes no arguments, sets an empty array
+- `UpdateWith.ClearArray()`: applicable to primitive arrays, takes no arguments, sets an empty array
+- `UpdateWith.ClearObjectArray()`: applicable to object arrays, takes no arguments, sets an empty array
 
-Update functions applicable to nested object arrays:
+Update functions applicable only to nested object arrays:
 
-- `UpdateWith.NestedArrayUpdate()`: takes a partial object of array element type, updates all array elements with its values
-- `UpdateWith.ClearObjectArray()`: takes no arguments, sets an empty array
+- `UpdateWith.NestedArrayUpdate()`: takes a partial object of array element type, updates all array elements
 
 Update functions applicable to nested objects:
 
 - `UpdateWith.NestedUpdate()`: takes a partial update of compatible type, updates the nested object
-  - it is highly recommended to check if nested object exists before calling nested update, because otherwise an object will be created containing only (!) the updated properties (this breaks the domain model contract)
+  - it is highly recommended to **check if nested object exists before calling nested update**, because if object does not exist, an udpate will create a new object with only updated properties (this breaks the domain model contract and can result in difficult to trace bugs)
 - `UpdateWith.ClearObject()`: takes no arguments:
   - deletes a nested object property in MongoDB
   - sets relation to NULL in SQL databases

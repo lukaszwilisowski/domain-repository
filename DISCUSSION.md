@@ -3,8 +3,8 @@
 Properly implemented abstract repository layer solves 3 major development problems:
 
 1. By hiding DB details, allows to easily switch between different databases. This pattern is called **DB as an implementation detail**.
-2. Thanks to advanced Typescript checks, takes into consideration additional constraints such as optional and readonly, providing developers with **better intellisense and type-checking**.
-3. Offers a mocked repository implementation, which simplifies unit testing and **removes the need to mock any DB dependencies**.
+2. Thanks to advanced Typescript checks, takes into consideration additional constraints such as optional and readonly properties, providing developers with **better intellisense and type-checking**.
+3. **Greatly simplifies unit testing** by using out-of-the-box MockedDBRepository implementation.
 
 ---
 
@@ -24,7 +24,7 @@ The TypeORM framework already improves this landscape, by decoupling models from
 
 Abstract repository layer approach pushes TypeORM improvements even further, by introducing additional abstraction layer over specific DB implementation. The full architecture now consists of:
 
-- constrollers
+- controllers
 - domain objects with optional and readonly properties
 - business services operating on domain models, using **abtract repository interface**
 - specific repository implementation for selected DBs\*
@@ -85,12 +85,12 @@ Because of SOLID's Single-responsibility principle. You should not operate on ob
 
 ### 7. _Why object Id should be of type string?_
 
-Because string type can be safely mapped from **any** type of database:
+Because string id can be safely mapped from **any** database id:
 
 - [string id] <- [MongoDb ObjectId]
-- [string id] <- [numeric SQL id]
+- [string id] <- [SQL int id]
 
-Also, IDs are usually read, assigned or compared, but not semantically processed. So in most circumstances there is no need to use different type than string. If there is, you can still use our repository, but you will not be able to switch it to different database as easily.
+Also, identifies are usually read, assigned or compared, but not semantically processed. So in most circumstances there is no need to use different type than string. If there is, you can still use our repository, but as a consequence, you will not be able to switch to different database so easily.
 
 ### 8. _Why should I care for optional and readonly properties?_
 
@@ -100,33 +100,79 @@ To get most of Typescript compile-time checks. The better designed is your domai
 - clear _non_-optional property (makes no sense)
 - update _readonly_ property (makes no sense)
 
-### 9. _I already use specific businesss repositories. Can I switch to IDomainRepository?_
+### 9. _I already use specific businesss repositories. Why would I switch to IDomainRepository?_
 
-Yes. The two main approaches to implementing repositories are:
+Because you do not lose anything, and can still benefit from simplified testing and db inter-operability.
 
-- using generic repositories (Mongoose collection, TypeORM repository) in more specific business functions (or CQRS queries / commands). An examle of that would be:
+To step back. There are two main approaches to implementing repositories:
+
+- using generic repositories (Mongoose collection, TypeORM repository) in more specific business functions (or CQRS queries / commands).
+  IDomainRepository is naturally designed to replace those:
 
 ```typescript
+//before
 class OrderService {
+  private orderCollection: mongoose.model<MongoOrder>;
+
+  public findOrder(orderName: string): MongoOrder {
+    return this.orderCollection.findOne({ name: orderName });
+  }
+}
+
+//after:
+class OrderService {
+  private orderRepository: IDomainRepository<Order, OrderAttached>;
+
   public findOrder(orderName: string): IOrderAttached {
-    return this.genericRepository.findOne({ name: orderName });
+    return this.orderRepository.findOne({ name: orderName });
   }
 }
 ```
 
-- using specific repositories for each type of db entity, in business functions (or CQRS queries / commands), as in example:
+- using specific repositories for each type of db entity. This approach has some advantages, but it is also more verbose. Here you have basically few options:
+  - not installing domain-repository
+  - changing to abstract repository pattern and replacing your specific business repositories with generic IDomainRepository (like above)
+  - using IDomainRepository inside your specific business repositories, like here:
+
+Before:
 
 ```typescript
-class OrderService {
-  public findOrder(orderName: string): IOrderAttached {
+//specific repository
+export class OrderRepository {
+  private typeormRepository: Repository<Order>;
+
+  public findOrderByName(orderName: string): Order {
+    return this.typeormRepository.findOne({ name: orderName });
+  }
+}
+
+//usage
+class FindOrderQueryHandler {
+  private orderRepository: OrderRepository;
+
+  async execute(orderName: string): Order {
     return this.orderRepository.findOrderByName(orderName);
   }
 }
 ```
 
-The latter approach has important advantages over the former one, especially when each repository has a dedicated interface which can be implemented (mocked) for testing purposes. But, it is also more verbose.
+After:
 
-IDomainRepository can be also used **in both cases**. In specific repository case, leave your repository interface untouched, but change its implementation to use our IDomainRepository as its sub-dependency (instead of Mongoose collection or TypeORM repository).
+```typescript
+//specific repository
+export class OrderRepository {
+  private orderRepository: IReadDomainRepository<Order>;
+
+  public findOrderByName(orderName: string): Order {
+    return this.orderRepository.findOne({ name: orderName });
+  }
+}
+
+//usage as before
+{...}
+```
+
+By doing so you will lose a benefit of strict type checking (which your specific repository should provide anyway), but still have db inter-supportability and easier unit testing (no more mocking of individual repository methods).
 
 ### 10. _Are you planning to add fluent API?_
 
