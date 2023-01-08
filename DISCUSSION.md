@@ -76,8 +76,8 @@ See our [API](https://github.com/lukaszwilisowski/domain-repository/blob/main/AP
 Features that will **not be implemented**:
 
 - functions and procedures (as those are unrecommended for code-based architecture)
-- direct SQL and MongoDB queries (as those are natually not inte-changeable between databases)
-- findById methods, as those do not apply to all types of databases (in SQL there can be tables without any IDs or id column can have different name)
+- direct SQL and MongoDB queries (as those are natually not inter-changeable between databases)
+- findById methods, as those do not apply to all databases (in SQL there can be tables without any IDs or id column can have arbitrary name)
 
 If you are 100% sure you need any of the unsupported features, please create a specific service with direct ORM dependency (Mongoose or TypeORM) for that single purpose.
 
