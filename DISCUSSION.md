@@ -71,7 +71,7 @@ If you wonder how those are implemented in concrete databases:
 
 ### 4. _Which ORM functions does IDomainRepository support?_
 
-[See API](https://github.com/lukaszwilisowski/domain-repository/blob/main/API.md)
+[See API](https://github.com/lukaszwilisowski/domain-repository/blob/main/API.md) and Roadmap
 
 ### 5. _Is IDomainRepository performant?_
 
