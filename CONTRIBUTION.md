@@ -6,14 +6,32 @@ Any contribution is highly welcome. We accept pull-requests.
 
 We can **only add features that are supported by all DBs** (included mocked in-memory one).
 
+---
+
 ## Roadmap
 
-To be added in near future:
+Our assumptions are simple:
+
+- simplify db usage in standard, code-based architecture
+- support standard db use cases, used in majority of the projects
+- ignore specific db features, used in specific projects
+
+Missing features to be added soon:
 
 - transactions
 - find options, such as: skip(), take(), sort()
 - more integration test cases (and corner cases) for currently supported databases
 - more repository implementations for next databases
+
+Features that will **not be implemented**:
+
+- functions and procedures (as those are unrecommended for code-based architecture)
+- direct SQL and MongoDB queries (as those are natually not inte-changeable between databases)
+- findById methods, as those do not apply to all types of databases (in SQL there can be tables without any IDs or id column can have different name)
+
+If you are 100% sure you need any of the unsupported features, please create a specific service with direct ORM dependency (Mongoose or TypeORM) for that single purpose.
+
+---
 
 ## Development strategy
 
@@ -22,15 +40,19 @@ The whole IDomainRepository is in one GitHub repo (with all DB implementations).
 - Mongoose
 - TypeORM
 
-This is not a perfect solution, because each client has to download both of those sub-dependencies when installing the library. However, this is considered acceptable, because:
+One downside of this approach is that each client has to download both of those sub-dependencies when installing the library. But this is a necessary requirement, if we want to keep test templates and actual tests in the same repo (to make sure both are always up-to-date). Splitting the packages at the moment would be an overkill, because:
 
-- in Node.js those unused libraries will be ignored during build
-- our testing strategy requires that all of the integration tests are passing all current template tests, so we need to keep them in one repo, to prevent anybody from breaking the contract
+- imports are already isolated in specific index.ts files (so there is no risk that by using mongodb repository you will import typeorm dependencies and vice-versa)
+- in Node.js unused libraries are ignored anyways (not compiled), so it only affects the size of node-modules folder
+
+---
 
 ## Testing strategy
 
-Assumptions of testing strategy:
+The main assumption of this project is that **each repository implementation must pass all of the test templates** (test cases for abstract IDomainRepository):
 
-- the test templates are created and developed in [test/\_templates](https://github.com/lukaszwilisowski/domain-repository/tree/main/test/_templates).
-- **each repository implementation must pass all of the test templates** (MockedDBRepository with unit-tests, real DB repositories with integration-tests)
-- real db repositories should be unit-tested as much as possible. For example, in MongoDb we created unit tests to check if search criteria and update criteria are properly formatted. But in PostgreSQL we have no unit-tests, because the SQL output from TypeORM is too ugly to unit test it (to reconsider in future).
+- the test cases can be found in [test/\_templates](https://github.com/lukaszwilisowski/domain-repository/tree/main/test/_templates)
+- the actual tests can be found in: [test/db](https://github.com/lukaszwilisowski/domain-repository/tree/main/test/db)
+- the new test cases are much welcome, to make sure we support all use-cases and corner-cases in each database
+- if you add a new test case, you must ensure that all unit tests (\*.tests.ts). and integration tests pass (\*.int-tests.ts).
+- when possible, real db repositories should have additional unit-tests. For example, in MongoDb we created unit tests to check if search criteria and update criteria are properly formatted. But in PostgreSQL we have no unit-tests, because the SQL output from TypeORM is too ugly to unit test it (to reconsider in future).

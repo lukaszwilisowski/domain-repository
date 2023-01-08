@@ -258,7 +258,55 @@ MongoDB data (see best_of_all renamed property):
 
 ---
 
-PostgreSQL example:
+### PostgreSQL example
+
+Db model:
+
+```typescript
+export type ICarSqlEntity = {
+  id: number;
+  name: string;
+  best_of_all: boolean;
+  readonly yearOfProduction: number;
+  sold?: Date;
+};
+```
+
+Db schema and mapping:
+
+```typescript
+import { mapToSqlIntId } from 'domain-repository/db/postgresql';
+import { Mapping } from 'domain-repository/mapping';
+
+//you can put ! next to the properties, to prevent Typescript no-initializer warnings
+@Entity('cars')
+export class SqlCarEntity implements ICarSqlEntity {
+  @PrimaryGeneratedColumn()
+  readonly id!: number;
+
+  @Column('text')
+  name!: string;
+
+  @Column('bool')
+  best_of_all!: boolean;
+
+  @Column('int')
+  readonly yearOfProduction!: number;
+
+  @Column('text', { nullable: true })
+  sold?: Date;
+}
+
+export const sqlCarMapping: Mapping<ICarAttached, ICarSqlEntity> = {
+  id: mapToSqlIntId,
+  name: 'name',
+  best: 'best_of_all',
+  yearOfProduction: 'yearOfProduction',
+  sold: 'sold'
+};
+```
+
+Test code:
 
 ```typescript
 import { PostgreSQLDbRepository } from 'domain-repository/db/postgresql';
