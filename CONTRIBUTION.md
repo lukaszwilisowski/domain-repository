@@ -23,14 +23,6 @@ Missing features to be added soon:
 - more integration test cases (and corner cases) for currently supported databases
 - more repository implementations for next databases
 
-Features that will **not be implemented**:
-
-- functions and procedures (as those are unrecommended for code-based architecture)
-- direct SQL and MongoDB queries (as those are natually not inte-changeable between databases)
-- findById methods, as those do not apply to all types of databases (in SQL there can be tables without any IDs or id column can have different name)
-
-If you are 100% sure you need any of the unsupported features, please create a specific service with direct ORM dependency (Mongoose or TypeORM) for that single purpose.
-
 ---
 
 ## Development strategy

@@ -73,6 +73,14 @@ If you wonder how those are implemented in concrete databases:
 
 See our [API](https://github.com/lukaszwilisowski/domain-repository/blob/main/API.md) and [Roadmap](https://github.com/lukaszwilisowski/domain-repository/blob/main/CONTRIBUTION.md#roadmap).
 
+Features that will **not be implemented**:
+
+- functions and procedures (as those are unrecommended for code-based architecture)
+- direct SQL and MongoDB queries (as those are natually not inte-changeable between databases)
+- findById methods, as those do not apply to all types of databases (in SQL there can be tables without any IDs or id column can have different name)
+
+If you are 100% sure you need any of the unsupported features, please create a specific service with direct ORM dependency (Mongoose or TypeORM) for that single purpose.
+
 ### 5. _Is IDomainRepository performant?_
 
 Yes, the performance of IDomainRepository is **equal** to the performance of underlying Mongoose or TypeORM repository, with a single exception: when updating **nested arrays and objects in SQL** database.
