@@ -98,11 +98,15 @@ export class MockedDBRepository<T, A extends T> implements IDomainRepository<T, 
     return { numberOfUpdatedObjects };
   }
 
-  public async findOneAndDelete(criteria: SearchCriteria<A>): Promise<void> {
+  public async findOneAndDelete(criteria: SearchCriteria<A>): Promise<A | undefined> {
     const object = await this.findOne(criteria);
 
     const index = this.collection.findIndex((o) => o === object);
+    const found = index >= 0 ? this.collection[index] : undefined;
+
     this.collection.splice(index, 1);
+
+    return found;
   }
 
   public async findAllAndDelete(criteria: SearchCriteria<A>): Promise<{ numberOfDeletedObjects: number }> {

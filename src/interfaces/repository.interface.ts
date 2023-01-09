@@ -120,8 +120,10 @@ export interface IWriteDomainRepository<Detached, Attached extends Detached> {
    * @param criteria Contains the list of optional properties to search by.
    * To run complex searches, use `SearchBy` conditions.
    * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
+   *
+   * @returns Attached object or undefined if object was not found.
    */
-  findOneAndDelete(criteria: SearchCriteria<Attached>): Promise<void>;
+  findOneAndDelete(criteria: SearchCriteria<Attached>): Promise<Attached | undefined>;
 
   /**
    * Finds all objects that meet specified criteria and deletes them. Returns an object with a number of deleted entities.

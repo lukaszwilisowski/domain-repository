@@ -120,9 +120,12 @@ export class PostgreSQLDbRepository<T, A extends T, E extends ObjectLiteral> imp
     return { numberOfUpdatedObjects };
   }
 
-  public async findOneAndDelete(criteria: SearchCriteria<A>): Promise<void> {
+  public async findOneAndDelete(criteria: SearchCriteria<A>): Promise<A | undefined> {
     const entity = await this.getSelectQuery(criteria).getOne();
-    if (entity) await this.typeOrmRepository.remove(entity);
+    if (!entity) return undefined;
+
+    await this.typeOrmRepository.remove(entity);
+    return this.objectEntityMapper.mapEntityToAttachedObject(entity);
   }
 
   public async findAllAndDelete(criteria: SearchCriteria<A>): Promise<{ numberOfDeletedObjects: number }> {

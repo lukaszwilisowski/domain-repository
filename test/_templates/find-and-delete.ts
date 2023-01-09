@@ -35,7 +35,11 @@ export const runFindAndDeleteTests = (
     });
 
     it('should delete object', async () => {
-      await ticketRepository.findOneAndDelete({ price: 10 });
+      const deleted = await ticketRepository.findOneAndDelete({ price: 10 });
+
+      expect(deleted).toBeDefined();
+      expect(deleted!.name).toBe('Joe');
+
       const all = await ticketRepository.findAll();
 
       expect(all.length).toBe(1);
@@ -52,7 +56,11 @@ export const runFindAndDeleteTests = (
     });
 
     it('should delete object by IsGreaterThan', async () => {
-      await ticketRepository.findOneAndDelete({ price: SearchBy.IsGreaterThan(5) });
+      const deleted = await ticketRepository.findOneAndDelete({ price: SearchBy.IsGreaterThan(5) });
+
+      expect(deleted).toBeDefined();
+      expect(deleted!.name).toBe('Joe');
+
       const all = await ticketRepository.findAll();
 
       expect(all.length).toBe(1);

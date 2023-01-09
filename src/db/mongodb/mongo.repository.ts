@@ -100,9 +100,10 @@ export class MongoDbRepository<T, A extends T, E> implements IDomainRepository<T
     return { numberOfUpdatedObjects: updateResult.modifiedCount };
   }
 
-  public async findOneAndDelete(criteria: SearchCriteria<A>): Promise<void> {
+  public async findOneAndDelete(criteria: SearchCriteria<A>): Promise<A | undefined> {
     const searchCriteria = this.getCriteria(criteria);
-    await this.mongooseCollection.findOneAndDelete(searchCriteria);
+    const result = await this.mongooseCollection.findOneAndDelete(searchCriteria);
+    return result ? this.objectEntityMapper.mapEntityToAttachedObject(result) : undefined;
   }
 
   public async findAllAndDelete(criteria: SearchCriteria<A>): Promise<{ numberOfDeletedObjects: number }> {
