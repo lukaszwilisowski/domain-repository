@@ -85,7 +85,7 @@ export class CarService {
 
 Here lies the greatest benefit of using IDomainRepository. You can easily test your services using MockedDbRepository implementation. **No more difficult mocking of db methods!**
 
-This way you can focus on your business code and test only that (which is one of the pricipal guidelines for unit testing).
+This way you can focus on your business code and test only that (this is one of the principal guidelines of unit testing).
 
 ```typescript
 import { MockedDBRepository } from 'domain-repository';
