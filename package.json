@@ -5,12 +5,12 @@
   "description": "",
   "license": "ISC",
   "keywords": [],
-  "exports": [
-    "./index.js",
-    "./mapping",
-    "./db/mongodb",
-    "./db/postgresql"
-  ],
+  "exports": {
+    ".": "./index.js",
+    "./mapping": "./mapping/index.js",
+    "./db/mongodb": "./db/mongodb/index.js",
+    "./db/postgresql": "./db/postgresql/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/lukaszwilisowski/domain-repository.git"
