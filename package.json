@@ -7,9 +7,9 @@
   "keywords": [],
   "exports": [
     "./index.js",
-    "./mapping/index.js",
-    "./db/mongodb/index.js",
-    "./db/postgresql/index.js"
+    "./mapping",
+    "./db/mongodb",
+    "./db/postgresql"
   ],
   "repository": {
     "type": "git",
