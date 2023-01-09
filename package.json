@@ -6,10 +6,10 @@
   "license": "ISC",
   "keywords": [],
   "exports": [
-    "./index.ts",
-    "./mapping/index.ts",
-    "./db/mongodb/index.ts",
-    "./db/postgresql/index.ts"
+    "./index.js",
+    "./mapping/index.js",
+    "./db/mongodb/index.js",
+    "./db/postgresql/index.js"
   ],
   "repository": {
     "type": "git",
