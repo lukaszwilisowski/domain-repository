@@ -4,7 +4,14 @@
   "version": "1.2.6",
   "description": "",
   "license": "ISC",
-  "keywords": [],
+  "keywords": [
+    "domain",
+    "repository",
+    "database",
+    "mongoose",
+    "typeorm",
+    "test-driven-development"
+  ],
   "exports": {
     ".": "./index.js",
     "./mapping": "./mapping/index.js",
