@@ -78,7 +78,7 @@ export type PrimitiveCompatibleTypes<T> = T extends PrimitiveTypes
 
 type StringCompatibleTypes<T> = IfEquals<T, string, string> extends never
   ? //enum
-    T | Equals<T> | DoesNotEqual<T> | IsOneOfTheValues<T> | IsNoneOfTheValues<T>
+    T | Equals<T> | DoesNotEqual<T> | IsOneOfTheValues<string> | IsNoneOfTheValues<string>
   : //string
     | string
       | Equals<string>

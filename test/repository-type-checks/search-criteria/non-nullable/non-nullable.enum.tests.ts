@@ -12,8 +12,8 @@ describe('Non-nullable', () => {
   it('string enum should be searchable by standard conditions', () => {
     repository.findOne({ type: StringAnimalType.Lion });
     repository.findOne({ type: SearchBy.DoesNotEqual(StringAnimalType.Lion) });
-    repository.findOne({ type: SearchBy.IsOneOfTheValues([StringAnimalType.Lion]) });
-    repository.findOne({ type: SearchBy.IsNoneOfTheValues([StringAnimalType.Lion]) });
+    repository.findOne({ type: SearchBy.IsOneOfTheValues([StringAnimalType.Lion, StringAnimalType.Tiger]) });
+    repository.findOne({ type: SearchBy.IsNoneOfTheValues([StringAnimalType.Lion, 'sad']) });
 
     // @ts-expect-error
     repository.findOne({ type: SearchBy.Exists() });

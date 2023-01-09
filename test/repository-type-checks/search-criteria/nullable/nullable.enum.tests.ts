@@ -13,8 +13,8 @@ describe('Nullable', () => {
   it('string enum should be searchable by standard conditions', () => {
     repository.findOne({ type: StringAnimalType.Lion });
     repository.findOne({ type: SearchBy.DoesNotEqual(StringAnimalType.Lion) });
-    repository.findOne({ type: SearchBy.IsOneOfTheValues([StringAnimalType.Lion]) });
-    repository.findOne({ type: SearchBy.IsNoneOfTheValues([StringAnimalType.Lion]) });
+    repository.findOne({ type: SearchBy.IsOneOfTheValues([StringAnimalType.Lion, StringAnimalType.Tiger]) });
+    repository.findOne({ type: SearchBy.IsNoneOfTheValues([StringAnimalType.Lion, StringAnimalType.Tiger]) });
 
     repository.findOne({ type: SearchBy.Exists() });
     repository.findOne({ type: SearchBy.DoesNotExist() });

@@ -22,6 +22,7 @@ export interface NullableFeatures {
 export interface NullableAnimal {
   name?: string;
   type?: StringAnimalType;
+  types?: StringAnimalType[];
   foodType?: NumericFoodType;
   sex?: SexType;
   age?: number;

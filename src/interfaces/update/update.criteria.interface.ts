@@ -55,7 +55,11 @@ type PrimitiveCompatibleTypes<T> = T extends PrimitiveTypes
 type ArrayCompatibletypes<T, X> = T extends Array<infer X>
   ? //non-nullable array
     X extends PrimitiveTypes
-    ? X[] | Set<X[]> | Push<X> | PushEach<X> | Pull<X> | PullEach<X>
+    ? X extends string
+      ? //string or enum array
+        string[] | Set<string[]> | Push<string> | PushEach<string> | Pull<string> | PullEach<string>
+      : //primitive array
+        X[] | Set<X[]> | Push<X> | PushEach<X> | Pull<X> | PullEach<X>
     : X[] | Set<X[]> | Push<X> | PushEach<X> | Pull<X> | PullEach<X> | NestedArrayUpdate<X>
   : T extends undefined
   ? //nullable array

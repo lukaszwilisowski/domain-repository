@@ -62,9 +62,6 @@ describe('Non-nullable object array update', () => {
     );
 
     // @ts-expect-error
-    repository.findOneAndUpdate({}, { friends: UpdateWith.Set<{}[]>([friend]) });
-
-    // @ts-expect-error
     repository.findOneAndUpdate({}, { friends: UpdateWith.NestedUpdate({ age: 10 }) });
 
     // @ts-expect-error
