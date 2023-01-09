@@ -9,21 +9,47 @@ Useful links:
 - [How to contribute?](https://github.com/lukaszwilisowski/domain-repository/blob/main/CONTRIBUTION.md)
 - [Code example](https://github.com/lukaszwilisowski/domain-repository-example)
 
-## Installation
+## Installation with Mongoose
 
-1. If you are using Mongoose, or TypeORM, first uninstall it.
+#1. **First** uninstall Mongoose and MongoDb.
 
 ```bash
-npm uninstall mongoose mongodb typeorm @types/mongoose @types/mongodb @types/typeorm
+npm uninstall mongoose mongodb @types/mongoose @types/mongodb
 ```
 
-2. Install domain-repository
+#2. Install latest Mongoose.
+
+```bash
+npm install mongoose
+```
+
+#3. Only AFTER you have latest Mongoose installed, install domain-repository.
 
 ```bash
 npm install domain-repository
 ```
 
-3. Depending on your needs, install Mongoose or TypeORM in the latest version.
+If you do it the other way round, you can have problems with MongoDB BSON dependency!
+
+## Installation with TypeORM
+
+#1. **First** uninstall TypeORM.
+
+```bash
+npm uninstall typeorm @types/typeorm
+```
+
+#2. Install latest TypeORM.
+
+```bash
+npm install typeorm
+```
+
+#3. Install domain-repository.
+
+```bash
+npm install domain-repository
+```
 
 ## How to use it
 
