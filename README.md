@@ -11,7 +11,7 @@ Useful links:
 
 ## Installation with Mongoose
 
-#1. **First** uninstall Mongoose and MongoDb.
+#1. First uninstall Mongoose and MongoDb.
 
 ```bash
 npm uninstall mongoose mongodb @types/mongoose @types/mongodb
@@ -33,7 +33,7 @@ If you do it the other way round, you can have problems with MongoDB BSON depend
 
 ## Installation with TypeORM
 
-#1. **First** uninstall TypeORM.
+#1. First uninstall TypeORM.
 
 ```bash
 npm uninstall typeorm @types/typeorm
