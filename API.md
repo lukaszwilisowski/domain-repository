@@ -142,20 +142,20 @@ Search functions applicable to arrays of primitives:
 - `SearchBy.HasNoneOfTheElements()`: takes an array of compatible elements, matches an array which has none of the values
 - `SearchBy.HasAllElements()`: takes an array of compatible elements, matches an array which has all of the values
 - `SearchBy.ArrayExists()`: applies to optional arrays only, takes no arguments:
-  - matches existing and non-empty (!) array in MongoDb (assuming the higher level object exists)
+  - matches existing and **non-empty (!)** array in MongoDb (assuming the higher level object exists)
   - matches non-empty array in SQL databases
 - `SearchBy.DoesNotExists()`: applies to optional arrays only, takes no arguments:
-  - matches non-existing or empty (!) array in MongoDb (assuming the higher level object exists)
+  - matches non-existing or **empty (!)** array in MongoDb (assuming the higher level object exists)
   - matches empty array in SQL databases
 
 Search functions applicable to nested object arrays:
 
 - `SearchBy.HasElementThatMatches()`: takes a nested criteria, matches an array which has at least one element that matches the nested criteria
 - `SearchBy.ObjectArrayExists()`: applies to optional object arrays only, takes no arguments:
-  - matches existing and non-empty (!) object array in MongoDb (assuming the higher level object exists)
+  - matches existing and **non-empty (!)** object array in MongoDb (assuming the higher level object exists)
   - matches non-empty related collection in SQL databases
 - `SearchBy.ObjectDoesNotExists()`: applies to optional object arrays only, takes no arguments:
-  - matches non-existing or empty (!) object array in MongoDb (assuming the higher level object exists)
+  - matches non-existing or **empty (!)** object array in MongoDb (assuming the higher level object exists)
   - matches empty related collection in SQL databases
 
 Search functions applicable to nested objects:
@@ -303,8 +303,8 @@ Update functions applicable to array types (both primitive arrays and object arr
 - `UpdateWith.PushEach()`: takes an array of compatibles elements, pushes them to the array
 - `UpdateWith.Pull()`: takes an array element of compatible type, pulls them from the array
 - `UpdateWith.PullEach()`: takes an array of compatibles elements, pulls them from the array
-- `UpdateWith.ClearArray()`: applicable to primitive arrays, takes no arguments, sets an empty array
-- `UpdateWith.ClearObjectArray()`: applicable to object arrays, takes no arguments, sets an empty array
+- `UpdateWith.ClearArray()`: applicable to primitive arrays, takes no arguments, sets an **empty (!)** array
+- `UpdateWith.ClearObjectArray()`: applicable to object arrays, takes no arguments, sets an **empty (!)** array
 
 Update functions applicable only to nested object arrays:
 
