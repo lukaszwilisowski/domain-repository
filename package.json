@@ -5,7 +5,12 @@
   "description": "",
   "license": "ISC",
   "keywords": [],
-  "main": "src/index.js",
+  "exports": [
+    "./index.ts",
+    "./mapping/index.ts",
+    "./db/mongodb/index.ts",
+    "./db/postgresql/index.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/lukaszwilisowski/domain-repository.git"
