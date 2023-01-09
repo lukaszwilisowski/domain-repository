@@ -187,7 +187,7 @@ Please note that our Mapping allows for more advanced transformations, such as:
 - an object array property can be mapped to other object array property, using nested mapping `MapTo.ObjectArray(mappedProperty, nestedMapping)`
 - a nested object property can be mapped to other nested object property, using nested mapping `MapTo.NestedObject(mappedProperty, nestedMapping)`
 
-You can find an example of advanced nested object mapping [here](https://github.com/lukaszwilisowski/domain-repository/blob/main/test/db/mongoose/entities/car/car.entity.ts).
+You can find an example of advanced nested object mapping [here](https://github.com/lukaszwilisowski/domain-repository/blob/main/test/db/mongodb/entities/car/car.entity.ts) and [here](https://github.com/lukaszwilisowski/domain-repository/blob/main/test/object-entity-mapper/_models/example.mapping.ts).
 
 ---
 
