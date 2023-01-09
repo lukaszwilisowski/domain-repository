@@ -2,8 +2,8 @@ import { DoesNotExist, Exists, ValueCondition } from '../interfaces/search/searc
 import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
 import { Clear, ValueAction } from '../interfaces/update/update.conditions';
 import { UpdateCriteria } from '../interfaces/update/update.criteria.interface';
+import { compileMappings } from './helpers/mapping.helper';
 import { Mapping } from './interfaces/mapping.interface';
-import { compileMappings } from './mapping.helper';
 import { CompiledMapping } from './models/compiled.mapping';
 
 /**

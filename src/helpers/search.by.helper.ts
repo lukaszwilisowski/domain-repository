@@ -1,4 +1,4 @@
-import { NoInfer } from '../helper.types';
+import { NoInfer } from '../interfaces/helper.types';
 import {
   ArrayDoesNotExist,
   ArrayExists,
@@ -29,8 +29,8 @@ import {
   ObjectDoesNotExist,
   ObjectExists,
   StartsWith
-} from './search.conditions';
-import { SearchCriteria } from './search.criteria.interface';
+} from '../interfaces/search/search.conditions';
+import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
 
 export const SearchBy = {
   /** Checks if property equals value. */

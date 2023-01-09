@@ -1,7 +1,11 @@
-
-import { Mapping } from './interfaces/mapping.interface';
-import { TransformArray, TransformArrayOfObjects, TransformNestedObject, TransformProperty } from './interfaces/mapping.transforms';
-import { CompiledMapping } from './models/compiled.mapping';
+import { Mapping } from '../interfaces/mapping.interface';
+import {
+  TransformArray,
+  TransformArrayOfObjects,
+  TransformNestedObject,
+  TransformProperty
+} from '../interfaces/mapping.transforms';
+import { CompiledMapping } from '../models/compiled.mapping';
 
 export const compileMappings = <A, E, MapAll>(mapping: Mapping<A, E, MapAll>): CompiledMapping => {
   const cm = new CompiledMapping();

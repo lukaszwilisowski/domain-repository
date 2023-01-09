@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { MongoEntityFormatter } from 'db/mongodb/mongo.entity.formatter';
-import { SearchBy } from 'interfaces/search/search.by.interface';
+import { SearchBy } from 'helpers/search.by.helper';
 import * as mongoose from 'mongoose';
 import { SearchCriteria } from '../../../..';
 import { ITestAdvanced, ITestFeatures, ITestPart, TestColor } from '../../../_models/car/car.interface';

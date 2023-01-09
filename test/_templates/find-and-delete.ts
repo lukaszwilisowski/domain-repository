@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
+import { SearchBy } from 'helpers/search.by.helper';
 import { IDomainRepository } from 'interfaces/repository.interface';
-import { SearchBy } from 'interfaces/search/search.by.interface';
 import { testTickets } from '../_data/ticket/ticket.data';
 import { ITestTicket, ITestTicketAttached } from '../_models/ticket/ticket.interface';
 

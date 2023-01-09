@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
+import { SearchBy } from 'helpers/search.by.helper';
+import { UpdateWith } from 'helpers/update.with.helper';
 import { IDomainRepository } from 'interfaces/repository.interface';
-import { SearchBy } from 'interfaces/search/search.by.interface';
-import { UpdateWith } from 'interfaces/update/update.with.interface';
 import { testCharacters } from '../_data/character/character.data';
 import { ITestCharacter, ITestCharacterAttached, ITestStats } from '../_models/character/character.interface';
 

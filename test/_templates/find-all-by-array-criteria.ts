@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { SearchBy } from 'helpers/search.by.helper';
 import { IDomainRepository } from 'interfaces/repository.interface';
-import { SearchBy } from 'interfaces/search/search.by.interface';
 import { ITestCar, ITestCarAttached, ITestPart } from '../_models/car/car.interface';
 
 export const runFindAllByArrayCriteriaTests = (

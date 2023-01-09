@@ -1,4 +1,4 @@
-import { MapTo } from 'object-entity-mapper/interfaces/map.to.interface';
+import { MapTo } from 'object-entity-mapper/helpers/map.to.helper';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, Relation } from 'typeorm';
 import { mapToSqlIntId } from '../../../../../src/db/postgresql/sql.id.mapping';

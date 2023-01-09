@@ -1,13 +1,8 @@
 import { describe, expect, it } from '@jest/globals';
+import { UpdateWith } from 'helpers/update.with.helper';
 import { NestedUpdate } from 'interfaces/update/update.conditions';
-import { UpdateWith } from 'interfaces/update/update.with.interface';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
-import {
-  AdditionalObject,
-  AnimalObject,
-  FeaturesObject,
-  FriendObject
-} from './_models/animal.models';
+import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject } from './_models/animal.models';
 import { complexMapping } from './_models/example.mapping';
 
 describe('Map update', () => {

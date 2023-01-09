@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it } from '@jest/globals';
-import { MapTo } from 'object-entity-mapper/interfaces/map.to.interface';
+import { MapTo } from 'object-entity-mapper/helpers/map.to.helper';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject } from './_models/animal.models';
 

@@ -1,13 +1,8 @@
 import { describe, expect, it } from '@jest/globals';
-import { SearchBy } from 'interfaces/search/search.by.interface';
+import { SearchBy } from 'helpers/search.by.helper';
 import { IsGreaterThan, NestedCriteria } from 'interfaces/search/search.conditions';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
-import {
-  AdditionalObject,
-  AnimalObject,
-  FeaturesObject,
-  FriendObject
-} from './_models/animal.models';
+import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject } from './_models/animal.models';
 import { complexMapping } from './_models/example.mapping';
 
 describe('Map criteria', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { MongoEntityFormatter } from 'db/mongodb/mongo.entity.formatter';
-import { UpdateWith } from 'interfaces/update/update.with.interface';
+import { UpdateWith } from 'helpers/update.with.helper';
 import { ITestAdvanced, ITestCar, ITestFeatures, ITestPart, TestColor } from '../../../_models/car/car.interface';
 
 const mongoEntityFormatter = new MongoEntityFormatter<ITestCar>();

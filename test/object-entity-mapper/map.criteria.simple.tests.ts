@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { SearchBy } from 'interfaces/search/search.by.interface';
+import { SearchBy } from 'helpers/search.by.helper';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
 import { AnimalObject } from './_models/animal.models';

@@ -1,4 +1,4 @@
-import { NoInfer } from '../helper.types';
+import { NoInfer } from '../interfaces/helper.types';
 import {
   Clear,
   ClearArray,
@@ -12,8 +12,8 @@ import {
   Push,
   PushEach,
   Set
-} from './update.conditions';
-import { UpdateCriteria } from './update.criteria.interface';
+} from '../interfaces/update/update.conditions';
+import { UpdateCriteria } from '../interfaces/update/update.criteria.interface';
 
 export const UpdateWith = {
   /**

@@ -4,7 +4,7 @@ import {
   TransformArrayOfObjects,
   TransformNestedObject,
   TransformProperty
-} from './mapping.transforms';
+} from '../interfaces/mapping.transforms';
 
 export const MapTo = {
   /**
