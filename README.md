@@ -61,8 +61,6 @@ An attached model will contain:
 
 Use `IDomainRepository`\* interface in places, where you would previously use Mongoose collection or TypeORM repository. Type it explicitly with your standard and Attached model type.
 
-\*If you only need to read or write data you can also use narrowed versions of interfaces: `IReadDomainRepository` or `IWriteDomainRepository` (SOLID's Interface segregation principle).
-
 ```typescript
 import { IDomainRepository } from 'domain-repository';
 
@@ -79,11 +77,15 @@ export class CarService {
 }
 ```
 
+\*If you only need to read or write data you can also use narrowed versions of interfaces: `IReadDomainRepository` or `IWriteDomainRepository` (SOLID's Interface segregation principle).
+
 ---
 
 ### 3. Write unit tests (Test-driven-development)
 
 Here lies the greatest benefit of using IDomainRepository. You can easily test your services using MockedDbRepository implementation. **No more difficult mocking of db methods!**
+
+This way you can focus on your business code and test only that (which is one of the pricipal guidelines for unit testing).
 
 ```typescript
 import { MockedDBRepository } from 'domain-repository';
@@ -111,8 +113,6 @@ describe('CarService', () => {
   });
 });
 ```
-
-Your testers will no longer have to know the technical details of your db implementation. The unit testing has never been easier.
 
 ---
 
