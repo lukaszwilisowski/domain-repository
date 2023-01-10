@@ -6,7 +6,7 @@ The interface has currently 3 implementations:
 
 - MockedDBRepository, for simulated, in-memory database
 - MongoDbRepository, a Mongoose implementation for MongoDB database
-- SqlDbRepository, a TypeORM implementation for PostreSQL database
+- PostgreSQLDbRepository, a TypeORM implementation for PostgreSQL database
 
 More implementaitons will be added in future. It is crutial to understand that **any repository function works in any database**. There are no abstraction leaks that we know of at the moment, that is features that work in one repository but do not work in others.
 
