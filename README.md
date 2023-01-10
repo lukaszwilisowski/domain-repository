@@ -60,16 +60,28 @@ Make sure you have domain models defined. Each model should be exported in two v
 - `Detached` (default model without id), for objects not yet persisted in the database
 - `Attached` (with id), for already persisted objects
 
-This differentiation improves intellisense and debugging. You can call your models whatever you like, as long as you stick to your naming convention. Our recommendation is to add _Attached suffix_ to all of your attached models.
+This differentiation improves intellisense and debugging. You can call your models whatever you like, as long as you stick to your naming convention. We recommend the following good practices:
+
+- use _IType_ naming convention for pure model types, to distinguish them from classes
+- add _Attached suffix_ to all of your attached models
+- provide JSDoc comments to your model properties (so that your developers can better understand the domain)
+- add mutable / readonly prefix to your property descriptions
+- if property is optional, explain why it is optional (due to business, technological or temporary reasons)
 
 For example:
 
 ```typescript
-//We recommend to use IType naming convention for pure model types, to distinguish them from classes
 export type ICar = {
+  /* Mutable name of the car. */
   name: string;
+
+  /* Mutable flag. Equals true for the single, higest ranked car in the system. */
   best: boolean;
+
+  /* Readonly year of production. */
   readonly yearOfProduction: number;
+
+  /* Mutable sale date. Optional means the car was not sold yet. */
   sold?: Date;
 };
 

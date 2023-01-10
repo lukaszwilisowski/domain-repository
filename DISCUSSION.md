@@ -50,6 +50,8 @@ The main benefit of this approach comes from SOLID's Liskov substitution princip
 
 - _What if I never change my DB?_ Then you still can benefit from domain driven design and simplified testing.
 
+- _Can you give an example of the project where this pattern proved useful?_ Sure. Some time ago, we created an application that was using complicated data source (directory services). Directory services take a lot of time to set up. We received a short call to prepare a demo, but did not have data source ready. Thanks to the abstract data layer, in just few hours we have created a demo, replacing base implemenatiton with simulated server-session database. This way, each client opening a demo website could play with one's own private data stored temporarily in the server's memory. This kind of magic is only possible when you have abstracted data source.
+
 ### 2. _Which DB features does IDomainRepository support?_
 
 IDomainRepository id DB agnostic and supports all DB features that are transparent to underlying ORM layer (Mongoose or TypeORM).
