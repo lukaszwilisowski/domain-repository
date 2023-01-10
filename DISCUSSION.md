@@ -85,9 +85,22 @@ If you are 100% sure you need any of the unsupported features, please create a s
 
 ### 5. _Is IDomainRepository performant?_
 
-Yes, the performance of IDomainRepository is **equal** to the performance of underlying Mongoose or TypeORM repository, with a single exception: when updating **nested arrays and objects in SQL** database.
+Yes, with small exceptions, depending on the target database and type of query.
 
-In this case we are using `save()` method, which can be slow in some circumstances (for example when updating a large number of nested elements). In most use-cases this performance drop is negligible. In cases, where it is not, please create a **separate IDomainRepository for nested object / array type** and run your functions from there.
+For Mongoose implemenation (MongoDbRepository), the performance of IDomainRepository is basically equal to the performance of underlying Mongoose repository.
+
+For PostgreSQL's TypeORM implemenation (PostgreSQLDbRepository), it depends on the type of method:
+
+- findOne, findOneOrFail, findAll, countAll, create, createMany - in those methods the performance of IDomainRepository is basically equal to the performance of underlying TypeORM repository
+- findOneAndUpdate - PostgreSQL does not support updating a single entity in an easy way, so to achieve that, we are using two TypeORM functions: getOne() + save(). In this case we do not worry about performance, because this function is not available in TypeORM and cannot be easily improved (without writing complex SQL queries).
+- findOneAndDelete - similarly to findOneAndUpdate, this is a new function, not available in TypeORM. We are using two TypeORM functions here: getOne() + remove().
+- findAllAndUpdate - depending on search and update criteria, we differentiate two update strategies:
+  - when searching by first-level properties and updating first-level properties, the performance of IDomainRepository is basically equal to the performance of underlying TypeORM repository
+  - in all other cases, when searching by nested objects properties or nested object array properties, when updating nested objects or nested arrays, we have no other choice than to use TypeORM getMany() + save(). This can impact performance in some cases, see mitigation advice below.
+    - there is one additional sub-case here: when updating primitive arrays using Push, PushEach, Pull and PullEach method, we are using getMany() + save(). Those operations are implementable in PostgreSQL and TypeORM within a single update query, but require manual escaping and sanitizing. To be reconsidered in future. See [update helper code](https://github.com/lukaszwilisowski/domain-repository/blob/main/src/db/postgresql/helpers/update.helper.ts) for details.
+- findAllAndDelete - the TypeORM delete query does not support joining other tables (nested objects and arrays) so to be safe, we are using getMany() + remove() here. This can impact performance in some cases, see mitigation advice below. To improve it, in future we may implement two delete strategies, similar to update case.
+
+PostgreSQL mitigation advice: in most cases the perfomance drop for updates and deletes is negligible. However, if you need to update or delete many nested elements at once, and you want the best performance possible, we suggest to create a **separate IDomainRepository for nested object / array type** and run your performant functions from there.
 
 ### 6. _Why should I map DB objects to domain objects?_
 

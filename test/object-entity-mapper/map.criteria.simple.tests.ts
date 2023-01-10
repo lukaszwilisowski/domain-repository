@@ -89,4 +89,17 @@ describe('Map criteria', () => {
 
     expect(mappedCriteria.friendIDs).toEqual(SearchBy.HasAllElements([1, 2, 3]));
   });
+
+  it('should map SortOptions', () => {
+    const mappedSortOptions = simpleMapper.mapSearchOptions({
+      skip: 5,
+      limit: 10,
+      sortBy: { name: 'asc', age: 'desc' }
+    });
+
+    expect(mappedSortOptions.skip).toBe(5);
+    expect(mappedSortOptions.limit).toBe(10);
+    expect(mappedSortOptions.sortBy?.name).toEqual('asc');
+    expect(mappedSortOptions.sortBy?.age).toEqual('desc');
+  });
 });

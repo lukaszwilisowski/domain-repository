@@ -5,7 +5,8 @@ import { Mocked } from 'jest-mock';
 import { NullableAnimal } from '../../_models/nullable.model';
 
 const repository = {
-  findOne: jest.fn()
+  findOne: jest.fn(),
+  findAll: jest.fn()
 } as unknown as Mocked<IDomainRepository<NullableAnimal, NullableAnimal>>;
 
 describe('Nullable string criteria', () => {
@@ -22,6 +23,16 @@ describe('Nullable string criteria', () => {
     repository.findOne({ name: SearchBy.IsNoneOfTheValues(['dog']) });
     repository.findOne({ name: SearchBy.Exists() });
     repository.findOne({ name: SearchBy.DoesNotExist() });
+
+    repository.findAll({ name: SearchBy.StartsWith('dog') }, { skip: 10, limit: 10 });
+    repository.findAll({ name: SearchBy.StartsWith('dog') }, { sortBy: { name: 'asc' } });
+    repository.findAll(
+      { name: SearchBy.StartsWith('dog') },
+      { sortBy: { name: 'asc', age: 'desc' }, skip: 10, limit: 10 }
+    );
+
+    // @ts-expect-error
+    repository.findAll({ name: SearchBy.StartsWith('dog') }, { sortBy: { friends: 'asc' } });
 
     // @ts-expect-error
     repository.findOne({ name: null });

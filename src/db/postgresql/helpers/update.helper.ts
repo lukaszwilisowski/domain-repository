@@ -36,8 +36,12 @@ export const isSimpleUpdate = (criteria: Record<string, unknown>, update: Record
 
     if (criteria[key] instanceof ValueCondition) {
       const vc = criteria[key] as ValueCondition<unknown>;
+
       if (Array.isArray(vc.value)) {
-        if (typeof (vc.value as unknown[])[0] === 'object') isSimpleUpdate = false;
+        if (typeof (vc.value as unknown[])[0] === 'object') {
+          isSimpleUpdate = false;
+          continue;
+        }
       } else if (typeof vc.value === 'object') isSimpleUpdate = false;
     }
   }
@@ -115,7 +119,7 @@ const getUpdateQueryValue = (key: string, action: unknown): unknown => {
       const numericValue = parseInt(a.value as string);
       return () => `coalesce("${key}", 0) + ${numericValue}`;
     ///////////////////////
-    //Push and pull methods have been moved to slow update strategy (because of lack of escaping and sanitizing) -> to be reverted in future.
+    //Push and pull methods have been moved to slow update strategy (because of lack of escaping and sanitizing) -> to be corrected in future.
     // case 'Push':
     //   return () => `"${key}" || '{${a.value}}'`;
     // case 'PushEach':

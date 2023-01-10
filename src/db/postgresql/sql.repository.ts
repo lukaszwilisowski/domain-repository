@@ -1,3 +1,4 @@
+import { SearchOptions } from 'interfaces/search/search.options.interface';
 import { ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import { SingleEntityNotFoundError } from '../../errors/singleEntityNotFound.error';
 import { InPlaceUpdateHelper } from '../../helpers/inplace.update.helper';
@@ -25,28 +26,34 @@ export class PostgreSQLDbRepository<T, A extends T, E extends ObjectLiteral> imp
     this.inPlaceUpdateHelper = new InPlaceUpdateHelper();
   }
 
-  private getSelectQuery(criteria?: SearchCriteria<A>, loadRelations?: boolean): SelectQueryBuilder<E> {
+  private getSelectQuery(
+    criteria?: SearchCriteria<A>,
+    options?: SearchOptions<A>,
+    loadRelations?: boolean
+  ): SelectQueryBuilder<E> {
     const entityName = this.typeOrmRepository.metadata.name;
     const compiledMapping = this.objectEntityMapper.getCompiledMapping();
     const queryBuilder = this.typeOrmRepository.createQueryBuilder().select();
     const mappedCriteria = this.objectEntityMapper.mapSearchCriteria(criteria);
+    const mappedOptions = this.objectEntityMapper.mapSearchOptions(options);
 
     return this.sqlEntityFormatter.formatSelectQuery(
       entityName,
       queryBuilder,
       mappedCriteria,
+      mappedOptions,
       compiledMapping,
       loadRelations
     );
   }
 
   public async findOne(criteria: SearchCriteria<A>): Promise<A | undefined> {
-    const foundEntity = await this.getSelectQuery(criteria, true).getOne();
+    const foundEntity = await this.getSelectQuery(criteria, undefined, true).getOne();
     return foundEntity ? this.objectEntityMapper.mapEntityToAttachedObject(foundEntity) : undefined;
   }
 
   public async findOneOrFail(criteria: SearchCriteria<A>): Promise<A> {
-    const foundEntities = await this.getSelectQuery(criteria, true).getMany();
+    const foundEntities = await this.getSelectQuery(criteria, undefined, true).getMany();
 
     if (foundEntities.length !== 1)
       throw new SingleEntityNotFoundError(
@@ -58,8 +65,8 @@ export class PostgreSQLDbRepository<T, A extends T, E extends ObjectLiteral> imp
     return this.objectEntityMapper.mapEntityToAttachedObject(foundEntities[0]);
   }
 
-  public async findAll(criteria?: SearchCriteria<A>): Promise<Array<A>> {
-    const foundEntities = await this.getSelectQuery(criteria, true).getMany();
+  public async findAll(criteria?: SearchCriteria<A>, options?: SearchOptions<A>): Promise<Array<A>> {
+    const foundEntities = await this.getSelectQuery(criteria, options, true).getMany();
     return foundEntities.map((e) => this.objectEntityMapper.mapEntityToAttachedObject(e));
   }
 
@@ -83,9 +90,9 @@ export class PostgreSQLDbRepository<T, A extends T, E extends ObjectLiteral> imp
   }
 
   //Postgres does not support updating single entity in an easy way
-  //That is why we are using getOne() + save() tactic here
+  //That is why we are using getOne() + save() here
   public async findOneAndUpdate(criteria: SearchCriteria<A>, update: UpdateCriteria<T>): Promise<A | undefined> {
-    const entity = await this.getSelectQuery(criteria, true).getOne();
+    const entity = await this.getSelectQuery(criteria, undefined, true).getOne();
 
     if (entity) {
       const mappedUpdate = this.objectEntityMapper.mapUpdate(update);
@@ -113,13 +120,15 @@ export class PostgreSQLDbRepository<T, A extends T, E extends ObjectLiteral> imp
       return { numberOfUpdatedObjects: updateResult.affected || 0 };
     }
 
-    const entities = await this.getSelectQuery(criteria, true).getMany();
+    const entities = await this.getSelectQuery(criteria, undefined, true).getMany();
     const numberOfUpdatedObjects = this.inPlaceUpdateHelper.updateInPlace(entities, mappedUpdate);
     await this.typeOrmRepository.save(entities);
 
     return { numberOfUpdatedObjects };
   }
 
+  //Postgres does not support deleting a single entity in an easy way
+  //That is why we are using getOne() + remove() here
   public async findOneAndDelete(criteria: SearchCriteria<A>): Promise<A | undefined> {
     const entity = await this.getSelectQuery(criteria).getOne();
     if (!entity) return undefined;

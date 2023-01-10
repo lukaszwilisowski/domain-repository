@@ -125,4 +125,17 @@ describe('Map criteria', () => {
 
     expect(mappedCriteria.featuresNullable).toEqual(SearchBy.ObjectExists());
   });
+
+  it('should map SortOptions', () => {
+    const mappedSortOptions = complexMapper.mapSearchOptions({
+      skip: 5,
+      limit: 10,
+      sortBy: { name: 'asc', name2: 'desc' }
+    });
+
+    expect(mappedSortOptions.skip).toBe(5);
+    expect(mappedSortOptions.limit).toBe(10);
+    expect(mappedSortOptions.sortBy?.name2).toEqual('asc');
+    expect(mappedSortOptions.sortBy?.name3).toEqual('desc');
+  });
 });

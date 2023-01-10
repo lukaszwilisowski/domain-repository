@@ -1,3 +1,4 @@
+import { SearchOptions } from 'interfaces/search/search.options.interface';
 import { SingleEntityNotFoundError } from '../errors/singleEntityNotFound.error';
 import { InPlaceUpdateHelper } from '../helpers/inplace.update.helper';
 import { IDomainRepository } from '../interfaces/repository.interface';
@@ -31,9 +32,10 @@ export class MockedDBRepository<T, A extends T> implements IDomainRepository<T, 
     else return foundObjects[0];
   }
 
-  public async findAll(criteria?: SearchCriteria<A>): Promise<Array<A>> {
+  public async findAll(criteria?: SearchCriteria<A>, options?: SearchOptions<A>): Promise<Array<A>> {
     const predicate = this.inPlaceFilterHelper.getPredicate(criteria);
-    return this.collection.filter(predicate);
+    const filtered = this.collection.filter(predicate);
+    return this.inPlaceFilterHelper.applyOptionsTo(filtered, options);
   }
 
   public async countAll(criteria: SearchCriteria<A>): Promise<number> {

@@ -1,3 +1,4 @@
+import { SearchOptions } from 'interfaces/search/search.options.interface';
 import { areDeepEqual } from '../helpers/deep.equality.helper';
 import {
   DoesNotExist,
@@ -7,10 +8,30 @@ import {
   ValueCondition
 } from '../interfaces/search/search.conditions';
 import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
+import { generateSortFn, SortProp } from './sort.helper';
 
 export class InPlaceFilterHelper {
   public getPredicate<A>(criteria?: SearchCriteria<A>): (arrayElement: A) => boolean {
     return (element) => this.matchesCriteria(element, criteria);
+  }
+
+  public applyOptionsTo<A>(data: A[], options?: SearchOptions<A>): A[] {
+    if (options?.sortBy) {
+      const sortOptions = options?.sortBy as Record<string, unknown>;
+      const props: SortProp[] = [];
+
+      for (const key in sortOptions) {
+        if (sortOptions[key] === 'desc') props.push({ name: key, reverse: true });
+        else props.push({ name: key });
+      }
+
+      (data as Record<string, unknown>[]).sort(generateSortFn(props));
+    }
+
+    const skip = options?.skip || 0;
+    const limit = options?.limit || data.length - skip;
+
+    return data.slice(skip, skip + limit);
   }
 
   private matchesCriteria<A>(element: A, criteria?: SearchCriteria<A>): boolean {

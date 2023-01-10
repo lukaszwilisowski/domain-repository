@@ -58,9 +58,11 @@ findOneOrFail(criteria: SearchCriteria<Attached>): Promise<Attached>;
  * To run complex searches, use `SearchBy` conditions.
  * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
  *
+ * @param options specifies additional result options (skip, limit, sort).
+ *
  * @returns A list of attached objects.
  */
-findAll(criteria?: SearchCriteria<Attached>): Promise<Array<Attached>>;
+findAll(criteria?: SearchCriteria<Attached>, options?: SearchOptions<Attached>): Promise<Attached[]>;
 ```
 
 ```typescript

@@ -1,3 +1,4 @@
+import { SearchOptions } from 'interfaces/search/search.options.interface';
 import mongoose from 'mongoose';
 import { SingleEntityNotFoundError } from '../../errors/singleEntityNotFound.error';
 import { IDomainRepository } from '../../interfaces/repository.interface';
@@ -52,9 +53,12 @@ export class MongoDbRepository<T, A extends T, E> implements IDomainRepository<T
     return this.objectEntityMapper.mapEntityToAttachedObject(foundEntities[0]);
   }
 
-  public async findAll(criteria?: SearchCriteria<A>): Promise<Array<A>> {
+  public async findAll(criteria?: SearchCriteria<A>, options?: SearchOptions<A>): Promise<Array<A>> {
     const searchCriteria = this.getCriteria(criteria);
-    const foundEntities = await this.mongooseCollection.find(searchCriteria);
+    const searchOptions = this.objectEntityMapper.mapSearchOptions(options);
+    const formattedOptions = { ...searchOptions, sort: searchOptions.sortBy };
+
+    const foundEntities = await this.mongooseCollection.find(searchCriteria, undefined, formattedOptions);
     return foundEntities.map((e) => this.objectEntityMapper.mapEntityToAttachedObject(e));
   }
 

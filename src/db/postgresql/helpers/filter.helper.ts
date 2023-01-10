@@ -1,3 +1,4 @@
+import { SearchOptions, SortOptions } from 'interfaces/search/search.options.interface';
 import { ObjectLiteral, SelectQueryBuilder, UpdateQueryBuilder } from 'typeorm';
 import {
   Equals,
@@ -16,6 +17,7 @@ export const formatSelectQuery = <E extends ObjectLiteral>(
   entityName: string,
   queryBuilder: SelectQueryBuilder<E>,
   criteria: Record<string, unknown>,
+  options: SearchOptions<E>,
   compiledMapping: CompiledMapping,
   loadRelations?: boolean
 ): SelectQueryBuilder<E> => {
@@ -28,6 +30,29 @@ export const formatSelectQuery = <E extends ObjectLiteral>(
   if (loadRelations) {
     //load left relations, which were not loaded during standard query
     loadUnloadedRelatons(entityName, queryBuilder, compiledMapping, nestedKeysAlreadyLoaded);
+  }
+
+  if (options.sortBy) {
+    let first = true;
+
+    for (const key in options.sortBy) {
+      const queryKey = entityName ? `${entityName}.${key}` : key;
+      const sortOption = options.sortBy[key as keyof SortOptions<E>]?.toUpperCase() as 'ASC' | 'DESC';
+      const nullsOptions = first ? (sortOption === 'ASC' ? 'NULLS FIRST' : 'NULLS LAST') : undefined;
+      queryBuilder.orderBy(queryKey, sortOption, nullsOptions);
+      first = false;
+    }
+  }
+
+  if (nestedKeysAlreadyLoaded.length === 0) {
+    //can be run on db side
+    if (options.skip) queryBuilder.offset(options.skip);
+    if (options.limit) queryBuilder.limit(options.limit);
+  } else {
+    //in there are joins, offset and limit could return incorrect number of entities
+    //in this case, we need to use skip and take which are called after getting db results
+    if (options.skip) queryBuilder.skip(options.skip);
+    if (options.limit) queryBuilder.take(options.limit);
   }
 
   return queryBuilder;

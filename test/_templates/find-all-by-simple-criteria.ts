@@ -234,4 +234,81 @@ export const runFindAllBySimpleCriteriaTests = (
       const foundCars4 = await carRepository.findAll({ model: SearchBy.StartsWith('not_existing') });
       expect(foundCars4.length).toBe(0);
     });
+
+    it('should sort', async () => {
+      const foundCars = await carRepository.findAll({}, { sortBy: { model: 'asc' } });
+
+      expect(foundCars.length).toBe(4);
+      expect(foundCars[0].model).toEqual('Mazda CX5');
+      expect(foundCars[1].model).toEqual('Mazda RX8');
+      expect(foundCars[2].model).toEqual('Peugeot 508');
+      expect(foundCars[3].model).toEqual('Toyota Avensis');
+    });
+
+    it('should sort and skip', async () => {
+      const foundCars = await carRepository.findAll({}, { sortBy: { model: 'asc' }, skip: 1 });
+
+      expect(foundCars.length).toBe(3);
+      expect(foundCars[0].model).toEqual('Mazda RX8');
+      expect(foundCars[1].model).toEqual('Peugeot 508');
+      expect(foundCars[2].model).toEqual('Toyota Avensis');
+    });
+
+    it('should sort and limit', async () => {
+      const foundCars = await carRepository.findAll({}, { sortBy: { model: 'asc' }, limit: 2 });
+
+      expect(foundCars.length).toBe(2);
+      expect(foundCars[0].model).toEqual('Mazda CX5');
+      expect(foundCars[1].model).toEqual('Mazda RX8');
+    });
+
+    it('should sort, skip and limit', async () => {
+      const foundCars = await carRepository.findAll({}, { sortBy: { model: 'asc' }, skip: 1, limit: 2 });
+
+      expect(foundCars.length).toBe(2);
+      expect(foundCars[0].model).toEqual('Mazda RX8');
+      expect(foundCars[1].model).toEqual('Peugeot 508');
+    });
+
+    it('should sort asc', async () => {
+      const foundCars = await carRepository.findAll({}, { sortBy: { leftGas: 'asc' } });
+
+      expect(foundCars.length).toBe(4);
+      expect(foundCars[0].model).toEqual('Peugeot 508');
+      expect(foundCars[1].model).toEqual('Mazda CX5');
+      expect(foundCars[2].model).toEqual('Mazda RX8');
+      expect(foundCars[3].model).toEqual('Toyota Avensis');
+    });
+
+    it('should sort desc', async () => {
+      const foundCars = await carRepository.findAll({}, { sortBy: { leftGas: 'desc' } });
+
+      expect(foundCars.length).toBe(4);
+      expect(foundCars[0].model).toEqual('Toyota Avensis');
+      expect(foundCars[1].model).toEqual('Mazda RX8');
+      expect(foundCars[2].model).toEqual('Mazda CX5');
+      expect(foundCars[3].model).toEqual('Peugeot 508');
+    });
+
+    it('should sort by multiple properties', async () => {
+      const foundCars = await carRepository.findAll({}, { sortBy: { engineType: 'asc', leftGas: 'desc' } });
+
+      expect(foundCars.length).toBe(4);
+      expect(foundCars[0].model).toEqual('Peugeot 508');
+      expect(foundCars[1].model).toEqual('Toyota Avensis');
+      expect(foundCars[2].model).toEqual('Mazda RX8');
+      expect(foundCars[3].model).toEqual('Mazda CX5');
+    });
+
+    it('should run complex skip, limit and sort', async () => {
+      const foundCars = await carRepository.findAll(
+        {
+          parts: SearchBy.ObjectArrayDoesNotExist()
+        },
+        { sortBy: { engineType: 'asc', leftGas: 'desc' }, skip: 1, limit: 1 }
+      );
+
+      expect(foundCars.length).toBe(1);
+      expect(foundCars[0].model).toEqual('Mazda RX8');
+    });
   });

@@ -1,4 +1,5 @@
 import { SearchCriteria } from './search/search.criteria.interface';
+import { SearchOptions } from './search/search.options.interface';
 import { UpdateCriteria } from './update/update.criteria.interface';
 
 /**
@@ -46,9 +47,11 @@ export interface IReadDomainRepository<Attached> {
    * To run complex searches, use `SearchBy` conditions.
    * All conditions are `AND`ed. To use (OR) logic, run multiple searches.
    *
+   * @param options specifies additional result options (skip, limit, sort).
+   *
    * @returns A list of attached objects.
    */
-  findAll(criteria?: SearchCriteria<Attached>): Promise<Array<Attached>>;
+  findAll(criteria?: SearchCriteria<Attached>, options?: SearchOptions<Attached>): Promise<Attached[]>;
 
   /**
    * Counts the number of objects by specified criteria.

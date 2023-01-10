@@ -1,5 +1,6 @@
 import { DoesNotExist, Exists, ValueCondition } from '../interfaces/search/search.conditions';
 import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
+import { SearchOptions, SortOptions } from '../interfaces/search/search.options.interface';
 import { Clear, ValueAction } from '../interfaces/update/update.conditions';
 import { UpdateCriteria } from '../interfaces/update/update.criteria.interface';
 import { compileMappings } from './helpers/mapping.helper';
@@ -25,6 +26,13 @@ export class ObjectEntityMapper<T, A extends T, E> {
     if (!criteria) return {};
 
     return this.mapInternal(criteria, this.compiledMapping);
+  }
+
+  /** Maps search options into entity search options. */
+  public mapSearchOptions(options?: SearchOptions<A>): SearchOptions<E> {
+    if (!options) return {};
+    const mappedSortOptions = this.mapInternal(options.sortBy, this.compiledMapping) as SortOptions<E>;
+    return { ...options, sortBy: mappedSortOptions };
   }
 
   /** Maps new detached object into detached entity. */

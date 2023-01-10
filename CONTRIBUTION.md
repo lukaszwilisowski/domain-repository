@@ -16,11 +16,13 @@ Our assumptions are simple:
 - support standard db use cases, used in majority of the projects
 - ignore specific db features, used in specific projects
 
-Missing features to be added soon:
+Recenlty added:
+
+- find result options, such as: skip(), take(), sort()
+
+To be added soon:
 
 - transactions
-- find options, such as: skip(), take(), sort()
-- more integration test cases (and corner cases) for currently supported databases
 - more repository implementations for next databases
 
 ---
