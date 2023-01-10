@@ -75,7 +75,7 @@ export type ICar = {
   /* Mutable name of the car. */
   name: string;
 
-  /* Mutable flag. Equals true for the single, higest ranked car in the system. */
+  /* Mutable flag. Equals true for the single, highest ranked car in the system. */
   best: boolean;
 
   /* Readonly year of production. */
