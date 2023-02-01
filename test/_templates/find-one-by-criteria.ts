@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { SearchBy } from 'helpers/search.by.helper';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { ITestCar, ITestCarAttached } from '../_models/car/car.interface';
 
@@ -30,6 +31,13 @@ export const runFindOneByCriteriaTests = (
       const result = await carRepository.findOne({ id: peugeot?.id });
 
       expect(result?.model).toEqual('Peugeot 508');
+    });
+
+    it('should find single element by one of the IDs', async () => {
+      const peugeot = await carRepository.findOne({ model: 'Peugeot 508' });
+      const peugeot2 = await carRepository.findOne({ id: SearchBy.IsOneOfTheValues([peugeot!.id]) });
+
+      expect(peugeot).toEqual(peugeot2);
     });
 
     it('should not find anything', async () => {

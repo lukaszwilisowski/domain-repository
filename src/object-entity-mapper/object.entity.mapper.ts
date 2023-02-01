@@ -145,7 +145,9 @@ export class ObjectEntityMapper<T, A extends T, E> {
       (reversed ? mapping.entityKeyToFuncMap[key] : mapping.objectKeyToFuncMap[key]) || //transform found?
       ((i: unknown) => i); //if not, fallback to no-transformation
 
-    transformedValue = transform(transformedValue);
+    transformedValue = Array.isArray(transformedValue)
+      ? transformedValue.map((v) => transform(v))
+      : transform(transformedValue);
 
     return transformedValue;
   }

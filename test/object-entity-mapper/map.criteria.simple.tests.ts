@@ -1,8 +1,12 @@
 import { describe, expect, it } from '@jest/globals';
 import { SearchBy } from 'helpers/search.by.helper';
+import { IsOneOfTheValues } from 'interfaces/search/search.conditions';
+import mongoose from 'mongoose';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
+import { mapToMongoObjectId } from '../../db/mongodb';
 import { AnimalObject } from './_models/animal.models';
+import { DeskMongoObject, DeskObject } from './_models/desk.model';
 
 describe('Map criteria', () => {
   const simpleMapping: Mapping<AnimalObject, AnimalObject, false> = {
@@ -12,7 +16,12 @@ describe('Map criteria', () => {
     friendIDs: 'friendIDs'
   };
 
+  const deskMapping: Mapping<DeskObject, DeskMongoObject> = {
+    id: mapToMongoObjectId
+  };
+
   const simpleMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, AnimalObject>(simpleMapping);
+  const deskMapper = new ObjectEntityMapper<DeskObject, DeskObject, DeskMongoObject>(deskMapping);
 
   it('should map undefined', () => {
     const mappedCriteria = simpleMapper.mapSearchCriteria();
@@ -76,6 +85,18 @@ describe('Map criteria', () => {
     const mappedCriteria = simpleMapper.mapSearchCriteria({ name: SearchBy.IsOneOfTheValues(['Brian', 'John']) });
 
     expect(mappedCriteria.name).toEqual(SearchBy.IsOneOfTheValues(['Brian', 'John']));
+  });
+
+  it('should map IsOneOfTheValues with ID', () => {
+    const mappedCriteria = deskMapper.mapSearchCriteria({
+      id: SearchBy.IsOneOfTheValues(['63b8091cdd1f0c4927ca4725', '63b8094815787ea434bd798a'])
+    });
+
+    const searchCondition = mappedCriteria._id as unknown as IsOneOfTheValues<mongoose.Types.ObjectId>;
+    const objectIdArray = searchCondition.value;
+
+    expect(mongoose.Types.ObjectId.isValid(objectIdArray[0])).toBe(true);
+    expect(mongoose.Types.ObjectId.isValid(objectIdArray[1])).toBe(true);
   });
 
   it('should map HasElement', () => {
