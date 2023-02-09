@@ -1,4 +1,3 @@
-import { SearchOptions } from 'interfaces/search/search.options.interface';
 import { areDeepEqual } from '../helpers/deep.equality.helper';
 import {
   DoesNotExist,
@@ -8,6 +7,7 @@ import {
   ValueCondition
 } from '../interfaces/search/search.conditions';
 import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
+import { SearchOptions } from '../interfaces/search/search.options.interface';
 import { generateSortFn, SortProp } from './sort.helper';
 
 export class InPlaceFilterHelper {

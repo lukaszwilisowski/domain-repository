@@ -1,4 +1,3 @@
-import { SearchOptions, SortOptions } from 'interfaces/search/search.options.interface';
 import { ObjectLiteral, SelectQueryBuilder, UpdateQueryBuilder } from 'typeorm';
 import {
   Equals,
@@ -11,6 +10,7 @@ import {
   ValueCondition
 } from '../../../interfaces/search/search.conditions';
 import { SearchCriteria } from '../../../interfaces/search/search.criteria.interface';
+import { SearchOptions, SortOptions } from '../../../interfaces/search/search.options.interface';
 import { CompiledMapping } from '../../../object-entity-mapper/models/compiled.mapping';
 
 export const formatSelectQuery = <E extends ObjectLiteral>(
