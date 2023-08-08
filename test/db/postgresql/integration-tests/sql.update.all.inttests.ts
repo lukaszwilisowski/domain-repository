@@ -17,7 +17,7 @@ const findAllAndUpdateSqlTestSetup = async (): Promise<{
 }> => {
   const dataSource = new DataSource({
     type: 'postgres',
-    host: 'localhost',
+    host: '127.0.0.1',
     port: 5432,
     database: 'testdb',
     username: 'postgres',

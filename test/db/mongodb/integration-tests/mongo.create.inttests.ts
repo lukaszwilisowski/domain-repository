@@ -3,7 +3,7 @@ import { IDomainRepository } from 'interfaces/repository.interface';
 import mongoose from 'mongoose';
 import { ITestCar, ITestCarAttached } from '../../../_models/car/car.interface';
 import { runCreateTests } from '../../../_templates/create';
-import { carMapping, getCarCollection, TestMongoCarEntity } from '../entities/car/car.entity';
+import { TestMongoCarEntity, carMapping, getCarCollection } from '../entities/car/car.entity';
 
 const createMongoTestSetup = async (): Promise<{
   carRepository: IDomainRepository<ITestCar, ITestCarAttached>;
@@ -12,7 +12,7 @@ const createMongoTestSetup = async (): Promise<{
   mongoose.set('strictQuery', false);
 
   await new Promise<void>((resolve) => {
-    mongoose.connect('mongodb://localhost:27017/unittestdb', {});
+    mongoose.connect('mongodb://127.0.0.1:27017/unittestdb');
     mongoose.connection.on('open', () => resolve());
   });
 

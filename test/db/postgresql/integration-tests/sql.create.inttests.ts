@@ -4,11 +4,11 @@ import { DataSource } from 'typeorm';
 import { ITestCar, ITestCarAttached } from '../../../_models/car/car.interface';
 import { runCreateTests } from '../../../_templates/create';
 import {
-  carMapping,
   TestSqlAdvancedFeaturesEntity,
   TestSqlCarEntity,
   TestSqlFeaturesEntity,
-  TestSqlPartEntity
+  TestSqlPartEntity,
+  carMapping
 } from '../entities/car/car.entity';
 
 const createSqlTestSetup = async (): Promise<{
@@ -17,7 +17,7 @@ const createSqlTestSetup = async (): Promise<{
 }> => {
   const dataSource = new DataSource({
     type: 'postgres',
-    host: 'localhost',
+    host: '127.0.0.1',
     port: 5432,
     database: 'testdb',
     username: 'postgres',

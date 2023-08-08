@@ -4,9 +4,9 @@ import { DataSource } from 'typeorm';
 import { ITestCharacter, ITestCharacterAttached } from '../../../_models/character/character.interface';
 import { runFindOneAndUpdateTests } from '../../../_templates/find-one-and-update';
 import {
-  characterMapping,
   TestSqlCharacterEntity,
-  TestSqlStatsEntity
+  TestSqlStatsEntity,
+  characterMapping
 } from '../entities/character/character.entity';
 
 const findOneAndUpdateSqlTestSetup = async (): Promise<{
@@ -15,7 +15,7 @@ const findOneAndUpdateSqlTestSetup = async (): Promise<{
 }> => {
   const dataSource = new DataSource({
     type: 'postgres',
-    host: 'localhost',
+    host: '127.0.0.1',
     port: 5432,
     database: 'testdb',
     username: 'postgres',

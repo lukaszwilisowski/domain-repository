@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { SingleEntityNotFoundError } from 'errors/singleEntityNotFound.error';
 import { SearchBy } from 'helpers/search.by.helper';
 import { IDomainRepository } from 'interfaces/repository.interface';
 import { ITestCar, ITestCarAttached } from '../_models/car/car.interface';
@@ -59,15 +60,19 @@ export const runFindOneByCriteriaTests = (
     });
 
     it('should fail if two elements were found', async () => {
-      expect(async () => await carRepository.findOneOrFail({ engineModel: '2.0' })).rejects.toThrow(
-        `Found ${2} entities of type`
-      );
+      try {
+        await carRepository.findOne({ engineModel: '2.0' });
+      } catch (er) {
+        expect((er as SingleEntityNotFoundError).message).toEqual(`Found ${2} entities of type`);
+      }
     });
 
     it('should fail if no element was found', async () => {
-      expect(async () => await carRepository.findOneOrFail({ fullTankCapacity: 1234 })).rejects.toThrow(
-        `Found ${0} entities of type`
-      );
+      try {
+        await carRepository.findOne({ fullTankCapacity: 1234 });
+      } catch (er) {
+        expect((er as SingleEntityNotFoundError).message).toEqual(`Found ${0} entities of type`);
+      }
     });
 
     it('should find single element with nested properties', async () => {

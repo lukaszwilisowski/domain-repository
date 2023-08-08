@@ -40,7 +40,7 @@ export const getCriteria = (criteria: Record<string, unknown>): Record<string, u
 const changeValueToMongoCriteria = (condition: unknown): unknown => {
   if (
     condition === null ||
-    (condition as Record<string, unknown>)['_bsontype'] === 'ObjectID' ||
+    (condition as Record<string, unknown>)['_bsontype'] === 'ObjectId' ||
     Array.isArray(condition) ||
     typeof condition !== 'object'
   ) {

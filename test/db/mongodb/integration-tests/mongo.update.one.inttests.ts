@@ -4,9 +4,9 @@ import mongoose from 'mongoose';
 import { ITestCharacter, ITestCharacterAttached } from '../../../_models/character/character.interface';
 import { runFindOneAndUpdateTests } from '../../../_templates/find-one-and-update';
 import {
+  TestMongoCharacterEntity,
   characterMapping,
-  getCharacterCollection,
-  TestMongoCharacterEntity
+  getCharacterCollection
 } from '../entities/character/character.entity';
 
 const findOneAndUpdateMongoTestSetup = async (): Promise<{
@@ -16,7 +16,7 @@ const findOneAndUpdateMongoTestSetup = async (): Promise<{
   mongoose.set('strictQuery', false);
 
   await new Promise<void>((resolve) => {
-    mongoose.connect('mongodb://localhost:27017/unittestdb', {});
+    mongoose.connect('mongodb://127.0.0.1:27017/unittestdb', {});
     mongoose.connection.on('open', () => resolve());
   });
 
