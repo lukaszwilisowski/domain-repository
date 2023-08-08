@@ -12,6 +12,9 @@
     "typeorm",
     "test-driven-development"
   ],
+  "files": [
+    "dist/**"
+  ],
   "exports": {
     ".": "./index.js",
     "./mapping": "./mapping/index.js",
