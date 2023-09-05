@@ -126,7 +126,10 @@ export const SearchBy = {
   /** Checks if array has none of the elements. Matches undefined and null arrays (if parent object exists). */
   HasNoneOfTheElements: <T>(value: T[]) => new HasNoneOfTheElements(value),
 
-  /** Checks if array contains all elements. */
+  /**
+   * Checks if array contains all elements.
+   * Do not use inside HasNoElementThatMatches clause!
+   */
   HasAllElements: <T>(value: T[]) => new HasAllElements(value),
 
   ///////////////////////////////////////////////////////////
