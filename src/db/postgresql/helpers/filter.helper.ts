@@ -13,6 +13,7 @@ import {
 import { SearchCriteria } from '../../../interfaces/search/search.criteria.interface';
 import { SearchOptions, SortOptions } from '../../../interfaces/search/search.options.interface';
 import { CompiledMapping } from '../../../object-entity-mapper/models/compiled.mapping';
+import { getOppositeCondition } from './opposite.condition.helper';
 
 export const formatSelectQuery = <E extends ObjectLiteral>(
   entityName: string,
@@ -64,8 +65,11 @@ const formatSelectQueryImpl = <E extends ObjectLiteral>(
   queryBuilder: SelectQueryBuilder<E>,
   criteria: Record<string, unknown>,
   compiledMapping: CompiledMapping,
-  nestedKeysAlreadyLoaded: string[]
+  nestedKeysAlreadyLoaded: string[],
+  opposite?: boolean
 ): SelectQueryBuilder<E> => {
+  const savedOrQueriesForLater = [];
+
   for (const key in criteria) {
     if (criteria[key] === undefined)
       //ignore undefined
@@ -74,22 +78,41 @@ const formatSelectQueryImpl = <E extends ObjectLiteral>(
     const queryKey = entityName ? `${entityName}.${key}` : key;
     const nestedJoinEntityName = queryKey.replace('.', '_');
 
-    //nested criteria requires left joins
+    //JOIN in those circumstances:
     if (
       criteria[key] instanceof NestedCriteria ||
       criteria[key] instanceof HasElementThatMatches ||
-      criteria[key] instanceof HasNoElementThatMatches
+      criteria[key] instanceof HasNoElementThatMatches ||
+      criteria[key] instanceof ObjectExists ||
+      criteria[key] instanceof ObjectDoesNotExist
     ) {
-      const nestedCriteria = criteria[key] as ValueCondition<SearchCriteria<unknown>>;
-
       queryBuilder.leftJoinAndSelect(queryKey, nestedJoinEntityName);
       nestedKeysAlreadyLoaded.push(queryKey);
+    }
 
-      const isNullClause = criteria[key] instanceof HasNoElementThatMatches ? 'is null' : 'is not null';
-      queryBuilder.andWhere(`${nestedJoinEntityName}.id ${isNullClause}`);
+    const isNull = opposite ? 'is not null' : 'is null';
+    const isNotNull = opposite ? 'is null' : 'is not null';
+
+    //special cases of Exists that requires left joins
+    if (criteria[key] instanceof ObjectExists || criteria[key] instanceof ObjectArrayExists) {
+      queryBuilder.andWhere(`${nestedJoinEntityName}.id ${isNotNull}`);
+      continue;
+    }
+
+    //special cases of DoesNotExist that requires left joins
+    if (criteria[key] instanceof ObjectDoesNotExist || criteria[key] instanceof ObjectArrayDoesNotExist) {
+      queryBuilder.andWhere(`${nestedJoinEntityName}.id ${isNull}`);
+      continue;
+    }
+
+    //join, is not null
+    if (criteria[key] instanceof NestedCriteria || criteria[key] instanceof HasElementThatMatches) {
+      queryBuilder.andWhere(`${nestedJoinEntityName}.id ${isNotNull}`);
 
       //recursion
       const nestedCompiledMapping = compiledMapping.entityKeyToNestedMapping[key];
+      const nestedCriteria = criteria[key] as ValueCondition<SearchCriteria<unknown>>;
+
       formatSelectQueryImpl(
         nestedJoinEntityName,
         queryBuilder,
@@ -101,26 +124,32 @@ const formatSelectQueryImpl = <E extends ObjectLiteral>(
       continue;
     }
 
-    //special cases of Exists that requires left joins
-    if (criteria[key] instanceof ObjectExists || criteria[key] instanceof ObjectArrayExists) {
-      queryBuilder.leftJoinAndSelect(queryKey, nestedJoinEntityName);
-      nestedKeysAlreadyLoaded.push(queryKey);
+    //join, is null
+    if (criteria[key] instanceof HasNoElementThatMatches) {
+      savedOrQueriesForLater.push(`${nestedJoinEntityName}.id ${isNull}`);
 
-      queryBuilder.andWhere(`${nestedJoinEntityName}.id is not null`);
-      continue;
-    }
+      //recursion
+      const nestedCriteria = criteria[key] as ValueCondition<SearchCriteria<unknown>>;
+      const nestedCompiledMapping = compiledMapping.entityKeyToNestedMapping[key];
 
-    //special cases of DoesNotExist that requires left joins
-    if (criteria[key] instanceof ObjectDoesNotExist || criteria[key] instanceof ObjectArrayDoesNotExist) {
-      queryBuilder.leftJoinAndSelect(queryKey, nestedJoinEntityName);
-      nestedKeysAlreadyLoaded.push(queryKey);
+      formatSelectQueryImpl(
+        nestedJoinEntityName,
+        queryBuilder,
+        nestedCriteria.value,
+        nestedCompiledMapping,
+        nestedKeysAlreadyLoaded,
+        true
+      );
 
-      queryBuilder.andWhere(`${nestedJoinEntityName}.id is null`);
       continue;
     }
 
     //standard condition
-    addConditionToQueryBuilder(queryBuilder, queryKey, criteria[key]);
+    addConditionToQueryBuilder(queryBuilder, queryKey, criteria[key], opposite);
+  }
+
+  for (const orQuery of savedOrQueriesForLater) {
+    queryBuilder.orWhere(orQuery);
   }
 
   return queryBuilder;
@@ -150,7 +179,8 @@ const loadUnloadedRelatons = <E extends ObjectLiteral>(
 export const addConditionToQueryBuilder = <E extends ObjectLiteral>(
   queryBuilder: SelectQueryBuilder<E> | UpdateQueryBuilder<E>,
   queryKey: string,
-  condition: unknown
+  condition: unknown,
+  opposite?: boolean
 ): void => {
   const c =
     condition === null || Array.isArray(condition) || typeof condition !== 'object'
@@ -159,7 +189,9 @@ export const addConditionToQueryBuilder = <E extends ObjectLiteral>(
 
   const p = queryKey.replace('.', '');
 
-  switch (c.conditionName) {
+  const conditionName = !opposite ? c.conditionName : getOppositeCondition(c.conditionName);
+
+  switch (conditionName) {
     case 'Equals':
       if (c.value === null) queryBuilder.andWhere(`${queryKey} is null`);
       else queryBuilder.andWhere(`${queryKey} = :${p}`, { [p]: c.value });

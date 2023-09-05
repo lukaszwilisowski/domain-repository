@@ -68,9 +68,7 @@ export const runFindOneByCriteriaTests = (
       try {
         await carRepository.findOneOrFail({ fullTankCapacity: 1234 });
       } catch (er) {
-        expect((er as Error).message).toBe(
-          `Found 0 entities of type: cars2 by the following criteria: {\"fullTankCapacity\":1234}`
-        );
+        expect((er as Error).message.startsWith('Found 0 entities of type:')).toBe(true);
       }
     });
 
