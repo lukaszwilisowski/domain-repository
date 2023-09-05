@@ -153,6 +153,7 @@ Search functions applicable to arrays of primitives:
 Search functions applicable to nested object arrays:
 
 - `SearchBy.HasElementThatMatches()`: takes a nested criteria, matches an array which has at least one element that matches the nested criteria
+- `SearchBy.HasNoElementThatMatches()`: takes a nested criteria, matches an array which have no elements that match the nested criteria
 - `SearchBy.ObjectArrayExists()`: applies to optional object arrays only, takes no arguments:
   - matches existing and **non-empty (!)** object array in MongoDb (assuming the higher level object exists)
   - matches non-empty related collection in SQL databases

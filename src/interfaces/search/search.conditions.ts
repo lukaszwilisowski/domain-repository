@@ -207,4 +207,13 @@ export class HasElementThatMatches<T> extends ValueCondition<SearchCriteria<T>> 
   }
 }
 
+export class HasNoElementThatMatches<T> extends ValueCondition<SearchCriteria<T>> {
+  constructor(
+    value: SearchCriteria<T>,
+    public readonly hasNoElementThatMatchesConditionName = 'HasNoElementThatMatches'
+  ) {
+    super(value, hasNoElementThatMatchesConditionName);
+  }
+}
+
 /////////////////////////////////////////////////////////////////////////////

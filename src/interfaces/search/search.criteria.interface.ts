@@ -17,6 +17,7 @@ import {
   HasAnyOfTheElements,
   HasElement,
   HasElementThatMatches,
+  HasNoElementThatMatches,
   HasNoneOfTheElements,
   IsGreaterThan,
   IsGreaterThanOrEqual,
@@ -140,7 +141,7 @@ type ArrayCompatibletypes<T> = T extends Array<infer X>
 
 type ObjectArrayCompatibletypes<T> = T extends Array<infer X>
   ? //non-nullable array
-    HasElementThatMatches<X>
+    HasElementThatMatches<X> | HasNoElementThatMatches<X>
   : T extends Array<unknown> | undefined
   ? ObjectArrayExists | ObjectArrayDoesNotExist
   : //fallback

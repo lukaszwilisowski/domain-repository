@@ -1,5 +1,6 @@
 import {
   HasElementThatMatches,
+  HasNoElementThatMatches,
   NestedCriteria,
   ValueCondition
 } from '../../../interfaces/search/search.conditions';
@@ -27,6 +28,10 @@ export const getCriteria = (criteria: Record<string, unknown>): Record<string, u
       const elementCriteria = criteria[key] as HasElementThatMatches<unknown>;
       const formattedElementCriteria = getCriteria(elementCriteria.value as Record<string, unknown>);
       formattedCriteria[key] = { $elemMatch: formattedElementCriteria };
+    } else if (criteria[key] instanceof HasNoElementThatMatches) {
+      const elementCriteria = criteria[key] as HasNoElementThatMatches<unknown>;
+      const formattedElementCriteria = getCriteria(elementCriteria.value as Record<string, unknown>);
+      formattedCriteria[key] = { $not: { $elemMatch: formattedElementCriteria } };
     } else {
       //standard condition
       const condition = changeValueToMongoCriteria(criteria[key]);

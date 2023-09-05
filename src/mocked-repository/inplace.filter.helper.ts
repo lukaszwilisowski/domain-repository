@@ -3,12 +3,13 @@ import {
   DoesNotExist,
   Exists,
   HasElementThatMatches,
+  HasNoElementThatMatches,
   NestedCriteria,
   ValueCondition
 } from '../interfaces/search/search.conditions';
 import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
 import { SearchOptions } from '../interfaces/search/search.options.interface';
-import { generateSortFn, SortProp } from './sort.helper';
+import { SortProp, generateSortFn } from './sort.helper';
 
 export class InPlaceFilterHelper {
   public getPredicate<A>(criteria?: SearchCriteria<A>): (arrayElement: A) => boolean {
@@ -45,6 +46,14 @@ export class InPlaceFilterHelper {
         const array = element[key] as unknown[];
         const nestedCriteria = (criteria[key] as NestedCriteria<unknown>).value;
         if (!array.some((e) => this.matchesCriteria(e, nestedCriteria))) return false;
+        continue;
+      }
+
+      if (criteria[key] instanceof HasNoElementThatMatches) {
+        if (element[key]) continue;
+        const array = element[key] as unknown[];
+        const nestedCriteria = (criteria[key] as NestedCriteria<unknown>).value;
+        if (array.some((e) => this.matchesCriteria(e, nestedCriteria))) return false;
         continue;
       }
 

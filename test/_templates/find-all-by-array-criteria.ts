@@ -158,4 +158,14 @@ export const runFindAllByArrayCriteriaTests = (
       expect(result.length).toEqual(1);
       expect(result[0].model).toEqual('Toyota Avensis');
     });
+
+    it('should find nested array by HasNoElementThatMatches', async () => {
+      const result = await carRepository.findAll({
+        parts: SearchBy.HasNoElementThatMatches<ITestPart>({
+          name: 'window'
+        })
+      });
+
+      expect(result.length).toEqual(3);
+    });
   });

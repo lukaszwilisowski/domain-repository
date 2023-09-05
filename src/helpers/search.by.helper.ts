@@ -16,6 +16,7 @@ import {
   HasAnyOfTheElements,
   HasElement,
   HasElementThatMatches,
+  HasNoElementThatMatches,
   HasNoneOfTheElements,
   IsGreaterThan,
   IsGreaterThanOrEqual,
@@ -134,6 +135,9 @@ export const SearchBy = {
 
   /** Checks if nested array contains element that matches criteria. Requires explicit type `HasElementThatMatches<T>`. */
   HasElementThatMatches: <T = never>(value: SearchCriteria<NoInfer<T>>) => new HasElementThatMatches(value),
+
+  /** Checks if nested array contains no elements that match criteria. Requires explicit type `HasNoElementThatMatches<T>`. */
+  HasNoElementThatMatches: <T = never>(value: SearchCriteria<NoInfer<T>>) => new HasNoElementThatMatches(value),
 
   ///////////////////////////////////////////////////////////
   // Nested object //////////////////////////////////////////

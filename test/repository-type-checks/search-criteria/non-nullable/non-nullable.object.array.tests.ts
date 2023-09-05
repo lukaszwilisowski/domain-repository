@@ -19,7 +19,7 @@ describe('Non-nullable object array criteria', () => {
     });
 
     repository.findOne({
-      friends: SearchBy.HasElementThatMatches<Friend>({
+      friends: SearchBy.HasNoElementThatMatches<Friend>({
         age: 5,
         foodType: 0,
         // @ts-expect-error

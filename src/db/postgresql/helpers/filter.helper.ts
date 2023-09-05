@@ -2,6 +2,7 @@ import { ObjectLiteral, SelectQueryBuilder, UpdateQueryBuilder } from 'typeorm';
 import {
   Equals,
   HasElementThatMatches,
+  HasNoElementThatMatches,
   NestedCriteria,
   ObjectArrayDoesNotExist,
   ObjectArrayExists,
@@ -74,13 +75,18 @@ const formatSelectQueryImpl = <E extends ObjectLiteral>(
     const nestedJoinEntityName = queryKey.replace('.', '_');
 
     //nested criteria requires left joins
-    if (criteria[key] instanceof NestedCriteria || criteria[key] instanceof HasElementThatMatches) {
+    if (
+      criteria[key] instanceof NestedCriteria ||
+      criteria[key] instanceof HasElementThatMatches ||
+      criteria[key] instanceof HasNoElementThatMatches
+    ) {
       const nestedCriteria = criteria[key] as ValueCondition<SearchCriteria<unknown>>;
 
       queryBuilder.leftJoinAndSelect(queryKey, nestedJoinEntityName);
       nestedKeysAlreadyLoaded.push(queryKey);
 
-      queryBuilder.andWhere(`${nestedJoinEntityName}.id is not null`);
+      const isNullClause = criteria[key] instanceof HasNoElementThatMatches ? 'is null' : 'is not null';
+      queryBuilder.andWhere(`${nestedJoinEntityName}.id ${isNullClause}`);
 
       //recursion
       const nestedCompiledMapping = compiledMapping.entityKeyToNestedMapping[key];

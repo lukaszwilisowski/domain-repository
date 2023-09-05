@@ -231,7 +231,7 @@ describe('formatCriteria', () => {
     });
   });
 
-  it('should map array of objects condition', async () => {
+  it('should map HasElementThatMatches condition', async () => {
     const criteria = mongoEntityFormatter.formatCriteria({
       parts: SearchBy.HasElementThatMatches<ITestPart>({
         name: SearchBy.StartsWith('n'),
@@ -241,6 +241,19 @@ describe('formatCriteria', () => {
 
     expect(criteria).toEqual({
       parts: { $elemMatch: { name: { $regex: '^n.*$', $options: 'i' }, year: 1999 } }
+    });
+  });
+
+  it('should map HasNoElementThatMatches condition', async () => {
+    const criteria = mongoEntityFormatter.formatCriteria({
+      parts: SearchBy.HasNoElementThatMatches<ITestPart>({
+        name: SearchBy.StartsWith('n'),
+        year: 1999
+      })
+    });
+
+    expect(criteria).toEqual({
+      parts: { $not: { $elemMatch: { name: { $regex: '^n.*$', $options: 'i' }, year: 1999 } } }
     });
   });
 
