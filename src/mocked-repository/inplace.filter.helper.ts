@@ -50,7 +50,7 @@ export class InPlaceFilterHelper {
       }
 
       if (criteria[key] instanceof HasNoElementThatMatches) {
-        if (element[key]) continue;
+        if (!element[key]) continue;
         const array = element[key] as unknown[];
         const nestedCriteria = (criteria[key] as NestedCriteria<unknown>).value;
         if (array.some((e) => this.matchesCriteria(e, nestedCriteria))) return false;

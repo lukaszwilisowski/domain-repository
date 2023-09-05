@@ -3,7 +3,7 @@ import { IDomainRepository } from 'interfaces/repository.interface';
 import mongoose from 'mongoose';
 import { ITestTicket, ITestTicketAttached } from '../../../_models/ticket/ticket.interface';
 import { runFindAndDeleteTests } from '../../../_templates/find-and-delete';
-import { getTicketCollection, TestMongoTicketEntity, ticketMapping } from '../entities/ticket/ticket.entity';
+import { TestMongoTicketEntity, getTicketCollection, ticketMapping } from '../entities/ticket/ticket.entity';
 
 const findAndDeleteMongoTestSetup = async (): Promise<{
   ticketRepository: IDomainRepository<ITestTicket, ITestTicketAttached>;
@@ -12,7 +12,8 @@ const findAndDeleteMongoTestSetup = async (): Promise<{
   mongoose.set('strictQuery', false);
 
   await new Promise<void>((resolve) => {
-    mongoose.connect('mongodb://localhost:27017/unittestdb', {});
+    mongoose.set('strictQuery', false);
+    mongoose.connect('mongodb://127.0.0.1:27017/unittestdb');
     mongoose.connection.on('open', () => resolve());
   });
 

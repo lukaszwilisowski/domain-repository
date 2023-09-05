@@ -8,7 +8,7 @@ import { runFindAllByArrayCriteriaTests } from '../../../_templates/find-all-by-
 import { runFindAllByNestedObjectCriteriaTests } from '../../../_templates/find-all-by-nested-object-criteria';
 import { runFindAllBySimpleCriteriaTests } from '../../../_templates/find-all-by-simple-criteria';
 import { runFindOneByCriteriaTests } from '../../../_templates/find-one-by-criteria';
-import { carMapping, getCarCollection, TestMongoCarEntity } from '../entities/car/car.entity';
+import { TestMongoCarEntity, carMapping, getCarCollection } from '../entities/car/car.entity';
 
 const findMongoTestSetup = async (): Promise<{
   carRepository: IDomainRepository<ITestCar, ITestCarAttached>;
@@ -17,7 +17,8 @@ const findMongoTestSetup = async (): Promise<{
   mongoose.set('strictQuery', false);
 
   await new Promise<void>((resolve) => {
-    mongoose.connect('mongodb://localhost:27017/unittestdb', {});
+    mongoose.set('strictQuery', false);
+    mongoose.connect('mongodb://127.0.0.1:27017/unittestdb');
     mongoose.connection.on('open', () => resolve());
   });
 

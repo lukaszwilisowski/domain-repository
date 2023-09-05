@@ -79,7 +79,7 @@ export class MongoDbRepository<T, A extends T, E> implements IDomainRepository<T
     );
 
     const results = await this.mongooseCollection.insertMany(mappedEntities);
-    return results.map((result) => this.objectEntityMapper.mapEntityToAttachedObject(result));
+    return results.map((result) => this.objectEntityMapper.mapEntityToAttachedObject(result as E));
   }
 
   public async findOneAndUpdate(criteria: SearchCriteria<A>, update: UpdateCriteria<T>): Promise<A | undefined> {

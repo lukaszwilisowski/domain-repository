@@ -240,7 +240,7 @@ import { MongoDbRepository } from 'domain-repository/db/mongodb';
 
 const runMongoTest = async (): Promise<void> => {
   await new Promise<void>((resolve) => {
-    mongoose.connect('mongodb://localhost:27017/testdb', {});
+    mongoose.connect(process.env.MONGODB_BASEURL || '' + '/testdb', {});
     mongoose.connection.on('open', () => resolve());
   });
 

@@ -65,9 +65,13 @@ export const runFindOneByCriteriaTests = (
     });
 
     it('should fail if no element was found', async () => {
-      expect(async () => await carRepository.findOneOrFail({ fullTankCapacity: 1234 })).rejects.toThrow(
-        `Found ${0} entities of type`
-      );
+      try {
+        await carRepository.findOneOrFail({ fullTankCapacity: 1234 });
+      } catch (er) {
+        expect((er as Error).message).toBe(
+          `Found 0 entities of type: cars2 by the following criteria: {\"fullTankCapacity\":1234}`
+        );
+      }
     });
 
     it('should find single element with nested properties', async () => {
