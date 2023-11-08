@@ -46,6 +46,16 @@ export const runFindAndDeleteTests = (
       expect(all[0].name).toBe('Mike');
     });
 
+    it('should not delete object', async () => {
+      const deleted = await ticketRepository.findOneAndDelete({ price: 5 });
+
+      expect(deleted).toBeUndefined();
+
+      const all = await ticketRepository.findAll();
+
+      expect(all.length).toBe(2);
+    });
+
     it('should delete object by Id', async () => {
       const joe = await ticketRepository.findOne({ price: 10 });
       await ticketRepository.findAllAndDelete({ id: joe!.id });
@@ -72,5 +82,13 @@ export const runFindAndDeleteTests = (
 
       expect(result.numberOfDeletedObjects).toBe(2);
       expect(all.length).toBe(0);
+    });
+
+    it('should not delete any objects', async () => {
+      const result = await ticketRepository.findAllAndDelete({ price: SearchBy.IsLesserThan(5) });
+      const all = await ticketRepository.findAll();
+
+      expect(result.numberOfDeletedObjects).toBe(0);
+      expect(all.length).toBe(2);
     });
   });
