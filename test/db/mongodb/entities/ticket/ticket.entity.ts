@@ -4,7 +4,9 @@ import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { ITestTicket, ITestTicketAttached } from '../../../../_models/ticket/ticket.interface';
 import { BaseMongoEntity } from '../../base.mongo.entity';
 
-const TicketSchema = new Schema<ITestTicket>({
+export type TestMongoTicketEntity = ITestTicket & BaseMongoEntity;
+
+const TicketSchema = new Schema<TestMongoTicketEntity>({
   price: {
     type: Number,
     required: true
@@ -34,8 +36,6 @@ const TicketSchema = new Schema<ITestTicket>({
     required: false
   }
 });
-
-export type TestMongoTicketEntity = ITestTicket & BaseMongoEntity;
 
 export const getTicketCollection = (collectionName: string) =>
   mongoose.model<TestMongoTicketEntity>(collectionName, TicketSchema);

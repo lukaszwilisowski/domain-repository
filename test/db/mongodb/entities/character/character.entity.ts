@@ -11,7 +11,13 @@ import {
 } from '../../../../_models/character/character.interface';
 import { BaseMongoEntity } from '../../base.mongo.entity';
 
-const StatsSchema = new Schema<ITestStats>({
+export type TestMongoStatsEntity = ITestStats & BaseMongoEntity;
+export type TestMongoCharacterEntity = ITestCharacter &
+  BaseMongoEntity & {
+    stats?: TestMongoStatsEntity[];
+  };
+
+const StatsSchema = new Schema<TestMongoStatsEntity>({
   grade: {
     type: String,
     required: true
@@ -26,7 +32,7 @@ const StatsSchema = new Schema<ITestStats>({
   }
 });
 
-const CharacterSchema = new Schema<ITestCharacter>({
+const CharacterSchema = new Schema<TestMongoCharacterEntity>({
   name: {
     type: String,
     required: true
@@ -60,12 +66,6 @@ const CharacterSchema = new Schema<ITestCharacter>({
     required: false
   }
 });
-
-export type TestMongoStatsEntity = ITestStats & BaseMongoEntity;
-export type TestMongoCharacterEntity = ITestCharacter &
-  BaseMongoEntity & {
-    stats?: TestMongoStatsEntity[];
-  };
 
 export const getCharacterCollection = (collectionName: string) =>
   mongoose.model<TestMongoCharacterEntity>(collectionName, CharacterSchema);

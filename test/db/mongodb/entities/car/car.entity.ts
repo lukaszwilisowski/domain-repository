@@ -16,7 +16,20 @@ import {
 } from '../../../../_models/car/car.interface';
 import { BaseMongoEntity } from '../../base.mongo.entity';
 
-const PartSchema = new Schema<ITestPart>({
+export type TestMongoPartEntity = ITestPart & BaseMongoEntity;
+export type TestAdvancedEntity = ITestAdvanced & BaseMongoEntity;
+export type TestFeaturesEntity = ITestFeatures &
+  BaseMongoEntity & {
+    advanced?: TestAdvancedEntity;
+  };
+
+export type TestMongoCarEntity = ITestCar &
+  BaseMongoEntity & {
+    parts?: TestMongoPartEntity[];
+    features?: TestFeaturesEntity;
+  };
+
+const PartSchema = new Schema<TestMongoPartEntity>({
   name: {
     type: String,
     required: true
@@ -27,7 +40,7 @@ const PartSchema = new Schema<ITestPart>({
   }
 });
 
-const AdvancedSchema = new Schema<ITestAdvanced>({
+const AdvancedSchema = new Schema<TestAdvancedEntity>({
   serialNumber: {
     type: String,
     required: true
@@ -38,7 +51,7 @@ const AdvancedSchema = new Schema<ITestAdvanced>({
   }
 });
 
-const FeaturesSchema = new Schema<ITestFeatures>({
+const FeaturesSchema = new Schema<TestFeaturesEntity>({
   ranking: {
     type: Number,
     required: true
@@ -58,7 +71,7 @@ const FeaturesSchema = new Schema<ITestFeatures>({
   }
 });
 
-const CarSchema = new Schema<ITestCar>({
+const CarSchema = new Schema<TestMongoCarEntity>({
   manufacturingLineId: {
     type: String,
     required: false
@@ -113,19 +126,6 @@ const CarSchema = new Schema<ITestCar>({
     required: false
   }
 });
-
-export type TestMongoPartEntity = ITestPart & BaseMongoEntity;
-export type TestAdvancedEntity = ITestAdvanced & BaseMongoEntity;
-export type TestFeaturesEntity = ITestFeatures &
-  BaseMongoEntity & {
-    advanced?: TestAdvancedEntity;
-  };
-
-export type TestMongoCarEntity = ITestCar &
-  BaseMongoEntity & {
-    parts?: TestMongoPartEntity[];
-    features?: TestFeaturesEntity;
-  };
 
 export const getCarCollection = (collectionName: string) =>
   mongoose.model<TestMongoCarEntity>(collectionName, CarSchema);
