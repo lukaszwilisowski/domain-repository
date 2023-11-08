@@ -12,7 +12,6 @@ const createMongoTestSetup = async (): Promise<{
   mongoose.set('strictQuery', false);
 
   await new Promise<void>((resolve) => {
-    mongoose.set('strictQuery', false);
     mongoose.connect('mongodb://127.0.0.1:27017/unittestdb');
     mongoose.connection.on('open', () => resolve());
   });

@@ -13,7 +13,7 @@ export class MockedDBRepository<T, A extends T> implements IDomainRepository<T, 
   private readonly inPlaceUpdateHelper: InPlaceUpdateHelper;
   private readonly inPlaceCreateHelper: InPlaceCreateHelper<A>;
 
-  public constructor(private readonly collection: A[] = []) {
+  public constructor(private collection: A[] = []) {
     this.inPlaceFilterHelper = new InPlaceFilterHelper();
     this.inPlaceUpdateHelper = new InPlaceUpdateHelper();
     this.inPlaceCreateHelper = new InPlaceCreateHelper<A>();
@@ -102,21 +102,17 @@ export class MockedDBRepository<T, A extends T> implements IDomainRepository<T, 
 
   public async findOneAndDelete(criteria: SearchCriteria<A>): Promise<A | undefined> {
     const object = await this.findOne(criteria);
+    if (!object) return undefined;
 
-    const index = this.collection.findIndex((o) => o === object);
-    const found = index >= 0 ? this.collection[index] : undefined;
+    this.collection = this.collection.filter((o) => o !== object);
 
-    this.collection.splice(index, 1);
-
-    return found;
+    return object;
   }
 
   public async findAllAndDelete(criteria: SearchCriteria<A>): Promise<{ numberOfDeletedObjects: number }> {
     const objects = await this.findAll(criteria);
-    objects.forEach((obj) => {
-      const index = this.collection.findIndex((o) => o === obj);
-      this.collection.splice(index, 1);
-    });
+
+    this.collection = this.collection.filter((o) => !objects.includes(o));
 
     return { numberOfDeletedObjects: objects.length };
   }

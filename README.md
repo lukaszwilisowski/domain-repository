@@ -240,7 +240,7 @@ import { MongoDbRepository } from 'domain-repository/db/mongodb';
 
 const runMongoTest = async (): Promise<void> => {
   await new Promise<void>((resolve) => {
-    mongoose.connect(process.env.MONGODB_BASEURL || '' + '/testdb', {});
+    mongoose.connect('mongodb://127.0.0.1:27017/testdb', {});
     mongoose.connection.on('open', () => resolve());
   });
 
@@ -352,7 +352,7 @@ import { PostgreSQLDbRepository } from 'domain-repository/db/postgresql';
 const runPostgresTest = async (): Promise<void> => {
   const dataSource = new DataSource({
     type: 'postgres',
-    host: 'localhost',
+    host: '127.0.0.1',
     port: 5432,
     database: 'mydb',
     username: 'postgres',
