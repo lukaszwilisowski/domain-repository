@@ -1,12 +1,12 @@
 import { describe, expect, it } from '@jest/globals';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
-import { AnimalObject } from './_models/animal.models';
+import { AnimalObject, MappedAnimalObject } from './_models/animal.models';
 import { complexMapping } from './_models/example.mapping';
 
 describe('Map object', () => {
   it('should map object', () => {
-    const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, AnimalObject>(complexMapping);
+    const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, MappedAnimalObject>(complexMapping);
 
     const entity = complexMapper.mapDetachedObjectToEntity({
       name: 'Jack',
@@ -19,10 +19,14 @@ describe('Map object', () => {
       features: {
         color: 'blond',
         level: 100
+      },
+      featuresNullable: {
+        color: 'blond',
+        level: 100
       }
     });
 
-    expect(Object.keys(entity).length).toBe(6);
+    expect(Object.keys(entity).length).toBe(7);
     expect(entity.name).toBeUndefined();
     expect(entity.name2).toEqual('Jack');
     expect(entity.name3).toEqual('Dawson');
@@ -32,6 +36,8 @@ describe('Map object', () => {
     expect(entity.friends[0]).toEqual({ age: 11 });
     expect(entity.features.color).toEqual('blond_changed');
     expect(entity.features.level).toEqual(103);
+    expect(entity.features_nullable!.color).toEqual('blond_changed');
+    expect(entity.features_nullable!.level).toEqual(103);
   });
 
   it('should map object with custom mapping', () => {
@@ -73,5 +79,3 @@ describe('Map object', () => {
     expect(entity.featuresNullable).toBeUndefined();
   });
 });
-
-

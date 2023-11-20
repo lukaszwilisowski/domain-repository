@@ -2,11 +2,17 @@ import { describe, expect, it } from '@jest/globals';
 import { UpdateWith } from 'helpers/update.with.helper';
 import { NestedUpdate } from 'interfaces/update/update.conditions';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
-import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject } from './_models/animal.models';
+import {
+  AdditionalObject,
+  AnimalObject,
+  FeaturesObject,
+  FriendObject,
+  MappedAnimalObject
+} from './_models/animal.models';
 import { complexMapping } from './_models/example.mapping';
 
 describe('Map update', () => {
-  const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, AnimalObject>(complexMapping);
+  const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, MappedAnimalObject>(complexMapping);
 
   it('should map name', () => {
     const mappedCriteria = complexMapper.mapUpdate({ name: 'Brian' });
@@ -83,7 +89,7 @@ describe('Map update', () => {
       friendsNullable: UpdateWith.ClearObjectArray()
     });
 
-    expect(mappedCriteria.friendsNullable).toEqual(UpdateWith.ClearObjectArray());
+    expect(mappedCriteria.friends_nullable).toEqual(UpdateWith.ClearObjectArray());
   });
 
   it('should map features', () => {
@@ -107,7 +113,7 @@ describe('Map update', () => {
       featuresNullable: UpdateWith.ClearObject()
     });
 
-    expect(mappedCriteria.featuresNullable).toEqual(UpdateWith.ClearObject());
+    expect(mappedCriteria.features_nullable).toEqual(UpdateWith.ClearObject());
   });
 
   it('should map friends nested array update', () => {

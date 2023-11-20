@@ -1,11 +1,11 @@
 import { describe, expect, it } from '@jest/globals';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
 import { Features, Friend } from '../repository-type-checks/_models/non-nullable.model';
-import { AnimalObject } from './_models/animal.models';
+import { AnimalObject, MappedAnimalObject } from './_models/animal.models';
 import { complexMapping } from './_models/example.mapping';
 
 describe('Map entity', () => {
-  const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, AnimalObject>(complexMapping);
+  const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, MappedAnimalObject>(complexMapping);
 
   it('should map entity', () => {
     const entity = complexMapper.mapEntityToAttachedObject({
@@ -16,7 +16,15 @@ describe('Map entity', () => {
       friendIDs: [1, 2, 3],
       friendIDsNullable: [-1, -2, -3],
       friends: [{ name: 'Rose', age: 10 }],
+      friends_nullable: [{ name: 'Rose', age: 10 }],
       features: {
+        color: 'blond_changed',
+        level: 100,
+        additional: {
+          serialNumber: 's-03_new'
+        }
+      },
+      features_nullable: {
         color: 'blond_changed',
         level: 100,
         additional: {
@@ -25,16 +33,18 @@ describe('Map entity', () => {
       }
     });
 
-    expect(Object.keys(entity).length).toBe(6);
+    expect(Object.keys(entity).length).toBe(8);
     expect(entity.name).toEqual('Jack');
     expect(entity.name2).toEqual('Great');
     expect(entity.age).toBe(20);
     expect(entity.friendIDs).toBeUndefined();
     expect(entity.friendIDsNullable).toEqual([1, 2, 3]);
     expect(entity.friends[0]).toEqual({ age: 9 });
+    expect(entity.friendsNullable![0]).toEqual({ age: 9 });
     expect(entity.features.color).toEqual('blond');
     expect(entity.features.level).toEqual(97);
     expect(entity.features.additional?.serialNumber).toEqual('s-03');
+    expect(entity.featuresNullable!.additional?.serialNumber).toEqual('s-03');
   });
 
   it('should map object and reverse', () => {
@@ -77,13 +87,13 @@ describe('Map entity', () => {
       name2: 'Jack',
       name3: 'Great',
       age: 21,
-      ageNullable: null,
+      age_nullable: null,
       friendIDs: [1, 2, 3],
       friendIDsNullable: null as unknown as number[],
       friends: [{ name: 'Rose', age: 10 }],
-      friendsNullable: null as unknown as Friend[],
+      friends_nullable: null as unknown as Friend[],
       features: null as unknown as Features,
-      featuresNullable: null as unknown as Features
+      features_nullable: null as unknown as Features
     });
 
     expect(entity.nameNullable).toBe('default');
@@ -102,12 +112,12 @@ describe('Map entity', () => {
     expect(entityKeys).toContain('name2');
     expect(entityKeys).toContain('name3');
     expect(entityKeys).toContain('age');
-    expect(entityKeys).toContain('ageNullable');
+    expect(entityKeys).toContain('age_nullable');
     expect(entityKeys).not.toContain('friendIDs');
     expect(entityKeys).toContain('friendIDsNullable');
     expect(entityKeys).toContain('friends');
-    expect(entityKeys).toContain('friendsNullable');
+    expect(entityKeys).toContain('friends_nullable');
     expect(entityKeys).toContain('features');
-    expect(entityKeys).toContain('featuresNullable');
+    expect(entityKeys).toContain('features_nullable');
   });
 });

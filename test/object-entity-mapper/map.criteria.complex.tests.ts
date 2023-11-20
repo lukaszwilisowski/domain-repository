@@ -2,11 +2,17 @@ import { describe, expect, it } from '@jest/globals';
 import { SearchBy } from 'helpers/search.by.helper';
 import { IsGreaterThan, NestedCriteria } from 'interfaces/search/search.conditions';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
-import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject } from './_models/animal.models';
+import {
+  AdditionalObject,
+  AnimalObject,
+  FeaturesObject,
+  FriendObject,
+  MappedAnimalObject
+} from './_models/animal.models';
 import { complexMapping } from './_models/example.mapping';
 
 describe('Map criteria', () => {
-  const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, AnimalObject>(complexMapping);
+  const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, MappedAnimalObject>(complexMapping);
 
   it('should map name', () => {
     const mappedCriteria = complexMapper.mapSearchCriteria({ name: 'Brian' });
@@ -115,7 +121,7 @@ describe('Map criteria', () => {
       friendsNullable: SearchBy.ObjectArrayDoesNotExist()
     });
 
-    expect(mappedCriteria.friendsNullable).toEqual(SearchBy.ObjectArrayDoesNotExist());
+    expect(mappedCriteria.friends_nullable).toEqual(SearchBy.ObjectArrayDoesNotExist());
   });
 
   it('should map nested Exist -> Exist', () => {
@@ -123,7 +129,7 @@ describe('Map criteria', () => {
       featuresNullable: SearchBy.ObjectExists()
     });
 
-    expect(mappedCriteria.featuresNullable).toEqual(SearchBy.ObjectExists());
+    expect(mappedCriteria.features_nullable).toEqual(SearchBy.ObjectExists());
   });
 
   it('should map SortOptions', () => {
