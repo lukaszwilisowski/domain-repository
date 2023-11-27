@@ -72,6 +72,8 @@ export const getUpdateActionAndValue = (action: unknown): [string | undefined, u
   const a = action as ValueAction<unknown>;
 
   switch (a.actionName) {
+    case undefined:
+      return [undefined, a];
     case 'Set':
       return [undefined, a.value];
     ///////////////////////

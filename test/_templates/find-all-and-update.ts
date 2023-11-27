@@ -335,6 +335,34 @@ export const runFindAllAndUpdateTests = (
       expect(allCars[0].features?.advanced?.serialNumber).toEqual('new_sn');
     });
 
+    it('should update object', async () => {
+      const newFeatures: ITestFeatures = {
+        ranking: 100,
+        color: TestColor.Black,
+        numbers: [11, 12, 13],
+        advanced: {
+          serialNumber: 's-100',
+          index: 100
+        }
+      };
+
+      const { numberOfUpdatedObjects } = await carRepository.findAllAndUpdate(
+        { model: 'Toyota Avensis' },
+        { features: newFeatures }
+      );
+
+      expect(numberOfUpdatedObjects).toBe(1);
+
+      const allCars = await carRepository.findAll();
+      const car = allCars.find((car) => car.model === 'Toyota Avensis');
+
+      expect(car?.features?.ranking).toEqual(newFeatures.ranking);
+      expect(car?.features?.color).toEqual(newFeatures.color);
+      expect(car?.features?.numbers).toEqual(newFeatures.numbers);
+      expect(car?.features?.advanced?.serialNumber).toEqual(newFeatures.advanced?.serialNumber);
+      expect(car?.features?.advanced?.index).toEqual(newFeatures.advanced?.index);
+    });
+
     it('should update nested object', async () => {
       const { numberOfUpdatedObjects } = await carRepository.findAllAndUpdate(
         { features: SearchBy.NestedCriteria<ITestFeatures>({ ranking: SearchBy.IsGreaterThanOrEqual(20) }) },

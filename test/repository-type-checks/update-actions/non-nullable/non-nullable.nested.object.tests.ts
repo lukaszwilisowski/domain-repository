@@ -10,6 +10,19 @@ const repository = {
 
 describe('Non-nullable nested object update', () => {
   it('should work with proper actions', () => {
+    repository.findOneAndUpdate(
+      {},
+      {
+        features: {
+          carnivore: true,
+          color: 'white',
+          advanced: {
+            serialNumber: 's-01'
+          }
+        }
+      }
+    );
+
     repository.findOneAndUpdate({}, { features: UpdateWith.NestedUpdate<Features>({ carnivore: true }) });
     repository.findOneAndUpdate({}, { features: UpdateWith.NestedUpdate<Features>({ color: 'blue' }) });
 

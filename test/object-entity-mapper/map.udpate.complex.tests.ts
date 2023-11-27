@@ -97,7 +97,10 @@ describe('Map update', () => {
       features: UpdateWith.NestedUpdate<FeaturesObject>({ color: 'blue', level: UpdateWith.Clear() })
     });
 
-    expect(mappedCriteria.features?.value).toEqual({ color: 'blue_changed', level: UpdateWith.Clear() });
+    expect((mappedCriteria.features as NestedUpdate<FeaturesObject>)?.value).toEqual({
+      color: 'blue_changed',
+      level: UpdateWith.Clear()
+    });
   });
 
   it('should map features with Set', () => {
@@ -133,9 +136,13 @@ describe('Map update', () => {
       })
     });
 
-    expect(mappedCriteria.features?.value.additional).toBeInstanceOf(NestedUpdate);
+    expect((mappedCriteria.features as NestedUpdate<FeaturesObject>).value.additional).toBeInstanceOf(
+      NestedUpdate
+    );
 
-    const additionalCriteria = mappedCriteria.features?.value.additional as NestedUpdate<AdditionalObject>;
+    const additionalCriteria = (mappedCriteria.features as NestedUpdate<FeaturesObject>).value
+      .additional as NestedUpdate<AdditionalObject>;
+
     expect(additionalCriteria.value.serialNumber).toEqual('newSN_new');
   });
 });
