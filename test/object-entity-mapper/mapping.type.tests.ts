@@ -2,25 +2,31 @@
 import { describe, it } from '@jest/globals';
 import { MapTo } from 'object-entity-mapper/helpers/map.to.helper';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
-import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject } from './_models/animal.models';
+import {
+  AdditionalObject,
+  AnimalObject,
+  FeaturesObject,
+  FriendObject,
+  MappedAnimalObject
+} from './_models/animal.models';
 
 describe('Mapping', () => {
   it('should work for standard properties', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       name: 'name',
       age: 'age'
     };
   });
 
   it('should not work when mapping standard property to nullable property', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       // @ts-expect-error
       name: 'nameNullable'
     };
   });
 
   it('should work with transformed property', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       name: 'name',
       age: MapTo.Property(
         'age',
@@ -31,7 +37,7 @@ describe('Mapping', () => {
   });
 
   it('should work with property transformed to different property', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       name: 'name',
       age: MapTo.Property(
         'name',
@@ -42,15 +48,15 @@ describe('Mapping', () => {
   });
 
   it('should work with nullable property', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
-      ageNullable: 'ageNullable'
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
+      ageNullable: 'age_nullable'
     };
   });
 
   it('should work with nullable transformed property', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       ageNullable: MapTo.Property(
-        'ageNullable',
+        'age_nullable',
         (objectPoints: number) => objectPoints,
         (entityPoints: number | null) => entityPoints || 0
       )
@@ -58,7 +64,7 @@ describe('Mapping', () => {
   });
 
   it('should work with nullable property transformed to different property', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       ageNullable: MapTo.Property(
         'nameNullable',
         (objectPoints: number) => objectPoints?.toString() || '5',
@@ -68,13 +74,13 @@ describe('Mapping', () => {
   });
 
   it('should work with simple array', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       friendIDs: 'friendIDs'
     };
   });
 
   it('should work with transformed array', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       friendIDs: MapTo.Array(
         'friendIDs',
         (objectId: number) => objectId,
@@ -84,7 +90,7 @@ describe('Mapping', () => {
   });
 
   it('should not work with badly transformed array', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       // @ts-expect-error
       friendIDs: MapTo.Array(
         'friendIDs',
@@ -95,13 +101,13 @@ describe('Mapping', () => {
   });
 
   it('should work with nullable array', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       friendIDsNullable: 'friendIDsNullable'
     };
   });
 
   it('should work with transformed nullable array', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       friendIDsNullable: MapTo.Array(
         'friendIDsNullable',
         (objectId: number) => objectId,
@@ -111,7 +117,7 @@ describe('Mapping', () => {
   });
 
   it('should work with object array', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       friends: 'friends'
     };
   });
@@ -123,7 +129,7 @@ describe('Mapping', () => {
       level: 'level'
     };
 
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       friends: MapTo.ObjectArray('friends', elementMapping)
     };
   });
@@ -135,8 +141,8 @@ describe('Mapping', () => {
       level: 'level'
     };
 
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
-      friendsNullable: MapTo.ObjectArray('friendsNullable', elementMapping)
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
+      friendsNullable: MapTo.ObjectArray('friends_nullable', elementMapping)
     };
   });
 
@@ -147,14 +153,14 @@ describe('Mapping', () => {
       level: 'level'
     };
 
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       // @ts-expect-error
       friendsNullable: MapTo.ObjectArray('friends', elementMapping)
     };
   });
 
   it('should work with nested object', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       features: 'features'
     };
   });
@@ -165,14 +171,14 @@ describe('Mapping', () => {
       level: 'level'
     };
 
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       features: MapTo.NestedObject('features', featuresMapping)
     };
   });
 
   it('should work with nested nullable object', () => {
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
-      featuresNullable: 'featuresNullable'
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
+      featuresNullable: 'features_nullable'
     };
   });
 
@@ -182,8 +188,8 @@ describe('Mapping', () => {
       level: 'level'
     };
 
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
-      featuresNullable: MapTo.NestedObject('featuresNullable', featuresMapping)
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
+      featuresNullable: MapTo.NestedObject('features_nullable', featuresMapping)
     };
   });
 
@@ -193,7 +199,7 @@ describe('Mapping', () => {
       level: 'level'
     };
 
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       // @ts-expect-error
       featuresNullable: MapTo.NestedObject('features', featuresMapping)
     };
@@ -222,7 +228,7 @@ describe('Mapping', () => {
       additional: MapTo.NestedObject('additional', additionalMapping)
     };
 
-    const mapping: Mapping<AnimalObject, AnimalObject, false> = {
+    const mapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
       features: MapTo.NestedObject('features', featuresMapping)
     };
   });

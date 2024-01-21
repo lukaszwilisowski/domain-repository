@@ -105,7 +105,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
     if (transformedValue instanceof ValueAction)
       transformedValue = (transformedValue as ValueAction<unknown>).value;
 
-    const nestedMapping = reversed ? mapping.objectKeyToNestedMapping[key] : mapping.entityKeyToNestedMapping[key];
+    const nestedMapping = reversed ? mapping.entityKeyToNestedMapping[key] : mapping.objectKeyToNestedMapping[key];
 
     if (nestedMapping) {
       if (transformedValue === null) {

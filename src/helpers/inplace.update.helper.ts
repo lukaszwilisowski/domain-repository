@@ -54,6 +54,15 @@ export class InPlaceUpdateHelper {
     const actionNumber = a.value as number;
 
     switch (a.actionName) {
+      case undefined:
+        if (typeof a === 'object') {
+          const sv = (currentValue || {}) as Record<string, unknown>;
+          const updatedCount = this.updateInPlace([sv], a as unknown as Record<string, unknown>);
+          return !currentValue || updatedCount !== 0 ? sv : undefined;
+        }
+
+        return currentValue !== a ? a : undefined;
+
       case 'Set':
         if (!Array.isArray(a.value) && typeof a.value === 'object') {
           const sv = (currentValue || {}) as Record<string, unknown>;

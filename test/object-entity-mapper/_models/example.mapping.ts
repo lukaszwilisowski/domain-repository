@@ -1,6 +1,6 @@
 import { MapTo } from 'object-entity-mapper/helpers/map.to.helper';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
-import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject } from './animal.models';
+import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject, MappedAnimalObject } from './animal.models';
 
 const additionalMapping: Mapping<AdditionalObject, AdditionalObject> = {
   serialNumber: MapTo.Property(
@@ -33,7 +33,7 @@ const featuresMapping: Mapping<FeaturesObject, FeaturesObject> = {
   additional: MapTo.NestedObject('additional', additionalMapping)
 };
 
-export const complexMapping: Mapping<AnimalObject, AnimalObject, false> = {
+export const complexMapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
   name: 'name2',
   name2: 'name3',
   nameNullable: MapTo.Property(
@@ -47,7 +47,7 @@ export const complexMapping: Mapping<AnimalObject, AnimalObject, false> = {
     (entityAge: number) => entityAge - 1
   ),
   ageNullable: MapTo.Property(
-    'ageNullable',
+    'age_nullable',
     (objectAge: number | null) => objectAge || 0,
     (entityAge: number | null) => entityAge || 0
   ),
@@ -57,7 +57,7 @@ export const complexMapping: Mapping<AnimalObject, AnimalObject, false> = {
     (entityFriendId: number) => -entityFriendId
   ),
   friends: MapTo.ObjectArray('friends', friendMapping),
-  friendsNullable: MapTo.ObjectArray('friendsNullable', friendMapping),
+  friendsNullable: MapTo.ObjectArray('friends_nullable', friendMapping),
   features: MapTo.NestedObject('features', featuresMapping),
-  featuresNullable: MapTo.NestedObject('featuresNullable', featuresMapping)
+  featuresNullable: MapTo.NestedObject('features_nullable', featuresMapping)
 };

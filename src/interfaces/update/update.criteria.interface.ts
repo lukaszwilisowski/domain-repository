@@ -71,7 +71,7 @@ type ArrayCompatibletypes<T, X> = T extends Array<infer X>
 
 type ObjectCompatibletypes<T> = T extends object
   ? //non-nullable object
-    Set<T> | NestedUpdate<T>
+    T | Set<T> | NestedUpdate<T>
   : T extends object | undefined
   ? //nullable object
     ClearObject

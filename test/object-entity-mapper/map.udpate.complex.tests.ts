@@ -2,11 +2,17 @@ import { describe, expect, it } from '@jest/globals';
 import { UpdateWith } from 'helpers/update.with.helper';
 import { NestedUpdate } from 'interfaces/update/update.conditions';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
-import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject } from './_models/animal.models';
+import {
+  AdditionalObject,
+  AnimalObject,
+  FeaturesObject,
+  FriendObject,
+  MappedAnimalObject
+} from './_models/animal.models';
 import { complexMapping } from './_models/example.mapping';
 
 describe('Map update', () => {
-  const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, AnimalObject>(complexMapping);
+  const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, MappedAnimalObject>(complexMapping);
 
   it('should map name', () => {
     const mappedCriteria = complexMapper.mapUpdate({ name: 'Brian' });
@@ -83,7 +89,7 @@ describe('Map update', () => {
       friendsNullable: UpdateWith.ClearObjectArray()
     });
 
-    expect(mappedCriteria.friendsNullable).toEqual(UpdateWith.ClearObjectArray());
+    expect(mappedCriteria.friends_nullable).toEqual(UpdateWith.ClearObjectArray());
   });
 
   it('should map features', () => {
@@ -91,7 +97,10 @@ describe('Map update', () => {
       features: UpdateWith.NestedUpdate<FeaturesObject>({ color: 'blue', level: UpdateWith.Clear() })
     });
 
-    expect(mappedCriteria.features?.value).toEqual({ color: 'blue_changed', level: UpdateWith.Clear() });
+    expect((mappedCriteria.features as NestedUpdate<FeaturesObject>)?.value).toEqual({
+      color: 'blue_changed',
+      level: UpdateWith.Clear()
+    });
   });
 
   it('should map features with Set', () => {
@@ -107,7 +116,7 @@ describe('Map update', () => {
       featuresNullable: UpdateWith.ClearObject()
     });
 
-    expect(mappedCriteria.featuresNullable).toEqual(UpdateWith.ClearObject());
+    expect(mappedCriteria.features_nullable).toEqual(UpdateWith.ClearObject());
   });
 
   it('should map friends nested array update', () => {
@@ -127,9 +136,13 @@ describe('Map update', () => {
       })
     });
 
-    expect(mappedCriteria.features?.value.additional).toBeInstanceOf(NestedUpdate);
+    expect((mappedCriteria.features as NestedUpdate<FeaturesObject>).value.additional).toBeInstanceOf(
+      NestedUpdate
+    );
 
-    const additionalCriteria = mappedCriteria.features?.value.additional as NestedUpdate<AdditionalObject>;
+    const additionalCriteria = (mappedCriteria.features as NestedUpdate<FeaturesObject>).value
+      .additional as NestedUpdate<AdditionalObject>;
+
     expect(additionalCriteria.value.serialNumber).toEqual('newSN_new');
   });
 });

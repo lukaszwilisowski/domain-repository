@@ -5,14 +5,14 @@ import mongoose from 'mongoose';
 import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
 import { ObjectEntityMapper } from 'object-entity-mapper/object.entity.mapper';
 import { mapToMongoObjectId } from '../../db/mongodb';
-import { AnimalObject } from './_models/animal.models';
+import { AnimalObject, MappedAnimalObject } from './_models/animal.models';
 import { DeskMongoObject, DeskObject } from './_models/desk.model';
 
 describe('Map criteria', () => {
-  const simpleMapping: Mapping<AnimalObject, AnimalObject, false> = {
+  const simpleMapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
     name: 'name',
     age: 'age',
-    ageNullable: 'ageNullable',
+    ageNullable: 'age_nullable',
     friendIDs: 'friendIDs'
   };
 
@@ -20,7 +20,7 @@ describe('Map criteria', () => {
     id: mapToMongoObjectId
   };
 
-  const simpleMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, AnimalObject>(simpleMapping);
+  const simpleMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, MappedAnimalObject>(simpleMapping);
   const deskMapper = new ObjectEntityMapper<DeskObject, DeskObject, DeskMongoObject>(deskMapping);
 
   it('should map undefined', () => {
@@ -66,7 +66,7 @@ describe('Map criteria', () => {
       ageNullable: SearchBy.Exists()
     });
 
-    expect(mappedCriteria.ageNullable).toEqual(SearchBy.Exists());
+    expect(mappedCriteria.age_nullable).toEqual(SearchBy.Exists());
   });
 
   it('should map Contains', () => {

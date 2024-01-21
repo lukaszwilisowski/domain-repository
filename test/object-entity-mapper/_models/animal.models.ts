@@ -29,3 +29,18 @@ export type AnimalObject = {
   features: FeaturesObject;
   featuresNullable?: FeaturesObject;
 };
+
+export type MappedAnimalObject = {
+  name: string;
+  name2: string;
+  name3: string;
+  nameNullable?: string;
+  age: number;
+  age_nullable?: number | null;
+  friendIDs: number[];
+  friendIDsNullable?: number[];
+  friends: FriendObject[];
+  friends_nullable?: FriendObject[];
+  features: FeaturesObject;
+  features_nullable?: FeaturesObject;
+};
