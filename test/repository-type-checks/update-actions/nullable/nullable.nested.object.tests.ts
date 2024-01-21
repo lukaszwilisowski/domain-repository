@@ -10,7 +10,20 @@ const repository = {
 
 describe('Nullable nested object update', () => {
   it('should work with proper actions', () => {
+    const nullableFeatures: NullableFeatures = {
+      advanced: {
+        serialNumber: '123'
+      },
+      carnivore: true,
+      color: 'blue'
+    };
+
+    repository.findOneAndUpdate({}, { features: nullableFeatures });
+
+    repository.findOneAndUpdate({}, { features: UpdateWith.NestedUpdate<NullableFeatures>(nullableFeatures) });
+
     repository.findOneAndUpdate({}, { features: UpdateWith.NestedUpdate<NullableFeatures>({ carnivore: true }) });
+
     repository.findOneAndUpdate({}, { features: UpdateWith.NestedUpdate<NullableFeatures>({ color: 'blue' }) });
 
     repository.findOneAndUpdate({}, { features: UpdateWith.Set({ carnivore: true, color: 'blue' }) });
