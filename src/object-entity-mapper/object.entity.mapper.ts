@@ -1,11 +1,9 @@
+import { Mapping, StrictTypeMapper } from 'strict-type-mapper';
 import { DoesNotExist, Exists, ValueCondition } from '../interfaces/search/search.conditions';
 import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
 import { SearchOptions, SortOptions } from '../interfaces/search/search.options.interface';
 import { Clear, ValueAction } from '../interfaces/update/update.conditions';
 import { UpdateCriteria } from '../interfaces/update/update.criteria.interface';
-import { compileMappings } from './helpers/mapping.helper';
-import { Mapping } from './interfaces/mapping.interface';
-import { CompiledMapping } from './models/compiled.mapping';
 
 /**
  * Represents a general object-entity mapper.
@@ -14,10 +12,10 @@ import { CompiledMapping } from './models/compiled.mapping';
  * @type `E` invariant DB entity type.
  */
 export class ObjectEntityMapper<T, A extends T, E> {
-  private readonly compiledMapping: CompiledMapping;
+  private readonly typeMapper: StrictTypeMapper<T, E>;
 
   public constructor(mapping: Mapping<A, E, unknown>) {
-    this.compiledMapping = compileMappings(mapping);
+    this.typeMapper = new StrictTypeMapper(mapping);
   }
 
   /** Maps object criteria into entity criteria. */
@@ -25,40 +23,37 @@ export class ObjectEntityMapper<T, A extends T, E> {
     //treat empty criteria as find_all
     if (!criteria) return {};
 
-    return this.mapInternal(criteria, this.compiledMapping);
+    return this.mapInternal(criteria);
   }
 
   /** Maps search options into entity search options. */
   public mapSearchOptions(options?: SearchOptions<A>): SearchOptions<E> {
     if (!options) return {};
-    const mappedSortOptions = this.mapInternal(options.sortBy, this.compiledMapping) as SortOptions<E>;
+    const mappedSortOptions = this.mapInternal(options.sortBy) as SortOptions<E>;
     return { ...options, sortBy: mappedSortOptions };
   }
 
   /** Maps new detached object into detached entity. */
   public mapDetachedObjectToEntity(object: T): E {
-    return this.mapInternal(object, this.compiledMapping);
+    return this.mapInternal(object);
   }
 
   /** Maps object update into detached entity. */
   public mapUpdate(update: UpdateCriteria<T>): UpdateCriteria<E> {
-    return this.mapInternal(update, this.compiledMapping);
+    return this.mapInternal(update);
   }
 
   /** Maps entity into attached object. */
   public mapEntityToAttachedObject(entity: E): A {
-    return this.mapInternal(entity, this.compiledMapping, true);
+    return this.mapInternal(entity, true);
   }
 
-  /** Gets compiled mappings. */
-  public getCompiledMapping(): CompiledMapping {
-    return this.compiledMapping;
-  }
-
-  private mapInternal<I, O>(input: I, mapping: CompiledMapping, reversed?: boolean): O {
+  private mapInternal<I, O>(input: I, reversed?: boolean): O {
     const mappedOutput: { [k: string]: unknown } = {};
 
-    const keyMap = reversed ? mapping.entityKeyToObjectKeyMap : mapping.objectKeyToEntityKeyMap;
+    const mapping = this.typeMapper.getCompiledMapping();
+
+    const keyMap = reversed ? mapping.sourceKeyToTargetKeyMap : mapping.targetKeyToSourceKeyMap;
 
     for (const key in keyMap) {
       const targetKey = keyMap[key];
@@ -73,7 +68,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
         continue;
       }
 
-      const transformedValue = this.getTransformedValue(key, value, mapping, reversed);
+      const transformedValue = this.getTransformedValue(key, value, reversed);
 
       if (typeof value !== 'object' || value === null) {
         //direct assignment
@@ -97,7 +92,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
     return mappedOutput as O;
   }
 
-  private getTransformedValue(key: string, value: unknown, mapping: CompiledMapping, reversed?: boolean): unknown {
+  private getTransformedValue(key: string, value: unknown, reversed?: boolean): unknown {
     //compute transformed value
     let transformedValue: unknown = value;
     if (transformedValue instanceof ValueCondition)
@@ -105,7 +100,9 @@ export class ObjectEntityMapper<T, A extends T, E> {
     if (transformedValue instanceof ValueAction)
       transformedValue = (transformedValue as ValueAction<unknown>).value;
 
-    const nestedMapping = reversed ? mapping.entityKeyToNestedMapping[key] : mapping.objectKeyToNestedMapping[key];
+    const mapping = this.typeMapper.getCompiledMapping();
+
+    const nestedMapping = reversed ? mapping.sourceKeyToNestedMapping[key] : mapping.targetKeyToNestedMapping[key];
 
     if (nestedMapping) {
       if (transformedValue === null) {
@@ -113,10 +110,10 @@ export class ObjectEntityMapper<T, A extends T, E> {
         return null;
       } else if (Array.isArray(transformedValue)) {
         //array of objects
-        transformedValue = transformedValue.map((v) => this.mapInternal(v, nestedMapping, reversed));
+        transformedValue = transformedValue.map((v) => this.mapInternal(v, reversed));
       } else {
         //nested object
-        transformedValue = this.mapInternal(transformedValue, nestedMapping, reversed);
+        transformedValue = this.mapInternal(transformedValue, reversed);
       }
 
       return transformedValue;
@@ -124,8 +121,8 @@ export class ObjectEntityMapper<T, A extends T, E> {
 
     //array transformation
     const arrayElementTansform = reversed
-      ? mapping.entityElementKeyToFuncMap[key]
-      : mapping.objectElementKeyToFuncMap[key];
+      ? mapping.sourceElementKeyToFuncMap[key]
+      : mapping.targetElementKeyToFuncMap[key];
 
     if (arrayElementTansform) {
       if (transformedValue === null) {
@@ -142,7 +139,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
 
     //primitive transformation
     const transform =
-      (reversed ? mapping.entityKeyToFuncMap[key] : mapping.objectKeyToFuncMap[key]) || //transform found?
+      (reversed ? mapping.sourceKeyToFuncMap[key] : mapping.targetKeyToFuncMap[key]) || //transform found?
       ((i: unknown) => i); //if not, fallback to no-transformation
 
     transformedValue = Array.isArray(transformedValue)

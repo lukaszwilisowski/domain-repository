@@ -40,10 +40,11 @@
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "ts-jest": "^28.0.5",
-    "typescript": "^4.7.4"
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "mongoose": "^7.4.2",
+    "strict-type-mapper": "^1.0.6",
     "typeorm": "^0.3.17"
   }
 }
