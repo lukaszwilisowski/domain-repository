@@ -161,7 +161,7 @@ const loadUnloadedRelatons = <E extends ObjectLiteral>(
   compiledMapping: CompiledMapping,
   nestedKeysAlreadyLoaded: string[]
 ): void => {
-  for (const key of compiledMapping.nestedSourceKeys) {
+  for (const key of compiledMapping.nestedTargetKeys) {
     const queryKey = entityName ? `${entityName}.${key}` : key;
     const nestedJoinEntityName = queryKey.replace(/\./g, '_');
 

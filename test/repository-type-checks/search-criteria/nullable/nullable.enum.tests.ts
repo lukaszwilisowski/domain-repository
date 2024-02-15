@@ -35,11 +35,12 @@ describe('Nullable', () => {
       foodType: SearchBy.IsNoneOfTheValues([NumericFoodType.Meat, NumericFoodType.Vegetables])
     });
 
-    //Assignments of number when Enum is expected is allowed in Typescript.
-    //See issue: https://github.com/microsoft/TypeScript/issues/26362
-    //There are possible workarounds to prevent it at compile time, described in the thread above, but we consider them too complicated for our needs.
+    // @ts-expect-error
     repository.findOne({ foodType: 10 });
+
+    // @ts-expect-error
     repository.findOne({ foodType: SearchBy.DoesNotEqual(11) });
+
     repository.findOne({ foodType: SearchBy.IsNoneOfTheValues([10, 11]) });
 
     repository.findOne({ type: SearchBy.Exists() });
@@ -61,11 +62,13 @@ describe('Nullable', () => {
       sex: SearchBy.IsNoneOfTheValues([SexType.Male, SexType.Female])
     });
 
-    //Assignments of number when Enum is expected is allowed in Typescript.
-    //See issue: https://github.com/microsoft/TypeScript/issues/26362
-    //There are possible workarounds to prevent it at compile time, described in the thread above, but we consider them too complicated for our needs.
+    // @ts-expect-error
     repository.findOne({ sex: 10 });
+
+    // @ts-expect-error
     repository.findOne({ sex: SearchBy.DoesNotEqual(11) });
+
+    //This special case is allowed!
     repository.findOne({ sex: SearchBy.IsNoneOfTheValues([10, 11]) });
 
     repository.findOne({ sex: SearchBy.Exists() });

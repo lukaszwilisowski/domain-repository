@@ -1,4 +1,4 @@
-import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
+import { Mapping } from 'strict-type-mapper';
 import { Column, Entity } from 'typeorm';
 import { mapToSqlIntId } from '../../../../../src/db/postgresql/sql.id.mapping';
 import { ITestTicket, ITestTicketAttached } from '../../../../_models/ticket/ticket.interface';

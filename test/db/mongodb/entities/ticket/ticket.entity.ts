@@ -1,6 +1,6 @@
 import { mapToMongoObjectId } from 'db/mongodb/mongo.id.mapping';
 import mongoose, { Schema } from 'mongoose';
-import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
+import { Mapping } from 'strict-type-mapper';
 import { ITestTicket, ITestTicketAttached } from '../../../../_models/ticket/ticket.interface';
 import { BaseMongoEntity } from '../../base.mongo.entity';
 

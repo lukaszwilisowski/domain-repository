@@ -7,62 +7,57 @@ import { Mapping } from 'strict-type-mapper';
 import { mapToMongoObjectId } from '../../db/mongodb';
 import { AnimalObject, MappedAnimalObject } from './_models/animal.models';
 import { DeskMongoObject, DeskObject } from './_models/desk.model';
+import { complexMapping } from './_models/example.mapping';
 
 describe('Map criteria', () => {
-  const simpleMapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
-    name: 'name',
-    age: 'age',
-    ageNullable: 'age_nullable',
-    friendIDs: 'friendIDs'
-  };
+  const complexMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, MappedAnimalObject>(complexMapping);
 
   const deskMapping: Mapping<DeskObject, DeskMongoObject> = {
     id: mapToMongoObjectId
   };
 
-  const simpleMapper = new ObjectEntityMapper<AnimalObject, AnimalObject, MappedAnimalObject>(simpleMapping);
   const deskMapper = new ObjectEntityMapper<DeskObject, DeskObject, DeskMongoObject>(deskMapping);
 
   it('should map undefined', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria();
+    const mappedCriteria = complexMapper.mapSearchCriteria();
 
     expect(mappedCriteria).toEqual({});
   });
 
   it('should map single property', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ name: 'Brian' });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ name: 'Brian' });
 
-    expect(mappedCriteria).toEqual({ name: 'Brian' });
+    expect(mappedCriteria).toEqual({ name2: 'Brian' });
   });
 
   it('should map number 0', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ age: 0 });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ age: 0 });
 
-    expect(mappedCriteria).toEqual({ age: 0 });
+    expect(mappedCriteria).toEqual({ age: 1 });
   });
 
   it('should map single array', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ friendIDs: [1, 2] });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ friendIDs: [1, 2] });
 
     expect(mappedCriteria).toEqual({ friendIDs: [1, 2] });
   });
 
   it('should not map unmapped properties', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ name: 'Brian', age: 10, friendIDsNullable: [4, 5] });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ name: 'Brian', age: 10, friendIDsNullable: [4, 5] });
 
-    expect(mappedCriteria.name).toEqual('Brian');
-    expect(mappedCriteria.age).toEqual(10);
-    expect(mappedCriteria.friendIDsNullable).toBeUndefined();
+    expect(mappedCriteria.name2).toEqual('Brian');
+    expect(mappedCriteria.age).toEqual(11);
+    expect(mappedCriteria.friendIDsNullable).toEqual([-4, -5]);
   });
 
   it('should map Equals', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ name: SearchBy.Equals('Brian') });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ name: SearchBy.Equals('Brian') });
 
-    expect(mappedCriteria.name).toEqual(SearchBy.Equals('Brian'));
+    expect(mappedCriteria.name2).toEqual(SearchBy.Equals('Brian'));
   });
 
   it('should map Exists', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({
+    const mappedCriteria = complexMapper.mapSearchCriteria({
       ageNullable: SearchBy.Exists()
     });
 
@@ -70,21 +65,21 @@ describe('Map criteria', () => {
   });
 
   it('should map Contains', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ name: SearchBy.Contains('aaa') });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ name: SearchBy.Contains('aaa') });
 
-    expect(mappedCriteria.name).toEqual(SearchBy.Contains('aaa'));
+    expect(mappedCriteria.name2).toEqual(SearchBy.Contains('aaa'));
   });
 
   it('should map IsGreaterThan', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ age: SearchBy.IsGreaterThan(5) });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ age: SearchBy.IsGreaterThan(5) });
 
-    expect(mappedCriteria.age).toEqual(SearchBy.IsGreaterThan(5));
+    expect(mappedCriteria.age).toEqual(SearchBy.IsGreaterThan(6));
   });
 
   it('should map IsOneOfTheValues', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ name: SearchBy.IsOneOfTheValues(['Brian', 'John']) });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ name: SearchBy.IsOneOfTheValues(['Brian', 'John']) });
 
-    expect(mappedCriteria.name).toEqual(SearchBy.IsOneOfTheValues(['Brian', 'John']));
+    expect(mappedCriteria.name2).toEqual(SearchBy.IsOneOfTheValues(['Brian', 'John']));
   });
 
   it('should map IsOneOfTheValues with ID', () => {
@@ -100,19 +95,19 @@ describe('Map criteria', () => {
   });
 
   it('should map HasElement', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ friendIDs: SearchBy.HasElement(1) });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ friendIDs: SearchBy.HasElement(1) });
 
     expect(mappedCriteria.friendIDs).toEqual(SearchBy.HasElement(1));
   });
 
   it('should map HasAllElements', () => {
-    const mappedCriteria = simpleMapper.mapSearchCriteria({ friendIDs: SearchBy.HasAllElements([1, 2, 3]) });
+    const mappedCriteria = complexMapper.mapSearchCriteria({ friendIDs: SearchBy.HasAllElements([1, 2, 3]) });
 
     expect(mappedCriteria.friendIDs).toEqual(SearchBy.HasAllElements([1, 2, 3]));
   });
 
   it('should map SortOptions', () => {
-    const mappedSortOptions = simpleMapper.mapSearchOptions({
+    const mappedSortOptions = complexMapper.mapSearchOptions({
       skip: 5,
       limit: 10,
       sortBy: { name: 'asc', age: 'desc' }
@@ -120,7 +115,7 @@ describe('Map criteria', () => {
 
     expect(mappedSortOptions.skip).toBe(5);
     expect(mappedSortOptions.limit).toBe(10);
-    expect(mappedSortOptions.sortBy?.name).toEqual('asc');
+    expect(mappedSortOptions.sortBy?.name2).toEqual('asc');
     expect(mappedSortOptions.sortBy?.age).toEqual('desc');
   });
 });

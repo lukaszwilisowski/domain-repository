@@ -12,10 +12,12 @@ import { UpdateCriteria } from '../interfaces/update/update.criteria.interface';
  * @type `E` invariant DB entity type.
  */
 export class ObjectEntityMapper<T, A extends T, E> {
-  private readonly typeMapper: StrictTypeMapper<T, E>;
+  private readonly typeMapper: StrictTypeMapper<A, E>;
+  private readonly compiledMapping: CompiledMapping;
 
-  public constructor(mapping: Mapping<A, E, unknown>) {
-    this.typeMapper = new StrictTypeMapper(mapping);
+  public constructor(mapping: Mapping<A, E>) {
+    this.typeMapper = new StrictTypeMapper<A, E>(mapping);
+    this.compiledMapping = this.typeMapper.getCompiledMapping();
   }
 
   /** Maps object criteria into entity criteria. */
@@ -23,41 +25,48 @@ export class ObjectEntityMapper<T, A extends T, E> {
     //treat empty criteria as find_all
     if (!criteria) return {};
 
-    return this.mapInternal(criteria);
+    return this.mapInternal(criteria, this.compiledMapping);
   }
 
   /** Maps search options into entity search options. */
   public mapSearchOptions(options?: SearchOptions<A>): SearchOptions<E> {
     if (!options) return {};
-    const mappedSortOptions = this.mapInternal(options.sortBy) as SortOptions<E>;
-    return { ...options, sortBy: mappedSortOptions };
+    const mappedSortOptions: SearchOptions<E> = { ...options, sortBy: {} };
+    if (options.sortBy && mappedSortOptions.sortBy) {
+      for (const key in options.sortBy) {
+        const value = options.sortBy[key as keyof SortOptions<A>] as 'asc' | 'desc';
+        const mappedKey = this.compiledMapping.sourceKeyToTargetKeyMap[key];
+        mappedSortOptions.sortBy[mappedKey as keyof SortOptions<E>] = value;
+      }
+    }
+
+    return mappedSortOptions;
   }
 
   /** Maps new detached object into detached entity. */
   public mapDetachedObjectToEntity(object: T): E {
-    return this.mapInternal(object);
+    return this.mapInternal(object, this.compiledMapping);
   }
 
   /** Maps object update into detached entity. */
   public mapUpdate(update: UpdateCriteria<T>): UpdateCriteria<E> {
-    return this.mapInternal(update);
+    return this.mapInternal(update, this.compiledMapping);
   }
 
   /** Maps entity into attached object. */
   public mapEntityToAttachedObject(entity: E): A {
-    return this.mapInternal(entity, true);
+    return this.mapInternal(entity, this.compiledMapping, true);
   }
 
+  /** Gets compiled mappings. */
   public getCompiledMapping(): CompiledMapping {
-    return this.typeMapper.getCompiledMapping();
+    return this.compiledMapping;
   }
 
-  private mapInternal<I, O>(input: I, reversed?: boolean): O {
+  private mapInternal<I, O>(input: I, mapping: CompiledMapping, reversed?: boolean): O {
     const mappedOutput: { [k: string]: unknown } = {};
 
-    const mapping = this.typeMapper.getCompiledMapping();
-
-    const keyMap = reversed ? mapping.sourceKeyToTargetKeyMap : mapping.targetKeyToSourceKeyMap;
+    const keyMap = reversed ? mapping.targetKeyToSourceKeyMap : mapping.sourceKeyToTargetKeyMap;
 
     for (const key in keyMap) {
       const targetKey = keyMap[key];
@@ -72,7 +81,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
         continue;
       }
 
-      const transformedValue = this.getTransformedValue(key, value, reversed);
+      const transformedValue = this.getTransformedValue(key, value, mapping, reversed);
 
       if (typeof value !== 'object' || value === null) {
         //direct assignment
@@ -96,7 +105,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
     return mappedOutput as O;
   }
 
-  private getTransformedValue(key: string, value: unknown, reversed?: boolean): unknown {
+  private getTransformedValue(key: string, value: unknown, mapping: CompiledMapping, reversed?: boolean): unknown {
     //compute transformed value
     let transformedValue: unknown = value;
     if (transformedValue instanceof ValueCondition)
@@ -104,9 +113,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
     if (transformedValue instanceof ValueAction)
       transformedValue = (transformedValue as ValueAction<unknown>).value;
 
-    const mapping = this.typeMapper.getCompiledMapping();
-
-    const nestedMapping = reversed ? mapping.sourceKeyToNestedMapping[key] : mapping.targetKeyToNestedMapping[key];
+    const nestedMapping = reversed ? mapping.targetKeyToNestedMapping[key] : mapping.sourceKeyToNestedMapping[key];
 
     if (nestedMapping) {
       if (transformedValue === null) {
@@ -114,10 +121,10 @@ export class ObjectEntityMapper<T, A extends T, E> {
         return null;
       } else if (Array.isArray(transformedValue)) {
         //array of objects
-        transformedValue = transformedValue.map((v) => this.mapInternal(v, reversed));
+        transformedValue = transformedValue.map((v) => this.mapInternal(v, nestedMapping, reversed));
       } else {
         //nested object
-        transformedValue = this.mapInternal(transformedValue, reversed);
+        transformedValue = this.mapInternal(transformedValue, nestedMapping, reversed);
       }
 
       return transformedValue;
@@ -125,8 +132,8 @@ export class ObjectEntityMapper<T, A extends T, E> {
 
     //array transformation
     const arrayElementTansform = reversed
-      ? mapping.sourceElementKeyToFuncMap[key]
-      : mapping.targetElementKeyToFuncMap[key];
+      ? mapping.targetElementKeyToFuncMap[key]
+      : mapping.sourceElementKeyToFuncMap[key];
 
     if (arrayElementTansform) {
       if (transformedValue === null) {
@@ -143,7 +150,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
 
     //primitive transformation
     const transform =
-      (reversed ? mapping.sourceKeyToFuncMap[key] : mapping.targetKeyToFuncMap[key]) || //transform found?
+      (reversed ? mapping.targetKeyToFuncMap[key] : mapping.sourceKeyToFuncMap[key]) || //transform found?
       ((i: unknown) => i); //if not, fallback to no-transformation
 
     transformedValue = Array.isArray(transformedValue)
