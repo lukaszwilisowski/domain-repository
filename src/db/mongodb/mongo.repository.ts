@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
+import { Mapping } from 'strict-type-mapper';
 import { SingleEntityNotFoundError } from '../../errors/singleEntityNotFound.error';
 import { IDomainRepository } from '../../interfaces/repository.interface';
 import { SearchCriteria } from '../../interfaces/search/search.criteria.interface';
 import { SearchOptions } from '../../interfaces/search/search.options.interface';
 import { UpdateCriteria } from '../../interfaces/update/update.criteria.interface';
-import { Mapping } from '../../object-entity-mapper/interfaces/mapping.interface';
 import { ObjectEntityMapper } from '../../object-entity-mapper/object.entity.mapper';
 import { MongoEntityFormatter } from './mongo.entity.formatter';
 
@@ -107,7 +107,7 @@ export class MongoDbRepository<T, A extends T, E> implements IDomainRepository<T
   public async findOneAndDelete(criteria: SearchCriteria<A>): Promise<A | undefined> {
     const searchCriteria = this.getCriteria(criteria);
     const result = await this.mongooseCollection.findOneAndDelete(searchCriteria);
-    return result ? this.objectEntityMapper.mapEntityToAttachedObject(result) : undefined;
+    return result ? this.objectEntityMapper.mapEntityToAttachedObject(result as E) : undefined;
   }
 
   public async findAllAndDelete(criteria: SearchCriteria<A>): Promise<{ numberOfDeletedObjects: number }> {

@@ -1,8 +1,8 @@
+import { CompiledMapping } from 'strict-type-mapper';
 import { ObjectLiteral, SelectQueryBuilder, UpdateQueryBuilder } from 'typeorm';
 import { SearchCriteria } from '../../interfaces/search/search.criteria.interface';
 import { SearchOptions } from '../../interfaces/search/search.options.interface';
 import { UpdateCriteria } from '../../interfaces/update/update.criteria.interface';
-import { CompiledMapping } from '../../object-entity-mapper/models/compiled.mapping';
 import { formatSelectQuery } from './helpers/filter.helper';
 import { formatSimpleUpdateQuery, isSimpleUpdate } from './helpers/update.helper';
 

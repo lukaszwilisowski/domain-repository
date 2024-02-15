@@ -1,4 +1,4 @@
-import { Mapping, StrictTypeMapper } from 'strict-type-mapper';
+import { CompiledMapping, Mapping, StrictTypeMapper } from 'strict-type-mapper';
 import { DoesNotExist, Exists, ValueCondition } from '../interfaces/search/search.conditions';
 import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
 import { SearchOptions, SortOptions } from '../interfaces/search/search.options.interface';
@@ -46,6 +46,10 @@ export class ObjectEntityMapper<T, A extends T, E> {
   /** Maps entity into attached object. */
   public mapEntityToAttachedObject(entity: E): A {
     return this.mapInternal(entity, true);
+  }
+
+  public getCompiledMapping(): CompiledMapping {
+    return this.typeMapper.getCompiledMapping();
   }
 
   private mapInternal<I, O>(input: I, reversed?: boolean): O {
