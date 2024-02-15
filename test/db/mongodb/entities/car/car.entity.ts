@@ -1,7 +1,6 @@
 import { mapToMongoObjectId } from 'db/mongodb/mongo.id.mapping';
 import mongoose, { Schema } from 'mongoose';
-import { MapTo } from 'object-entity-mapper/helpers/map.to.helper';
-import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
+import { MapTo, Mapping } from 'strict-type-mapper';
 import {
   ITestAdvanced,
   ITestAdvancedAttached,

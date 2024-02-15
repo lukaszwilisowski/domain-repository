@@ -1,63 +1,66 @@
-import { MapTo } from 'object-entity-mapper/helpers/map.to.helper';
-import { Mapping } from 'object-entity-mapper/interfaces/mapping.interface';
+import { Mapping, MapTo } from 'strict-type-mapper';
 import { AdditionalObject, AnimalObject, FeaturesObject, FriendObject, MappedAnimalObject } from './animal.models';
 
-const additionalMapping: Mapping<AdditionalObject, AdditionalObject> = {
+export const additionalMapping: Mapping<AdditionalObject, AdditionalObject> = {
   serialNumber: MapTo.Property(
     'serialNumber',
-    (objectSN: string) => objectSN + '_new',
-    (entitySN: string) => entitySN.replace('_new', '')
+    (sourceSN: string) => sourceSN + '_new',
+    (targetSN: string) => targetSN.replace('_new', '')
   ),
   index: 'index'
 };
 
-const friendMapping: Mapping<FriendObject, FriendObject, false> = {
+export const friendMapping: Mapping<FriendObject, FriendObject> = {
   age: MapTo.Property(
     'age',
-    (objectAge: number) => objectAge + 1,
-    (entityAge: number) => entityAge - 1
-  )
+    (sourceAge: number) => sourceAge + 1,
+    (targetAge: number) => targetAge - 1
+  ),
+  name: 'name',
+  level: 'level'
 };
 
-const featuresMapping: Mapping<FeaturesObject, FeaturesObject> = {
+export const featuresMapping: Mapping<FeaturesObject, FeaturesObject> = {
   color: MapTo.Property(
     'color',
-    (objectColor: string) => objectColor + '_changed',
-    (entityColor: string) => entityColor.replace('_changed', '')
+    (sourceColor: string) => sourceColor + '_changed',
+    (targetColor: string) => targetColor.replace('_changed', '')
   ),
   level: MapTo.Property(
     'level',
-    (objectLevel: number) => objectLevel + 3,
-    (entityLevel: number | null) => (entityLevel || 0) - 3
+    (sourceLevel: number) => sourceLevel + 3,
+    (targetLevel: number) => targetLevel - 3
   ),
   additional: MapTo.NestedObject('additional', additionalMapping)
 };
 
-export const complexMapping: Mapping<AnimalObject, MappedAnimalObject, false> = {
+export const complexMapping: Mapping<AnimalObject, MappedAnimalObject> = {
   name: 'name2',
   name2: 'name3',
+  name3: 'name',
   nameNullable: MapTo.Property(
     'nameNullable',
-    (objectName: string) => objectName.toUpperCase(),
-    (entityName: string | null) => entityName?.toLowerCase() || 'default'
+    (sourceName: string) => sourceName.toUpperCase(),
+    (targetName: string) => targetName.toLowerCase()
   ),
   age: MapTo.Property(
     'age',
-    (objectAge: number) => objectAge + 1,
-    (entityAge: number) => entityAge - 1
+    (sourceAge: number) => sourceAge + 1,
+    (targetAge: number) => targetAge - 1
   ),
   ageNullable: MapTo.Property(
     'age_nullable',
-    (objectAge: number | null) => objectAge || 0,
-    (entityAge: number | null) => entityAge || 0
+    (sourceAge: number | null): number | null => sourceAge || 0,
+    (targetAge: number | null): number | null => targetAge || 0
   ),
   friendIDsNullable: MapTo.Array(
     'friendIDsNullable',
-    (objectFriendId: number) => -objectFriendId,
-    (entityFriendId: number) => -entityFriendId
+    (sourceFriendId: number) => -sourceFriendId,
+    (targetFriendId: number) => -targetFriendId
   ),
   friends: MapTo.ObjectArray('friends', friendMapping),
   friendsNullable: MapTo.ObjectArray('friends_nullable', friendMapping),
+  friendIDs: 'friendIDs',
   features: MapTo.NestedObject('features', featuresMapping),
   featuresNullable: MapTo.NestedObject('features_nullable', featuresMapping)
 };

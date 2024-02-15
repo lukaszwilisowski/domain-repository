@@ -1,6 +1,6 @@
 # Domain Repository
 
-IDomainRepository is a DB-agnostic abstract repository layer over Node.JS ORM frameworks (Mongoose or TypeORM). You can think of it as simplified, but more strictly typed version of those.
+IDomainRepository is an extension of ORM frameworks (Mongoose or TypeORM) that **automatically maps DB models into Domain models**.
 
 Useful links:
 
@@ -95,9 +95,73 @@ An attached model will contain:
 
 ---
 
-### 2. Use IDomainRepository in your business services
+### 2. Define your DB models (in Mongoose or TypeORM).
 
-Use `IDomainRepository`\* interface in places, where you would previously use Mongoose collection or TypeORM repository. Type it explicitly with your standard and Attached model type.
+Let's say you want to use MongoDB as your DB, and Mongoose as your ORM.
+
+Create a new file for my DB model, for example: `car.entity.ts`:
+
+Because this library uses **domain mapping**, this model does not have to be the same as your domain model.
+
+```typescript
+export type ICarMongoEntity = {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  best_of_all: boolean;
+  readonly yearOfProduction: number;
+  sold?: Date;
+};
+```
+
+Now create file `car.schema.ts` and define your db schema, using mongoose:
+
+```typescript
+//standard MongoDb schema, typed with your db model
+export const CarSchema = new Schema<ICarMongoEntity>({
+  name: {
+    type: String,
+    required: true
+  },
+  best_of_all: {
+    type: Boolean,
+    required: true
+  },
+  yearOfProduction: {
+    type: Number,
+    required: true
+  },
+  sold: {
+    type: Date,
+    required: false
+  }
+});
+```
+
+---
+
+### 3. Define mapping between Domain and DB models
+
+Check [strict-type-mapper](https://www.npmjs.com/package/strict-type-mapper) npm package for more details.
+
+```typescript
+import { Mapping } from 'strict-type-mapper';
+import { mapToMongoObjectId } from 'domain-repository/db/mongodb';
+
+//define mapping from domain model to db model
+export const mongoCarMapping: Mapping<ICarAttached, ICarMongoEntity> = {
+  id: mapToMongoObjectId,
+  name: 'name',
+  best: 'best_of_all',
+  yearOfProduction: 'yearOfProduction',
+  sold: 'sold'
+};
+```
+
+---
+
+### 4. Use IDomainRepository in your business services
+
+Use `IDomainRepository` interface in places, where you would previously use Mongoose collection or TypeORM repository. **Type it explicitly** with your Domain model type.
 
 ```typescript
 import { IDomainRepository } from 'domain-repository';
@@ -115,13 +179,15 @@ export class CarService {
 }
 ```
 
-\*If you only need to read or write data you can also use narrowed versions of interfaces: `IReadDomainRepository` or `IWriteDomainRepository` (SOLID's Interface segregation principle).
+If you only need to read or write data you can also use narrowed versions of interfaces: `IReadDomainRepository` or `IWriteDomainRepository` (SOLID's Interface segregation principle).
 
 ---
 
-### 3. Write unit tests (Test-driven-development)
+### 5. Write unit tests (Test-driven-development)
 
-Here lies the greatest benefit of using IDomainRepository. You can easily test your services using MockedDbRepository implementation. **No more difficult mocking of db methods!**
+Here lies the greatest benefit of using IDomainRepository. You can easily test your services using MockedDbRepository implementation.
+
+**No more difficult mocking of db methods!**
 
 This way you can focus on your business code and test only that (this is one of the principal guidelines of unit testing).
 
@@ -154,82 +220,7 @@ describe('CarService', () => {
 
 ---
 
-### 4. Choose your DB technology and define model mappings.
-
-Let's say I want to use MongoDB as my DB, and Mongoose as my ORM layer.
-
-Let's create a new file for my DB model, for example: `car.entity.ts`:
-Because we have mappings, this does not have to be the same model as domain model.
-
-```typescript
-export type ICarMongoEntity = {
-  _id: mongoose.Types.ObjectId;
-  name: string;
-  best_of_all: boolean;
-  readonly yearOfProduction: number;
-  sold?: Date;
-};
-```
-
-Now create file `car.schema.ts` and define your db schema, using mongoose:
-
-```typescript
-import { Mapping } from 'domain-repository/mapping';
-import { mapToMongoObjectId } from 'domain-repository/db/mongodb';
-
-//standard MongoDb schema, typed with your db model
-export const CarSchema = new Schema<ICarMongoEntity>({
-  name: {
-    type: String,
-    required: true
-  },
-  best_of_all: {
-    type: Boolean,
-    required: true
-  },
-  yearOfProduction: {
-    type: Number,
-    required: true
-  },
-  sold: {
-    type: Date,
-    required: false
-  }
-});
-
-//define mapping from domain model to db model
-export const mongoCarMapping: Mapping<ICarAttached, ICarMongoEntity> = {
-  id: mapToMongoObjectId,
-  name: 'name',
-  best: 'best_of_all',
-  yearOfProduction: 'yearOfProduction',
-  sold: 'sold'
-};
-```
-
-If you are interested, `mapToMongoObjectId` has a simple implementation:
-
-```typescript
-export const mapToMongoObjectId: TransformProperty<'_id', string, mongoose.Types.ObjectId> = MapTo.Property(
-  '_id',
-  (objectId: string) => new mongoose.Types.ObjectId(objectId),
-  (entityId: mongoose.Types.ObjectId) => entityId.toString()
-);
-```
-
-Please note that our Mapping allows for more advanced transformations, such as:
-
-- a property can be mapped to other property with compatible type but different name, using direct assignment: `property: 'mappedProperty'`
-- a primitive property can be mapped to other primitive property of different type, using transformation helper `MapTo.Property(mappedProperty, transformFunc, reverseTransformFunc)`
-- an array of primitives property can be mapped to other array of primitives, using single element transformation helper `MapTo.Array(mappedProperty, transformElementFunc, reverseTransformElementFunc)`
-- an object array property can be mapped to other object array property, using nested mapping `MapTo.ObjectArray(mappedProperty, nestedMapping)`
-- a nested object property can be mapped to other nested object property, using nested mapping `MapTo.NestedObject(mappedProperty, nestedMapping)`
-
-You can find an example of advanced nested object mapping [here](https://github.com/lukaszwilisowski/domain-repository/blob/main/test/db/mongodb/entities/car/car.entity.ts) and [here](https://github.com/lukaszwilisowski/domain-repository/blob/main/test/object-entity-mapper/_models/example.mapping.ts).
-
----
-
-### 5. Supply your services with proper repository implemenation for your target DB.
+### 6. Supply your services with proper repository implemenation for your target DB.
 
 Now depending on your db and ORM layer, you need to create ORM repository and pass it to our implementation of IDomainRepository.
 
@@ -313,8 +304,8 @@ export type ICarSqlEntity = {
 Db schema and mapping:
 
 ```typescript
+import { Mapping } from 'strict-type-mapper';
 import { mapToSqlIntId } from 'domain-repository/db/postgresql';
-import { Mapping } from 'domain-repository/mapping';
 
 //you can put ! next to the properties, to prevent Typescript no-initializer warnings
 @Entity('cars')

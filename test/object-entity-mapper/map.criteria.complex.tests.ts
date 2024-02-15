@@ -58,7 +58,7 @@ describe('Map criteria', () => {
       })
     });
 
-    expect(mappedCriteria.friends?.value.name).toBeUndefined();
+    expect(mappedCriteria.friends?.value.name).toBe('5');
     expect((mappedCriteria.friends?.value.age as IsGreaterThan<number>).value).toBe(8);
   });
 

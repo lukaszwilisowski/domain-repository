@@ -1,11 +1,9 @@
+import { CompiledMapping, Mapping, StrictTypeMapper } from 'strict-type-mapper';
 import { DoesNotExist, Exists, ValueCondition } from '../interfaces/search/search.conditions';
 import { SearchCriteria } from '../interfaces/search/search.criteria.interface';
 import { SearchOptions, SortOptions } from '../interfaces/search/search.options.interface';
 import { Clear, ValueAction } from '../interfaces/update/update.conditions';
 import { UpdateCriteria } from '../interfaces/update/update.criteria.interface';
-import { compileMappings } from './helpers/mapping.helper';
-import { Mapping } from './interfaces/mapping.interface';
-import { CompiledMapping } from './models/compiled.mapping';
 
 /**
  * Represents a general object-entity mapper.
@@ -14,10 +12,12 @@ import { CompiledMapping } from './models/compiled.mapping';
  * @type `E` invariant DB entity type.
  */
 export class ObjectEntityMapper<T, A extends T, E> {
+  private readonly typeMapper: StrictTypeMapper<A, E>;
   private readonly compiledMapping: CompiledMapping;
 
-  public constructor(mapping: Mapping<A, E, unknown>) {
-    this.compiledMapping = compileMappings(mapping);
+  public constructor(mapping: Mapping<A, E>) {
+    this.typeMapper = new StrictTypeMapper<A, E>(mapping);
+    this.compiledMapping = this.typeMapper.getCompiledMapping();
   }
 
   /** Maps object criteria into entity criteria. */
@@ -31,8 +31,16 @@ export class ObjectEntityMapper<T, A extends T, E> {
   /** Maps search options into entity search options. */
   public mapSearchOptions(options?: SearchOptions<A>): SearchOptions<E> {
     if (!options) return {};
-    const mappedSortOptions = this.mapInternal(options.sortBy, this.compiledMapping) as SortOptions<E>;
-    return { ...options, sortBy: mappedSortOptions };
+    const mappedSortOptions: SearchOptions<E> = { ...options, sortBy: {} };
+    if (options.sortBy && mappedSortOptions.sortBy) {
+      for (const key in options.sortBy) {
+        const value = options.sortBy[key as keyof SortOptions<A>] as 'asc' | 'desc';
+        const mappedKey = this.compiledMapping.sourceKeyToTargetKeyMap[key];
+        mappedSortOptions.sortBy[mappedKey as keyof SortOptions<E>] = value;
+      }
+    }
+
+    return mappedSortOptions;
   }
 
   /** Maps new detached object into detached entity. */
@@ -58,7 +66,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
   private mapInternal<I, O>(input: I, mapping: CompiledMapping, reversed?: boolean): O {
     const mappedOutput: { [k: string]: unknown } = {};
 
-    const keyMap = reversed ? mapping.entityKeyToObjectKeyMap : mapping.objectKeyToEntityKeyMap;
+    const keyMap = reversed ? mapping.targetKeyToSourceKeyMap : mapping.sourceKeyToTargetKeyMap;
 
     for (const key in keyMap) {
       const targetKey = keyMap[key];
@@ -105,7 +113,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
     if (transformedValue instanceof ValueAction)
       transformedValue = (transformedValue as ValueAction<unknown>).value;
 
-    const nestedMapping = reversed ? mapping.entityKeyToNestedMapping[key] : mapping.objectKeyToNestedMapping[key];
+    const nestedMapping = reversed ? mapping.targetKeyToNestedMapping[key] : mapping.sourceKeyToNestedMapping[key];
 
     if (nestedMapping) {
       if (transformedValue === null) {
@@ -124,8 +132,8 @@ export class ObjectEntityMapper<T, A extends T, E> {
 
     //array transformation
     const arrayElementTansform = reversed
-      ? mapping.entityElementKeyToFuncMap[key]
-      : mapping.objectElementKeyToFuncMap[key];
+      ? mapping.targetElementKeyToFuncMap[key]
+      : mapping.sourceElementKeyToFuncMap[key];
 
     if (arrayElementTansform) {
       if (transformedValue === null) {
@@ -142,7 +150,7 @@ export class ObjectEntityMapper<T, A extends T, E> {
 
     //primitive transformation
     const transform =
-      (reversed ? mapping.entityKeyToFuncMap[key] : mapping.objectKeyToFuncMap[key]) || //transform found?
+      (reversed ? mapping.targetKeyToFuncMap[key] : mapping.sourceKeyToFuncMap[key]) || //transform found?
       ((i: unknown) => i); //if not, fallback to no-transformation
 
     transformedValue = Array.isArray(transformedValue)

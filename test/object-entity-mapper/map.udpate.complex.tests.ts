@@ -73,7 +73,7 @@ describe('Map update', () => {
       friends: UpdateWith.Set([{ age: 10, name: 'f1', level: 5 }])
     });
 
-    expect(mappedCriteria.friends).toEqual(UpdateWith.Set([{ age: 11 }]));
+    expect(mappedCriteria.friends).toEqual(UpdateWith.Set([{ age: 11, name: 'f1', level: 5 }]));
   });
 
   it('should map friends with PullEach', () => {
@@ -81,7 +81,7 @@ describe('Map update', () => {
       friends: UpdateWith.Pull({ age: 10, name: 'f1', level: 5 })
     });
 
-    expect(mappedCriteria.friends).toEqual(UpdateWith.Pull({ age: 11 }));
+    expect(mappedCriteria.friends).toEqual(UpdateWith.Pull({ age: 11, name: 'f1', level: 5 }));
   });
 
   it('should map friendsNullable with PullEach', () => {

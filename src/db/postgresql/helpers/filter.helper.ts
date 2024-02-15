@@ -1,3 +1,4 @@
+import { CompiledMapping } from 'strict-type-mapper';
 import { ObjectLiteral, SelectQueryBuilder, UpdateQueryBuilder } from 'typeorm';
 import {
   Equals,
@@ -12,7 +13,6 @@ import {
 } from '../../../interfaces/search/search.conditions';
 import { SearchCriteria } from '../../../interfaces/search/search.criteria.interface';
 import { SearchOptions, SortOptions } from '../../../interfaces/search/search.options.interface';
-import { CompiledMapping } from '../../../object-entity-mapper/models/compiled.mapping';
 import { getOppositeCondition } from './opposite.condition.helper';
 
 export const formatSelectQuery = <E extends ObjectLiteral>(
@@ -110,7 +110,7 @@ const formatSelectQueryImpl = <E extends ObjectLiteral>(
       queryBuilder.andWhere(`${nestedJoinEntityName}.id ${isNotNull}`);
 
       //recursion
-      const nestedCompiledMapping = compiledMapping.entityKeyToNestedMapping[key];
+      const nestedCompiledMapping = compiledMapping.sourceKeyToNestedMapping[key];
       const nestedCriteria = criteria[key] as ValueCondition<SearchCriteria<unknown>>;
 
       formatSelectQueryImpl(
@@ -130,7 +130,7 @@ const formatSelectQueryImpl = <E extends ObjectLiteral>(
 
       //recursion
       const nestedCriteria = criteria[key] as ValueCondition<SearchCriteria<unknown>>;
-      const nestedCompiledMapping = compiledMapping.entityKeyToNestedMapping[key];
+      const nestedCompiledMapping = compiledMapping.sourceKeyToNestedMapping[key];
 
       formatSelectQueryImpl(
         nestedJoinEntityName,
@@ -161,7 +161,7 @@ const loadUnloadedRelatons = <E extends ObjectLiteral>(
   compiledMapping: CompiledMapping,
   nestedKeysAlreadyLoaded: string[]
 ): void => {
-  for (const key of compiledMapping.nestedEntityKeys) {
+  for (const key of compiledMapping.nestedTargetKeys) {
     const queryKey = entityName ? `${entityName}.${key}` : key;
     const nestedJoinEntityName = queryKey.replace(/\./g, '_');
 
@@ -169,8 +169,8 @@ const loadUnloadedRelatons = <E extends ObjectLiteral>(
 
     queryBuilder.leftJoinAndSelect(queryKey, nestedJoinEntityName);
 
-    if (compiledMapping.entityKeyToNestedMapping[key]) {
-      const nestedMapping = compiledMapping.entityKeyToNestedMapping[key] as CompiledMapping;
+    if (compiledMapping.sourceKeyToNestedMapping[key]) {
+      const nestedMapping = compiledMapping.sourceKeyToNestedMapping[key] as CompiledMapping;
       loadUnloadedRelatons(nestedJoinEntityName, queryBuilder, nestedMapping, nestedKeysAlreadyLoaded);
     }
   }
