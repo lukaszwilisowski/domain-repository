@@ -10,7 +10,7 @@ export class InPlaceCreateHelper<A> {
         for (const e of object[key] as unknown[]) {
           if (typeof e === 'object') {
             //create id for nested array object
-            this.generateIDsForObject(object[key] as Record<string, unknown>);
+            this.generateIDsForObject(object[key] as unknown as Record<string, unknown>);
           }
         }
 
@@ -30,6 +30,11 @@ export class InPlaceCreateHelper<A> {
     const copy = { ...(object as Record<string, unknown>) };
 
     for (const key in copy) {
+      if (copy[key] instanceof Date) {
+        copy[key] = new Date(copy[key] as Date);
+        continue;
+      }
+
       if (Array.isArray(copy[key])) {
         const newArray = [];
 
