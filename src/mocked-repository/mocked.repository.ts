@@ -29,7 +29,7 @@ export class MockedDBRepository<T, A extends T> implements IDomainRepository<T, 
 
     if (foundObjects.length !== 1)
       throw new SingleEntityNotFoundError('[MockedEntity]', foundObjects.length, criteria);
-    else return foundObjects[0];
+    else return foundObjects[0] as A;
   }
 
   public async findAll(criteria?: SearchCriteria<A>, options?: SearchOptions<A>): Promise<Array<A>> {
@@ -82,7 +82,7 @@ export class MockedDBRepository<T, A extends T> implements IDomainRepository<T, 
   ): Promise<{ numberOfUpdatedObjects: number }> {
     const objects = await this.findAll(criteria);
 
-    const indexes = [];
+    const indexes: number[] = [];
     const copies = [];
 
     for (const object of objects) {
@@ -94,7 +94,7 @@ export class MockedDBRepository<T, A extends T> implements IDomainRepository<T, 
 
     for (let i = 0; i < copies.length; i++) {
       const attachedObject = this.inPlaceCreateHelper.generateIDsForObject(copies[i] as Record<string, unknown>);
-      this.collection[indexes[i]] = attachedObject;
+      this.collection[indexes[i] as number] = attachedObject;
     }
 
     return { numberOfUpdatedObjects };

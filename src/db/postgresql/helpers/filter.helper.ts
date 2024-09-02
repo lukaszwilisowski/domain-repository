@@ -110,7 +110,7 @@ const formatSelectQueryImpl = <E extends ObjectLiteral>(
       queryBuilder.andWhere(`${nestedJoinEntityName}.id ${isNotNull}`);
 
       //recursion
-      const nestedCompiledMapping = compiledMapping.sourceKeyToNestedMapping[key];
+      const nestedCompiledMapping = compiledMapping.sourceKeyToNestedMapping[key] as CompiledMapping;
       const nestedCriteria = criteria[key] as ValueCondition<SearchCriteria<unknown>>;
 
       formatSelectQueryImpl(
@@ -130,7 +130,7 @@ const formatSelectQueryImpl = <E extends ObjectLiteral>(
 
       //recursion
       const nestedCriteria = criteria[key] as ValueCondition<SearchCriteria<unknown>>;
-      const nestedCompiledMapping = compiledMapping.sourceKeyToNestedMapping[key];
+      const nestedCompiledMapping = compiledMapping.sourceKeyToNestedMapping[key] as CompiledMapping;
 
       formatSelectQueryImpl(
         nestedJoinEntityName,

@@ -62,7 +62,7 @@ export class PostgreSQLDbRepository<T, A extends T, E extends ObjectLiteral> imp
         criteria
       );
 
-    return this.objectEntityMapper.mapEntityToAttachedObject(foundEntities[0]);
+    return this.objectEntityMapper.mapEntityToAttachedObject(foundEntities[0] as E);
   }
 
   public async findAll(criteria?: SearchCriteria<A>, options?: SearchOptions<A>): Promise<Array<A>> {
