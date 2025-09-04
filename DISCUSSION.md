@@ -4,7 +4,7 @@ Properly implemented abstract repository layer solves 3 major development proble
 
 1. By hiding DB details, allows to easily switch between different databases. This pattern is called **DB as an implementation detail**.
 2. Thanks to advanced Typescript checks, takes into consideration additional constraints such as optional and readonly properties, providing developers with **better intellisense and type-checking**.
-3. **Greatly simplifies unit testing** by using out-of-the-box MockedDBRepository implementation.
+3. **Greatly simplifies unit testing** by using out-of-the-box mocked database.
 
 ---
 
@@ -13,7 +13,7 @@ Properly implemented abstract repository layer solves 3 major development proble
 Classic back-end layered architecture consists of:
 
 - controllers
-- business services operating on database models
+- business services using db models or db repositories (**hard to mock and test!**)
 - database models and repositories (collections)
 
 The main drawback of this approach is leaking database details (you often have to pollute your domain code and business functions with DB implementation details). This code is harder to design (DDD), harder to maintain and harder to test. The simplicity comes at the cost of violating some of the SOLID principles.
@@ -26,7 +26,7 @@ Abstract repository layer approach pushes TypeORM improvements even further, by 
 
 - controllers
 - domain objects with optional and readonly properties
-- business services operating on domain models, using **abtract repository interface**
+- business services operating on domain models, using abtract repository interface (**easy to mock and test!**)
 - specific repository implementation for selected DBs\*
 - db models and **custom object-entity mappings**
 
